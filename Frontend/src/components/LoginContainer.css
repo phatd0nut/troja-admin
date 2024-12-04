@@ -1,0 +1,25 @@
+/* LoginContainer.css */
+.loginWrapper {
+    display: flex;
+    justify-content: flex-start; /* Justera horisontellt till vänster */
+    align-items: center; /* Centrera vertikalt */
+    height: 100vh; /* Ta upp hela höjden av viewporten */
+  }
+  
+  .loginContainer {
+    margin-left: 12.5%; /* Flytta containern till mitten av vänstra halvan */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  #loginBtn {
+    align-self: flex-end;
+    font-weight: bold;
+  }
+  
+  #loginBtn:hover {
+    background-color: #000000;
+  }
