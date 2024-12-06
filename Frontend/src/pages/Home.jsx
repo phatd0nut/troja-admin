@@ -1,13 +1,11 @@
 import React from 'react';
-import { Typography } from '@mui/material';
+import NavBar from '../components/NavBar'; // Importera NavBar-komponenten
 
-function Home() {
+const Home = () => {
   return (
     <div>
-      <Typography variant="h1">Home Page</Typography>
-      <Typography variant="body1">Welcome to the home page!</Typography>
     </div>
   );
-}
+};
 
 export default Home;

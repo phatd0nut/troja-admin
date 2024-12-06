@@ -17,9 +17,4 @@
   
   #loginBtn {
     align-self: flex-end;
-    font-weight: bold;
-  }
-  
-  #loginBtn:hover {
-    background-color: #000000;
   }

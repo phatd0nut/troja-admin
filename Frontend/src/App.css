@@ -2,9 +2,49 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
 }
-
 
 body {
   overflow: hidden;
+}
+
+.inputField{
+  box-shadow: #000000 0px 0px 1px;
+}
+
+.button {
+  font-weight: bold !important;
+}
+
+.button:hover {
+  background-color: #000000;
+}
+
+.loadingCircle {
+
+}
+
+.standardDialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 400px;
+  height: 200px;
+  gap: 40px;
+}
+
+.appContainer {
+  display: flex;
+}
+
+.content {
+  padding: 20px;
+  width: 100%;
+}
+
+.content.withNavBar {
+  margin-left: 60px; /* Samma bredd som navbaren */
+  width: calc(100% - 60px); /* Justera bredden på innehållet */
 }

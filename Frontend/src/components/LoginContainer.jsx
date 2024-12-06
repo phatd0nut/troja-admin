@@ -1,7 +1,7 @@
-import React from 'react';
-import InputFields from './InputFields';
-import './LoginContainer.css'; // Importera CSS-filen
-import Button from './Button';
+import React from "react";
+import InputField from "./InputField";
+import "./LoginContainer.css"; // Importera CSS-filen
+import Button from "./Button";
 
 const LoginContainer = ({
   username,
@@ -13,19 +13,19 @@ const LoginContainer = ({
   handleMouseDownPassword,
 }) => {
   // Kontrollera om både användarnamn och lösenord är ifyllda
-  const isFormValid = username.trim() !== '' && password.trim() !== '';
+  const isFormValid = username.trim() !== "" && password.trim() !== "";
 
   return (
     <div className="loginWrapper">
       <div className="loginContainer">
-        <InputFields
+        <InputField
           label="Användarnamn"
           type="text"
           value={username}
           onChange={handleUsernameChange}
           autoComplete="username"
         />
-        <InputFields
+        <InputField
           label="Lösenord"
           type="password"
           value={password}
@@ -41,7 +41,7 @@ const LoginContainer = ({
           variant="contained"
           color="primary"
           type="submit"
-          disabled={!isFormValid} // Inaktivera knappen om formuläret inte är giltigt
+          disabled={!isFormValid}
         >
           Logga in
         </Button>

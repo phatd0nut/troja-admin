@@ -8,7 +8,7 @@
   content: "";
   position: absolute;
   top: 55%;
-  left: 75%;
+  left: 72%;
   width: 120%;
   height: 120%;
   background-image: url("../assets/svg/troja_logo.svg"); /* Använd SVG-filen som bakgrund */
@@ -19,6 +19,7 @@
   z-index: -1; /* Placera bilden bakom innehållet */
 }
 
-form {
-
+h2 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
 }
