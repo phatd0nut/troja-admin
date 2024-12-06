@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   CssBaseline,
   Drawer,
@@ -22,47 +22,25 @@ import logo from "../assets/svg/troja_logo.svg"; // Importera SVG-filen
 const drawerWidth = 190;
 const miniDrawerWidth = 60;
 
-const NavBar = () => {
-  const [open, setOpen] = useState(false);
-
+const NavBar = ({ openNav, setOpenNav }) => {
   const handleDrawerOpen = () => {
-    setOpen(true);
+    setOpenNav(true);
   };
 
   const handleDrawerClose = () => {
-    setOpen(false);
+    setOpenNav(false);
   };
 
   const navItems = [
     { text: "Hem", icon: <HomeIcon className="menuIcons" />, path: "/home" },
-    {
-      text: "Kunder",
-      icon: <PeopleIcon className="menuIcons" />,
-      path: "/customers",
-    },
-    {
-      text: "Utskick",
-      icon: <MailIcon className="menuIcons" />,
-      path: "/mail",
-    },
-    {
-      text: "Inställningar",
-      icon: <SettingsIcon className="menuIcons" />,
-      path: "/settings",
-    },
-    {
-      text: "Logga ut",
-      icon: <LogoutIcon className="menuIcons" />,
-      path: "/logout",
-    },
+    { text: "Kunder", icon: <PeopleIcon className="menuIcons" />, path: "/customers" },
+    { text: "Utskick", icon: <MailIcon className="menuIcons" />, path: "/mail" },
+    { text: "Inställningar", icon: <SettingsIcon className="menuIcons" />, path: "/settings" },
+    { text: "Logga ut", icon: <LogoutIcon className="menuIcons" />, path: "/logout" },
     {
       text: "Fäll in",
-      icon: open ? (
-        <ChevronLeftIcon className="menuIcons" />
-      ) : (
-        <ChevronRightIcon className="menuIcons" />
-      ),
-      action: open ? handleDrawerClose : handleDrawerOpen,
+      icon: openNav ? <ChevronLeftIcon className="menuIcons" /> : <ChevronRightIcon className="menuIcons" />,
+      action: openNav ? handleDrawerClose : handleDrawerOpen,
     },
   ];
 
@@ -72,13 +50,13 @@ const NavBar = () => {
       <Drawer
         className="navbar" // Lägg till klassen navbar
         sx={{
-          width: open ? drawerWidth : miniDrawerWidth,
+          width: openNav ? drawerWidth : miniDrawerWidth,
           flexShrink: 0,
           whiteSpace: "nowrap",
           position: "relative",
           transition: "width 0.3s ease-in-out",
           [`& .MuiDrawer-paper`]: {
-            width: open ? drawerWidth : miniDrawerWidth,
+            width: openNav ? drawerWidth : miniDrawerWidth,
             boxSizing: "border-box",
             overflowX: "hidden",
             backgroundColor: (theme) => theme.palette.primary.main,
@@ -92,7 +70,7 @@ const NavBar = () => {
         }}
         variant="permanent"
         anchor="left"
-        open={open}
+        open={openNav}
       >
         <Box
           component={Link}
@@ -154,7 +132,7 @@ const NavBar = () => {
                 sx={{
                   color: (theme) => theme.palette.primary.contrastText,
                   transition: "opacity 0.3s ease-in-out", // Lägg till transition för opacity
-                  opacity: open ? 1 : 0, // Ändra opacity beroende på om Drawer är öppen eller stängd
+                  opacity: openNav ? 1 : 0, // Ändra opacity beroende på om Drawer är öppen eller stängd
                 }}
               />
             </ListItem>

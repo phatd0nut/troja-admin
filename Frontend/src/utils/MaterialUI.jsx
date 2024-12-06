@@ -31,6 +31,9 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from '@mui/icons-material/Logout';
+import Stack from "@mui/material/Stack";
+import Divider from "@mui/material/Divider";
+import Paper from "@mui/material/Paper";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 // Skapa ett tema
@@ -87,4 +90,7 @@ export {
   ChevronRightIcon,
   MenuIcon,
   LogoutIcon,
+  Stack,
+  Divider,
+  Paper,
 };

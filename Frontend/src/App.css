@@ -48,3 +48,16 @@ body {
   margin-left: 60px; /* Samma bredd som navbaren */
   width: calc(100% - 60px); /* Justera bredden på innehållet */
 }
+
+.pageHeader {
+  font-size: 3rem;
+  color: #dc2e34;
+  font-weight: 500;
+  margin-left: 40px;
+  margin-bottom: 60px;
+  text-transform: uppercase;
+}
+
+.content.withNavBar {
+  margin: 0;
+}

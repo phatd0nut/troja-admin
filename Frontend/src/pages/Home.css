@@ -1,0 +1,24 @@
+.stackGrid {
+  display: flex;
+  justify-content: center; /* Centrera horisontellt */
+  height: 100vh; /* Justera höjden efter behov */
+}
+
+.gridPaperItem {
+  width: 25vw;
+  height: 15vh;
+  min-width: 200px;
+  min-height: 100px;
+  margin: 10px;
+  padding: 10px;
+  border: 2px solid #dc2e34;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stackGridDivider {
+  height: 200px !important;
+}
