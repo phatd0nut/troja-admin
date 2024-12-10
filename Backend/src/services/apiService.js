@@ -4,9 +4,14 @@ const path = require("path");
 const cron = require("node-cron");
 require('dotenv').config();
 
-// Update the filePath to point to the data directory
-const dataDir = path.resolve(__dirname, "../data"); // Adjusted path to go one level up
+const dataDir = path.resolve(__dirname, "../data"); 
 const filePath = path.join(dataDir, "tempData.json");
+
+const baseUrl = process.env.BASE_URL;
+const TSapi = process.env.TSapi; 
+const eogRequestCode = process.env.EOGREQUESTCODE;
+const beginAt = 0; 
+const limit = 500; 
 
 let lastFetchTime = null;
 let isFetching = false;
@@ -42,7 +47,7 @@ const fetchWithRetry = async (url, params, retries = 3, delay = 1000) => {
 
             if (i < retries - 1) {
                 await new Promise((resolve) => setTimeout(resolve, delay));
-                delay *= 2; // Exponential backoff
+                delay *= 2; 
             } else {
                 throw error;
             }
@@ -56,14 +61,13 @@ const fetchDataAndLog = async () => {
         return;
     }
 
-    const url = process.env.TSapi;
+    const url = `${baseUrl}${eogRequestCode}/${beginAt}/${limit}?key=${TSapi}`;
     let allData = [];
-    let currentBeginAt = 0;
-    const limit = 5;
+    /* let currentBeginAt = 0;
+    const limit = 5; */
 
     let existingCrmIds = new Set();
 
-    
     try {
         const existingData = await fs.readFile(filePath, 'utf-8');
         if (existingData) {
@@ -76,13 +80,9 @@ const fetchDataAndLog = async () => {
     }
 
     try {
-        
         await fs.mkdir(dataDir, { recursive: true });
 
-        const response = await fetchWithRetry(url, {
-            beginAt: currentBeginAt,
-            limit: limit,
-        });
+        const response = await fetchWithRetry(url);
 
         if (!response || !response.purchases || response.purchases.length === 0) {
             console.error('No purchases found in the response:', response);
@@ -95,35 +95,48 @@ const fetchDataAndLog = async () => {
             const purchase = item.purchase;
             console.log('Processing purchase:', purchase);
 
-            const user = {
-                Crmid: purchase.crmId,
-                userrefno: purchase.userRefNo,
-                firstName: purchase.firstName,
-                lastName: purchase.lastName,
-                postalAddressLineOne: purchase.postalAddressLineOne,
-                zipcode: purchase.zipcode,
-                city: purchase.city,
-                Company: purchase.company,
-                events: purchase.events && purchase.events.length > 0 ? purchase.events.map(event => ({
-                    name: event.name,
-                    start: event.start,
-                    end: event.end
-                })) : [],
-                goods: purchase.goods && purchase.goods.length > 0 ? purchase.goods.map(good => ({
-                    name: good.name,
-                    receipttext: good.receiptText,
-                    type: good.type,
-                    artno: good.artNo,
-                    priceIncVatAfterDiscount: good.priceIncVatAfterDiscount
-                })) : []
-            };
+            const createdDate = new Date(purchase.createdUtc);
+            const isValidPurchase = createdDate >= new Date('2024-01-01T00:01:01.01Z') && purchase.status == "Completed" ;
 
-            
-            if (!existingCrmIds.has(user.Crmid)) {
-                allData.push(user);
-                existingCrmIds.add(user.Crmid); 
+            if (isValidPurchase) {
+                const user = {
+                    Crmid: purchase.crmId,
+                    status: purchase.status,
+                    userrefno: purchase.userRefNo,
+                    firstName: purchase.firstName,
+                    lastName: purchase.lastName,
+                    email: purchase.email,
+                    acceptInfo: purchase.acceptInfo,
+                    createdUtc: purchase.createdUtc,
+                    postalAddressLineOne: purchase.postalAddressLineOne,
+                    zipcode: purchase.zipcode,
+                    city: purchase.city,
+                    isCompany: purchase.isCompany,
+                    companyName: purchase.companyName, 
+                    events: purchase.events && purchase.events.length > 0 ? purchase.events.map(event => ({
+                        id: event.id, 
+                        name: event.name,
+                        start: event.start,
+                        end: event.end, 
+                    })) : [],
+                    goods: purchase.goods && purchase.goods.length > 0 ? purchase.goods.map(good => ({
+                        name: good.name,
+                        receipttext: good.receiptText,
+                        type: good.type,
+                        artno: good.artNo,
+                        priceIncVatAfterDiscount: good.priceIncVatAfterDiscount,
+                        eventId: good.eventId
+                    })) : []
+                };
+
+                if (!existingCrmIds.has(user.Crmid)) {
+                    allData.push(user);
+                    existingCrmIds.add(user.Crmid); 
+                } else {
+                    console.log(`Skipping duplicate CRM ID: ${user.Crmid}`);
+                }
             } else {
-                console.log(`Skipping duplicate CRM ID: ${user.Crmid}`);
+                console.log(`Skipping purchase due to criteria: ${purchase.crmId}`);
             }
         });
 
@@ -138,6 +151,7 @@ const fetchDataAndLog = async () => {
         isWriting = false;
     }
 };
+
 const setDeletionTime = (time) => {
     deletionTime = time;
 
@@ -161,7 +175,7 @@ const setDeletionTime = (time) => {
 };
 
 const scheduleTasks = () => {
-    const fetchInterval = process.env.FETCH_INTERVAL || '*/1 * * * *';
+    const fetchInterval = process.env.FETCH_INTERVAL || '0 0 * * *';
 
     cron.schedule(fetchInterval, async () => {
         if (isFetching) {
