@@ -34,7 +34,7 @@ const NavBar = ({ openNav, setOpenNav }) => {
   const navItems = [
     { text: "Hem", icon: <HomeIcon className="menuIcons" />, path: "/home" },
     { text: "Kunder", icon: <PeopleIcon className="menuIcons" />, path: "/customers" },
-    { text: "Utskick", icon: <MailIcon className="menuIcons" />, path: "/mail" },
+    { text: "Utskick", icon: <MailIcon className="menuIcons" />, path: "/mailing" },
     { text: "Inställningar", icon: <SettingsIcon className="menuIcons" />, path: "/settings" },
     { text: "Logga ut", icon: <LogoutIcon className="menuIcons" />, path: "/logout" },
     {

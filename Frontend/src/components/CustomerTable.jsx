@@ -169,6 +169,7 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
           page={page}
           onChange={handleChangePage}
           color="primary"
+          shape="rounded"
           sx={{
             "& .MuiPaginationItem-root": {
               "&:hover": {

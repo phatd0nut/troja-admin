@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Autocomplete, TextField, Box } from "@mui/material";
+import { Box } from "@mui/material";
+import DropdownSelect from "./DropdownSelect";
+import InputField from "../components/InputField";
 
 const searchOptions = [
   { title: "Namn" },
@@ -23,43 +25,27 @@ const CustomerFilter = ({
     setSearchQuery(event.target.value);
   };
 
-  const handleFilterChange = (event, newValue) => {
-    setSearchCriteria(newValue ? [newValue.title] : []);
-    setFilterValue(""); // Rensa filterValue när ett nytt kriterium väljs
-    setSearchQuery(""); // Rensa sökfältet när ett nytt kriterium väljs
+  const handleFilterChange = (newValue) => {
+    setSearchCriteria(newValue ? [newValue] : []);
+    setFilterValue(newValue ? newValue : ""); // Uppdatera filterValue när ett nytt kriterium väljs
   };
 
   return (
     <Box id="customerFilter">
-      <Autocomplete
+      <DropdownSelect
         options={searchOptions}
-        getOptionLabel={(option) => option.title}
-        renderOption={(props, option) => (
-          <li {...props} key={option.title}>
-            {option.title}
-          </li>
-        )}
-        style={{ width: 200 }}
-        inputValue={filterValue} // Använd filterValue för att visa det valda filtret
-        onInputChange={(event, newInputValue) => {
-          setFilterValue(newInputValue); // Uppdatera filterValue när användaren skriver
-        }}
+        value={filterValue}
         onChange={handleFilterChange}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Välj kriterier"
-            placeholder="Välj kriterier"
-          />
-        )}
-        noOptionsText="" // Ta bort meddelandet "No Options"
+        label="Välj kriterier"
+        placeholder="Välj kriterier"
+        style={{ width: 200 }}
       />
-      <TextField
-        label={searchCriteria.length > 0 ? `Sök kunder efter ${searchCriteria[0]}` : "Sök"}
-        variant="outlined"
+      <InputField
+        label={searchCriteria.length > 0 ? `Sök kunder efter ${searchCriteria[0]}` : "Välj filtreringskriterium"}
         value={searchQuery}
         onChange={handleSearchChange}
         style={{ width: 400 }}
+        disabled={searchCriteria.length === 0} // Inaktivera InputField om inget kriterium har valts
       />
     </Box>
   );

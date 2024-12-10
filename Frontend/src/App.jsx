@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import Home from './pages/Home';
 import AdminLogin from './pages/AdminLogin';
 import Customers from './pages/Customers';
-import NavBar from './components/NavBar'; // Importera NavBar-komponenten
+import Mailing from './pages/Mailing';
+import NavBar from './components/NavBar';
 import { ThemeProvider, theme } from './utils/MaterialUI';
 import './App.css';
 
@@ -32,6 +33,7 @@ const AppContent = ({ openNav, setOpenNav }) => {
           <Route path="/login" element={<AdminLogin />} />
           <Route path="/home" element={<Home />} />
           <Route path="/customers" element={<Customers />} />
+          <Route path="/mailing" element={<Mailing />} />
         </Routes>
       </div>
     </div>

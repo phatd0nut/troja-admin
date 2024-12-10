@@ -46,7 +46,8 @@ body {
 }
 
 .homeWrapper,
-.customersWrapper {
+.customersWrapper,
+.mailingWrapper {
   display: flex;
   flex-direction: column;
   width: 90vw;
@@ -81,4 +82,14 @@ body {
   justify-content:start;
   align-items: center;
   gap: 16px;
+}
+
+#mailControls {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+#beeEditor {
+height: 70vh;
 }
