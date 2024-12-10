@@ -21,10 +21,6 @@ body {
   background-color: #000000;
 }
 
-.loadingCircle {
-
-}
-
 .standardDialog {
   display: flex;
   justify-content: center;
@@ -49,15 +45,40 @@ body {
   width: calc(100% - 60px); /* Justera bredden på innehållet */
 }
 
+.homeWrapper,
+.customersWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 90vw;
+  margin-left: 20px
+}
+
 .pageHeader {
-  font-size: 3rem;
+  /* font-size: 3rem; */
   color: #dc2e34;
-  font-weight: 500;
-  margin-left: 40px;
-  margin-bottom: 60px;
+  /* font-weight: 500; */
+  margin-bottom: 20px !important;
   text-transform: uppercase;
+  align-self: flex-start;
 }
 
 .content.withNavBar {
   margin: 0;
+}
+
+#toolbarPaper {
+  margin-bottom: 40px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+#customerFilter{
+  display: flex;
+  justify-content:start;
+  align-items: center;
+  gap: 16px;
 }

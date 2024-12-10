@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import LoginContainer from "../components/LoginContainer";
 import LoadingCircle from "../components/LoadingCircle"; // Importera LoadingCircle-komponenten
 import { loginAdmin } from "../services/adminService"; // Importera inloggningsfunktionen
-import { Dialog, DialogContent } from "../utils/MaterialUI"; //
+import { Dialog, DialogContent, Button } from "../utils/MaterialUI"; //
 import "./adminLogin.css"; // Importera CSS-filen
 
 const AdminLogin = () => {
@@ -68,7 +68,7 @@ const AdminLogin = () => {
             handleMouseDownPassword={handleMouseDownPassword}
           />
           {error && <p className="error">{error}</p>}
-          <button type="submit">Logga in</button>
+          <Button type="submit">Logga in</Button>
         </form>
       )}
     </div>

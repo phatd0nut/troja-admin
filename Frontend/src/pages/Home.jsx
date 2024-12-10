@@ -1,12 +1,14 @@
-import React from "react";
 import StackGrid from "../components/StackGrid"; // Importera StackGrid-komponenten
+import InfoContainer from "../components/InfoContainer";
 import "./Home.css";
+import { Typography } from "../utils/MaterialUI"; // Importera Typography korrekt
 
-const Home = ({ openNav, setOpenNav }) => {
+const Home = () => {
   return (
-    <div>
-      <h1 className="pageHeader">Hem</h1>
-      <StackGrid isDrawerOpen={openNav} /> {/* Skicka `openNav`-state som prop */}
+    <div className="homeWrapper">
+      <Typography variant="h2" className="pageHeader">Hem</Typography>
+      <StackGrid />
+      <InfoContainer />
     </div>
   );
 };
