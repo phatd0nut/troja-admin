@@ -1,0 +1,25 @@
+/* adminLogin.css */
+.adminLoginWrapper {
+  overflow: hidden;
+}
+
+.adminLoginWrapper::before {
+  overflow: hidden;
+  content: "";
+  position: absolute;
+  top: 55%;
+  left: 72%;
+  width: 120%;
+  height: 120%;
+  background-image: url("../assets/svg/troja_logo.svg"); /* Använd SVG-filen som bakgrund */
+  background-size: contain; /* Anpassa bilden så att hela bilden visas */
+  background-repeat: no-repeat; /* Förhindra upprepning av bilden */
+  background-position: center; /* Centrera bakgrunden */
+  transform: translate(-50%, -50%) rotate(30deg); /* Roterar bilden 45 grader */
+  z-index: -1; /* Placera bilden bakom innehållet */
+}
+
+h2 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+}

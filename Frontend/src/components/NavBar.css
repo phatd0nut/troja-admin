@@ -1,0 +1,11 @@
+/* NavBar.css */
+
+.menuIcons {
+    font-size: 2rem !important;
+}
+
+button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}

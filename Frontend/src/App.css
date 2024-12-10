@@ -1,42 +1,63 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+body {
+  overflow: hidden;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.inputField{
+  box-shadow: #000000 0px 0px 1px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.button {
+  font-weight: bold !important;
 }
 
-.card {
-  padding: 2em;
+.button:hover {
+  background-color: #000000;
 }
 
-.read-the-docs {
-  color: #888;
+.loadingCircle {
+
+}
+
+.standardDialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 400px;
+  height: 200px;
+  gap: 40px;
+}
+
+.appContainer {
+  display: flex;
+}
+
+.content {
+  padding: 20px;
+  width: 100%;
+}
+
+.content.withNavBar {
+  margin-left: 60px; /* Samma bredd som navbaren */
+  width: calc(100% - 60px); /* Justera bredden på innehållet */
+}
+
+.pageHeader {
+  font-size: 3rem;
+  color: #dc2e34;
+  font-weight: 500;
+  margin-left: 40px;
+  margin-bottom: 60px;
+  text-transform: uppercase;
+}
+
+.content.withNavBar {
+  margin: 0;
 }
