@@ -34,6 +34,22 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Pagination from '@mui/material/Pagination';
+import Checkbox from '@mui/material/Checkbox';
+import Autocomplete from '@mui/material/Autocomplete';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import Chip from '@mui/material/Chip';
+import { TablePagination } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 // Skapa ett tema
@@ -93,4 +109,20 @@ export {
   Stack,
   Divider,
   Paper,
+  Typography,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  Pagination,
+  Checkbox,
+  Autocomplete,
+  CheckBoxOutlineBlankIcon,
+  CheckBoxIcon,
+  Chip,
+  TableSortLabel,
 };

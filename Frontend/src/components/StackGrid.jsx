@@ -1,46 +1,35 @@
 import React from "react";
-import { Stack, Paper, Box } from "../utils/MaterialUI"; // Importera Stack, Divider, Paper och Box korrekt
+import { Stack, Paper, Box, Typography } from "../utils/MaterialUI"; // Importera Stack, Divider, Paper och Box korrekt
 
-const StackGrid = ({ isDrawerOpen }) => {
-  const marginValue = isDrawerOpen ? 6 : 8;
-
+const StackGrid = () => {
   return (
-
-      <Stack
-        className="stackGrid"
-        direction="row"
-        spacing={0} // Sätt spacing till 0 och hantera spacing med margin på Box
+    <Stack
+      className="stackGrid"
+      direction={{ sm: 'column', md: 'row'}} // Responsiv direction
+      spacing={{ xs: 1, sm: 2, md: 4, lg: 12 }} // Responsiv spacing
+    >
+      <Box
+        sx={{
+          transition: "margin 0.3s ease-in-out",
+        }}
       >
-        <Box
-          sx={{
-            transition: "margin 0.3s ease-in-out",
-            marginRight: `${marginValue}%`,
-            marginLeft: `${marginValue}%`,
-            display: 'flex',
-          }}
-        >
-          <Paper className="gridPaperItem"><h3>Ruta 1</h3><p>Innehåll 1</p></Paper>
-        </Box>
-        <Box
-          sx={{
-            transition: "margin 0.3s ease-in-out",
-            marginRight: `${marginValue}%`,
-            display: 'flex',
-          }}
-        >
-          <Paper className="gridPaperItem"><h3>Ruta 2</h3><p>Innehåll 2</p></Paper>
-        </Box>
-        <Box
-          sx={{
-            transition: "margin 0.3s ease-in-out",
-            display: 'flex',
-            marginRight: `${marginValue}%`,
-          }}
-        >
-          <Paper className="gridPaperItem"><h3>Ruta 3</h3><p>Innehåll 3</p></Paper>
-        </Box>
-      </Stack>
-
+        <Paper className="gridPaperItem" elevation={3}><Typography variant="h4">Ruta 1</Typography><p>Innehåll 1</p></Paper>
+      </Box>
+      <Box
+        sx={{
+          transition: "margin 0.3s ease-in-out",
+        }}
+      >
+        <Paper className="gridPaperItem" elevation={3}><Typography variant="h4">Ruta 2</Typography><p>Innehåll 2</p></Paper>
+      </Box>
+      <Box
+        sx={{
+          transition: "margin 0.3s ease-in-out",
+        }}
+      >
+        <Paper className="gridPaperItem" elevation={3}><Typography variant="h4">Ruta 3</Typography><p>Innehåll 3</p></Paper>
+      </Box>
+    </Stack>
   );
 };
 

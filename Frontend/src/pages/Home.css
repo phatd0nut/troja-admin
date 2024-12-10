@@ -1,7 +1,38 @@
 .stackGrid {
   display: flex;
-  justify-content: center; /* Centrera horisontellt */
-  height: 100vh; /* Justera höjden efter behov */
+  justify-content: flex-start;
+  height: auto;
+  justify-content: space-between;
+}
+
+.infoContainer {
+  /* border: 2px solid #dc2e34; */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  height: 65vh;
+  margin-top: 2.5%;
+  /* box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.12); */
+  border-radius: 4px;
+  padding: 20px;
+  width: 100%;
+}
+
+.infoItem {
+  flex: 1; /* Gör så att varje infoItem tar upp lika mycket utrymme som möjligt */
+  margin: 8px; /* Lägg till margin mellan infoItem-elementen */
+  padding: 16px;
+  background-color: white;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.infoItem h2 {
+  margin-bottom: 5%;
+}
+
+.infoItem img {
+  width: 80px;
 }
 
 .gridPaperItem {
@@ -9,9 +40,8 @@
   height: 15vh;
   min-width: 200px;
   min-height: 100px;
-  margin: 10px;
   padding: 10px;
-  border: 2px solid #dc2e34;
+  /* border: 2px solid #dc2e34; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,6 +49,16 @@
   gap: 20px;
 }
 
-.stackGridDivider {
-  height: 200px !important;
+.nextMatch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 80px;
+}
+
+.ticketStats p {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 10px; /* Lägg till margin mellan p-elementen */
 }
