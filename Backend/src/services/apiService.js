@@ -3,7 +3,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const cron = require("node-cron");
 require('dotenv').config();
-
+const { insertDataFromJson } = require('./dataInsertationService'); 
 const dataDir = path.resolve(__dirname, "../data"); 
 const filePath = path.join(dataDir, "tempData.json");
 
@@ -96,34 +96,44 @@ const fetchDataAndLog = async () => {
             console.log('Processing purchase:', purchase);
 
             const createdDate = new Date(purchase.createdUtc);
-            const isValidPurchase = createdDate >= new Date('2024-01-01T00:01:01.01Z') && purchase.status == "Completed" ;
+            const isValidPurchase = createdDate >= new Date('2024-01-01T00:01:01.01Z') && (purchase.status == "Completed" || purchase.status == "Refunded");
 
             if (isValidPurchase) {
                 const user = {
                     Crmid: purchase.crmId,
                     status: purchase.status,
-                    userrefno: purchase.userRefNo,
-                    firstName: purchase.firstName,
-                    lastName: purchase.lastName,
+                    userrefno: purchase.userrefno,
+                    firstname: purchase.firstname,
+                    lastname: purchase.lastname,
                     email: purchase.email,
+                    mobilePhoneNo: purchase.mobilePhoneNo,
                     acceptInfo: purchase.acceptInfo,
                     createdUtc: purchase.createdUtc,
                     postalAddressLineOne: purchase.postalAddressLineOne,
                     zipcode: purchase.zipcode,
                     city: purchase.city,
                     isCompany: purchase.isCompany,
-                    companyName: purchase.companyName, 
+                    companyName: purchase.companyName,
+                    campaigns: purchase.campaigns && purchase.campaigns.length > 0 ? purchase.campaigns.map(campaign => ({
+                        id: campaign.id, 
+                        communicationId: campaign.communicationId, 
+                        activationCode: campaign.activationCode, 
+                        internalReference: campaign.internalReference 
+                    })) : [],
                     events: purchase.events && purchase.events.length > 0 ? purchase.events.map(event => ({
                         id: event.id, 
                         name: event.name,
                         start: event.start,
                         end: event.end, 
+                        address: (event.venue.address && event.venue.zipcode && event.venue.city && event.venue.country) ? 
+                        `${event.venue.address} ${event.venue.zipcode} ${event.venue.city} ${event.venue.country}` : null,
                     })) : [],
                     goods: purchase.goods && purchase.goods.length > 0 ? purchase.goods.map(good => ({
+                        goodsid: good.goodsid,
                         name: good.name,
                         receipttext: good.receiptText,
                         type: good.type,
-                        artno: good.artNo,
+                        artno: good.artno,
                         priceIncVatAfterDiscount: good.priceIncVatAfterDiscount,
                         eventId: good.eventId
                     })) : []
@@ -143,7 +153,7 @@ const fetchDataAndLog = async () => {
         isWriting = true;
         await fs.writeFile(filePath, JSON.stringify(allData, null, 2) + '\n'); 
         console.log(`Data logged to tempData.json: ${allData.length} records written.`);
-        
+       // await insertDataFromJson();
         lastFetchTime = new Date();
     } catch (error) {
         console.error("Error fetching data:", error.response?.data || error.message);
