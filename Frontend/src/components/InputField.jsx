@@ -20,6 +20,7 @@ const InputField = ({
   handleClickShowPassword,
   handleMouseDownPassword,
   className,
+  disabled,
 }) => {
   return (
     <FormControl
@@ -34,6 +35,12 @@ const InputField = ({
         value={value}
         onChange={onChange}
         autoComplete={autoComplete}
+        disabled={disabled}
+        sx={{
+          "&.Mui-disabled": {
+            backgroundColor: "#f0f0f0",
+          },
+        }}
         endAdornment={
           showPasswordToggle && (
             <InputAdornment position="end">

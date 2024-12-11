@@ -37,7 +37,6 @@ const AdminLogin = () => {
       const data = await loginAdmin(username, password);
       // Spara token och annan data i localStorage eller state
       localStorage.setItem("token", data.token);
-      console.log("Login successful:", data);
       // Fördröj navigeringen till /home med 2 sekunder
       await new Promise((resolve) => setTimeout(resolve, 2000));
       navigate("/home");
@@ -47,6 +46,7 @@ const AdminLogin = () => {
       setLoading(false); // Sätt laddningsstatus till false
     }
   };
+  
   return (
     <div className="adminLoginWrapper">
       {loading ? (

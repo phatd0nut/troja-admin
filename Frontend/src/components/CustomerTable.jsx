@@ -128,7 +128,7 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
   );
 
   return (
-    <Paper elevation={3}>
+    <Paper id="tablePaper" elevation={3}>
       <TableContainer>
         <Table>
           <TableHead sx={{ backgroundColor: "#dc2e34" }}>
@@ -169,6 +169,7 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
           page={page}
           onChange={handleChangePage}
           color="primary"
+          shape="rounded"
           sx={{
             "& .MuiPaginationItem-root": {
               "&:hover": {
