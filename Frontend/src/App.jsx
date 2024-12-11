@@ -1,33 +1,43 @@
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import Home from './pages/Home';
+import AdminLogin from './pages/AdminLogin';
+import Customers from './pages/Customers';
+import Mailing from './pages/Mailing';
+import NavBar from './components/NavBar';
+import { ThemeProvider, theme } from './utils/MaterialUI';
+import './App.css';
 
-import './App.css'
-
-function App() {
-
+const App = () => {
+  const [openNav, setOpenNav] = useState(false);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <ThemeProvider theme={theme}>
+      <Router>
+        <AppContent openNav={openNav} setOpenNav={setOpenNav} />
+      </Router>
+    </ThemeProvider>
+  );
+};
 
-export default App
+const AppContent = ({ openNav, setOpenNav }) => {
+  const location = useLocation();
+  const showNavBar = location.pathname !== '/login';
+
+  return (
+    <div className="appContainer">
+      {showNavBar && <NavBar openNav={openNav} setOpenNav={setOpenNav} />}
+      <div className={`content ${showNavBar ? 'withNavBar' : ''}`}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/login" element={<AdminLogin />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/customers" element={<Customers />} />
+          <Route path="/mailing" element={<Mailing />} />
+        </Routes>
+      </div>
+    </div>
+  );
+};
+
+export default App;

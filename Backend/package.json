@@ -17,6 +17,7 @@
     "mysql2": "^3.11.5",
     "node-cron": "^3.0.3",
     "pg": "^8.13.1"
+    "resend": "^4.0.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",
