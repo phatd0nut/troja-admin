@@ -1,76 +1,210 @@
-const axios = require('axios');
-const fs = require('fs').promises;
-const path = require('path');
-const cron = require('node-cron');
+const axios = require("axios");
+const fs = require("fs").promises;
+const path = require("path");
+const cron = require("node-cron");
+require('dotenv').config();
+const { insertDataFromJson } = require('./dataInsertationService'); 
+const dataDir = path.resolve(__dirname, "../data"); 
+const filePath = path.join(dataDir, "tempData.json");
 
-const filePath = path.join(__dirname, 'tempData.json');
+const baseUrl = process.env.BASE_URL;
+const TSapi = process.env.TSapi; 
+const eogRequestCode = process.env.EOGREQUESTCODE;
+const beginAt = 0; 
+const limit = 500; 
+
 let lastFetchTime = null;
-let deletionTime = '0 3 * * *'; // Default to 3 AM every day
+let isFetching = false;
+let isWriting = false;
+
+const tasks = {};
+let deletionTime = "0 3 * * *"; // Default to 3 AM every day
+
+const fetchWithRetry = async (url, params, retries = 3, delay = 1000) => {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    'Authorization': `Basic ${Buffer.from(`${process.env.TS_Username}:${process.env.TS_Password}`).toString('base64')}`,
+                    'User-Agent': 'MyApp/1.0',
+                    'Content-Type': 'application/json',
+                },
+            });
+            console.log('API Response:', response.data);
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                console.error(`Attempt ${i + 1} failed:`, {
+                    status: error.response.status,
+                    headers: error.response.headers,
+                    data: error.response.data,
+                });
+            } else if (error.request) {
+                console.error(`Attempt ${i + 1} failed: No response received.`);
+            } else {
+                console.error(`Attempt ${i + 1} failed:`, error.message);
+            }
+
+            if (i < retries - 1) {
+                await new Promise((resolve) => setTimeout(resolve, delay));
+                delay *= 2; 
+            } else {
+                throw error;
+            }
+        }
+    }
+};
 
 const fetchDataAndLog = async () => {
-  const url = process.env.TSapi; 
-  let allData = [];
-  let currentPage = 1;
-  const limit = 500; 
-
-  try {
-    while (true) {
-      const response = await axios.get(url, {
-        params: {
-          page: currentPage, 
-          limit: limit, 
-        },
-      });
-
-      const data = response.data;
-
-      // If no data is returned, break the loop
-      if (data.length === 0) {
-        break;
-      }
-
-      
-      allData = [...allData, ...data.filter(item => !allData.some(existingItem => existingItem.id === item.id))];
-
-      // Increment the page number for the next request
-      currentPage++;
+    if (isWriting) {
+        console.log('Skipping fetch as file is being written.');
+        return;
     }
 
-    // Write all fetched data to file
-    await fs.writeFile(filePath, JSON.stringify(allData, null, 2));
-    console.log('Data logged to tempData.json');
+    const url = `${baseUrl}${eogRequestCode}/${beginAt}/${limit}?key=${TSapi}`;
+    let allData = [];
+    /* let currentBeginAt = 0;
+    const limit = 5; */
 
-    // Update last fetch time
-    lastFetchTime = new Date();
+    let existingCrmIds = new Set();
 
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-};
-
-// Function to set deletion time from the frontend
-const setDeletionTime = (time) => {
-  deletionTime = time;
-  scheduleDeletion();
-};
-
-// Function to schedule deletion based on the deletion time
-const scheduleDeletion = () => {
-  // Clear any existing scheduled tasks
-  cron.getTasks().forEach(task => task.stop());
-
-  // Schedule a new deletion task
-  cron.schedule(deletionTime, async () => {
     try {
-      await fs.unlink(filePath);
-      console.log('Cached data deleted based on scheduled time');
+        const existingData = await fs.readFile(filePath, 'utf-8');
+        if (existingData) {
+            const parsedData = JSON.parse(existingData);
+            allData = parsedData; 
+            parsedData.forEach(user => existingCrmIds.add(user.Crmid));
+        }
     } catch (error) {
-      console.error('Error deleting cached data:', error);
+        console.error("Error reading existing data:", error.message);
     }
-  });
+
+    try {
+        await fs.mkdir(dataDir, { recursive: true });
+
+        const response = await fetchWithRetry(url);
+
+        if (!response || !response.purchases || response.purchases.length === 0) {
+            console.error('No purchases found in the response:', response);
+            return;
+        }
+
+        const data = response.purchases;
+
+        data.forEach(item => {
+            const purchase = item.purchase;
+            console.log('Processing purchase:', purchase);
+
+            const createdDate = new Date(purchase.createdUtc);
+            const isValidPurchase = createdDate >= new Date('2024-01-01T00:01:01.01Z') && (purchase.status == "Completed" || purchase.status == "Refunded");
+
+            if (isValidPurchase) {
+                const user = {
+                    Crmid: purchase.crmId,
+                    status: purchase.status,
+                    userrefno: purchase.userrefno,
+                    firstname: purchase.firstname,
+                    lastname: purchase.lastname,
+                    email: purchase.email,
+                    mobilePhoneNo: purchase.mobilePhoneNo,
+                    acceptInfo: purchase.acceptInfo,
+                    createdUtc: purchase.createdUtc,
+                    postalAddressLineOne: purchase.postalAddressLineOne,
+                    zipcode: purchase.zipcode,
+                    city: purchase.city,
+                    isCompany: purchase.isCompany,
+                    companyName: purchase.companyName,
+                    campaigns: purchase.campaigns && purchase.campaigns.length > 0 ? purchase.campaigns.map(campaign => ({
+                        id: campaign.id, 
+                        communicationId: campaign.communicationId, 
+                        activationCode: campaign.activationCode, 
+                        internalReference: campaign.internalReference 
+                    })) : [],
+                    events: purchase.events && purchase.events.length > 0 ? purchase.events.map(event => ({
+                        id: event.id, 
+                        name: event.name,
+                        start: event.start,
+                        end: event.end, 
+                        address: (event.venue.address && event.venue.zipcode && event.venue.city && event.venue.country) ? 
+                        `${event.venue.address} ${event.venue.zipcode} ${event.venue.city} ${event.venue.country}` : null,
+                    })) : [],
+                    goods: purchase.goods && purchase.goods.length > 0 ? purchase.goods.map(good => ({
+                        goodsid: good.goodsid,
+                        name: good.name,
+                        receipttext: good.receiptText,
+                        type: good.type,
+                        artno: good.artno,
+                        priceIncVatAfterDiscount: good.priceIncVatAfterDiscount,
+                        eventId: good.eventId
+                    })) : []
+                };
+
+                if (!existingCrmIds.has(user.Crmid)) {
+                    allData.push(user);
+                    existingCrmIds.add(user.Crmid); 
+                } else {
+                    console.log(`Skipping duplicate CRM ID: ${user.Crmid}`);
+                }
+            } else {
+                console.log(`Skipping purchase due to criteria: ${purchase.crmId}`);
+            }
+        });
+
+        isWriting = true;
+        await fs.writeFile(filePath, JSON.stringify(allData, null, 2) + '\n'); 
+        console.log(`Data logged to tempData.json: ${allData.length} records written.`);
+       // await insertDataFromJson();
+        lastFetchTime = new Date();
+    } catch (error) {
+        console.error("Error fetching data:", error.response?.data || error.message);
+    } finally {
+        isWriting = false;
+    }
 };
 
-// Initial scheduling of deletion
-scheduleDeletion();
+const setDeletionTime = (time) => {
+    deletionTime = time;
+
+    if (tasks.deletionTask) {
+        tasks.deletionTask.stop();
+        delete tasks.deletionTask;
+    }
+
+    tasks.deletionTask = cron.schedule(deletionTime, async () => {
+        if (isFetching) {
+            console.log('Skipping deletion during fetch.');
+            return;
+        }
+        try {
+            await fs.unlink(filePath);
+            console.log('Cached data deleted based on updated schedule.');
+        } catch (error) {
+            console.error('Error deleting cached data:', error);
+        }
+    });
+};
+
+const scheduleTasks = () => {
+    const fetchInterval = process.env.FETCH_INTERVAL || '0 0 * * *';
+
+    cron.schedule(fetchInterval, async () => {
+        if (isFetching) {
+            console.log('Fetch in progress, skipping...');
+            return;
+        }
+        isFetching = true;
+        try {
+            await fetchDataAndLog();
+        } catch (error) {
+            console.error('Error in scheduled fetch:', error.message);
+        } finally {
+            isFetching = false;
+        }
+    });
+
+    setDeletionTime(deletionTime);
+};
+
+scheduleTasks();
 
 module.exports = { fetchDataAndLog, setDeletionTime };
