@@ -1,27 +1,50 @@
-import React, { useEffect, useRef, useState } from 'react';
-import BeefreeSDK from '@beefree.io/sdk';
+import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react";
+import BeefreeSDK from "@beefree.io/sdk";
+import axios from "axios";
 
 // Hämta miljövariabler från .env-filen
 const clientId = import.meta.env.VITE_CLIENT_ID;
 const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
 
-const EmailBuilder = () => {
+const EmailBuilder = forwardRef((props, ref) => {
   const editorRef = useRef(null);
   const [bee, setBee] = useState(null);
+
+  useImperativeHandle(ref, () => ({
+    loadTemplate: (jsonFile) => {
+      if (bee) {
+        bee.load(jsonFile);
+      }
+    },
+    sendEmail: async () => {
+      if (bee) {
+        return new Promise((resolve, reject) => {
+          bee.send({}, (jsonFile, htmlFile) => {
+            console.log("onSend:", htmlFile);
+            props.sendEmail(htmlFile); // Anropa sendEmail-funktionen från props
+            resolve(htmlFile);
+          });
+        });
+      }
+    }
+  }));
 
   useEffect(() => {
     const initBee = async () => {
       try {
+        console.log("Initializing BeeFree SDK...");
         const beeInstance = new BeefreeSDK();
         await beeInstance.getToken(clientId, clientSecret);
 
         const beeConfig = {
-          uid: 'TrojaAdmin', // Ersätt med ditt faktiska uid
-          container: editorRef.current.id, // Använd id istället för direkt referens
-          language: 'sv-SE',
-          onSave: (jsonFile, htmlFile) => {
-            console.log('JSON File:', jsonFile);
-            console.log('HTML File:', htmlFile);
+          uid: "TrojaAdmin", // Ersätt med ditt faktiska uid
+          container: "beeEditor", // Använd id istället för direkt referens
+          language: "sv-SE",
+          onSave: (jsonFile) => {
+            saveTemplateLocally(jsonFile); // Spara endast JSON-filen lokalt
+          },
+          onSend: async (htmlFile) => {
+            props.sendEmail(htmlFile); // Skicka endast HTML-filen
           },
         };
 
@@ -29,8 +52,9 @@ const EmailBuilder = () => {
 
         beeInstance.start(beeConfig, template);
         setBee(beeInstance);
+        console.log("BeeFree SDK initialized.");
       } catch (error) {
-        console.error('Error initializing BeeFree:', error);
+        console.error("Error initializing BeeFree:", error);
       }
     };
 
@@ -43,20 +67,18 @@ const EmailBuilder = () => {
     };
   }, []);
 
-  const startBee = () => {
-    if (bee) {
-      const template = {}; // Lägg till din mall här
-      bee.start(template);
-    }
+  const saveTemplateLocally = async (jsonFile) => {
+    const blob = new Blob([JSON.stringify(jsonFile)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "template.json";
+    a.click();
+    URL.revokeObjectURL(url);
+    alert("Template saved locally!");
   };
 
-  return (
-    <div>
-      <div id="beeEditor" ref={editorRef}></div>
-      <button onClick={startBee}>Start Email Editor</button>
-      <button onClick={() => bee && bee.save()}>Save Email</button>
-    </div>
-  );
-};
+  return <div id="beeEditor" ref={editorRef}></div>;
+});
 
 export default EmailBuilder;

@@ -1,19 +1,52 @@
-import React from "react";
-import { Paper, Box, Typography, TextField } from "../utils/MaterialUI";
-import Button from "../components/Button";
+import React, { useRef } from "react";
+import { Paper, Box, Typography, Button } from "../utils/MaterialUI";
 import Toolbar from "../components/Toolbar";
-import InputFIeld from "../components/InputField";
-import DropdownSelect from "../components/DropdownSelect";
 import EmailBuilder from "../components/Emailbuilder";
-
-const templateOptions = [
-  { value: "1", label: "Mall 1" },
-  { value: "2", label: "Mall 2" },
-  { value: "3", label: "Mall 3" },
-  { value: "4", label: "Mall 4" },
-];
+import axios from "axios";
 
 const Mailing = () => {
+  const emailBuilderRef = useRef(null);
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const template = JSON.parse(e.target.result);
+        emailBuilderRef.current.loadTemplate(template);
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const sendEmail = async (htmlContent) => {
+    console.log("Sending email with content");
+    try {
+      // Hämta JWT-token från lokal lagring
+      const token = localStorage.getItem("token");
+
+      console.log(token);
+      
+
+      // Skicka POST-förfrågan till backendens mailservice med autentisering
+      const response = await axios.post("http://localhost:3000/admin/send-email", {
+        to: "ez222dc@student.lnu.se",
+        subject: "Test Email",
+        html: htmlContent,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      console.log("Email sent response:", response);
+      alert("Email sent successfully!");
+    } catch (error) {
+      console.error("Error sending email:", error);
+      alert("Failed to send email.");
+    }
+  };
+
   return (
     <div className="mailingWrapper">
       <Typography variant="h2" className="pageHeader">
@@ -21,21 +54,27 @@ const Mailing = () => {
       </Typography>
       <Toolbar>
         <div id="mailControls">
-          <DropdownSelect
-            options={templateOptions}
-            label={"Välj mall"}
-            style={{ width: "200px" }}
+          <input
+            type="file"
+            accept=".json"
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+            id="fileInput"
           />
-          <Button variant="contained" color="primary">
-            Skapa ny mall
-          </Button>
+          <label htmlFor="fileInput">
+            <Button variant="contained" color="primary" component="span">
+              Ladda mall
+            </Button>
+          </label>
         </div>
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" onClick={async () => {
+          await emailBuilderRef.current.sendEmail();
+        }}>
           Skicka mail
         </Button>
       </Toolbar>
-      <Paper elevation={3}>
-        <EmailBuilder />
+      <Paper id="mailingPaper" elevation={3}>
+        <EmailBuilder ref={emailBuilderRef} sendEmail={sendEmail} />
       </Paper>
     </div>
   );

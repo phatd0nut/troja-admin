@@ -2,19 +2,20 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 body {
   overflow: hidden;
 }
 
-.inputField{
+.inputField {
   box-shadow: #000000 0px 0px 1px;
 }
 
 .button {
   font-weight: bold !important;
+  padding: 16px 16px !important;
 }
 
 .button:hover {
@@ -51,7 +52,8 @@ body {
   display: flex;
   flex-direction: column;
   width: 90vw;
-  margin-left: 20px
+  height: 90vh;
+  margin-left: 20px;
 }
 
 .pageHeader {
@@ -71,16 +73,19 @@ body {
   margin-bottom: 40px;
 }
 
+#mailingPaper,
+#tablePaper {
+  height: 100%;
+}
+
 .toolbar {
-  display: flex;
+display: flex;
   justify-content: space-between;
   padding: 20px;
 }
 
-#customerFilter{
+#customerFilter {
   display: flex;
-  justify-content:start;
-  align-items: center;
   gap: 16px;
 }
 
@@ -91,5 +96,5 @@ body {
 }
 
 #beeEditor {
-height: 70vh;
+  height: 100%;
 }

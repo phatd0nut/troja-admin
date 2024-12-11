@@ -128,7 +128,7 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
   );
 
   return (
-    <Paper elevation={3}>
+    <Paper id="tablePaper" elevation={3}>
       <TableContainer>
         <Table>
           <TableHead sx={{ backgroundColor: "#dc2e34" }}>
