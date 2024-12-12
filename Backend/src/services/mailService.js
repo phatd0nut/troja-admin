@@ -5,7 +5,7 @@ const path = require('path');
 // Ladda miljövariabler från .env-filen i rotmappen
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-const resend = new Resend(process.env.RMail);
+const resend = new Resend(process.env.R_CLIENT);
 
 const sendEmail = async (to, subject, htmlContent) => {
 console.log('Sending email to:', to);

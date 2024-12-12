@@ -162,7 +162,8 @@ const insertOrUpdateEvents = async (events, purchaseId) => {
             id: eventExternalId,
             name,
             start,
-            end
+            end,
+            address
         } = event;
 
         if (!eventExternalId || !name || !start) {
@@ -171,17 +172,19 @@ const insertOrUpdateEvents = async (events, purchaseId) => {
 
         const [eventResult] = await pool.query(
             `INSERT INTO \`Event\` 
-            (eventId, name, start, \`end\`)
-            VALUES (?, ?, ?, ?)
+            (eventId, name, start, \`end\`, address)
+            VALUES (?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
                 name = VALUES(name),
                 start = VALUES(start),
-                \`end\` = VALUES(\`end\`)`,
+                \`end\` = VALUES(\`end\`),
+                address = VALUES(address)`, 
             [
                 eventExternalId,
                 name,
                 new Date(start),
-                end ? new Date(end) : null
+                end ? new Date(end) : null,
+                address || null 
             ]
         );
 
@@ -225,7 +228,7 @@ const insertOrUpdateGoods = async (goods, purchaseId) => {
         }
 
         let eventId = null;
-        if (eventExternalId) {
+        if (eventExternalId && eventExternalId.trim() !== '') {
             const [eventRows] = await pool.query(
                 `SELECT id FROM \`Event\` WHERE eventId = ?`,
                 [eventExternalId]
@@ -233,7 +236,7 @@ const insertOrUpdateGoods = async (goods, purchaseId) => {
             if (eventRows.length > 0) {
                 eventId = eventRows[0].id;
             } else {
-                throw new Error(`No event found with eventId: ${eventExternalId}`);
+                console.warn(`No event found with eventId: ${eventExternalId} for goods: ${goodsid}`);
             }
         }
 
