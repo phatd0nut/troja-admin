@@ -27,10 +27,14 @@ import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
 import MailIcon from "@mui/icons-material/Mail";
 import SettingsIcon from "@mui/icons-material/Settings";
+import SendIcon from "@mui/icons-material/Send";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from '@mui/icons-material/Logout';
+import DownloadIcon from '@mui/icons-material/Download';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import SyncIcon from '@mui/icons-material/Sync';
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
@@ -125,4 +129,8 @@ export {
   CheckBoxIcon,
   Chip,
   TableSortLabel,
+  SendIcon,
+  DownloadIcon,
+  GroupAddIcon,
+  SyncIcon,
 };

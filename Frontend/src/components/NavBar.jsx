@@ -15,7 +15,7 @@ import {
   LogoutIcon,
   Box,
 } from "../utils/MaterialUI";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./NavBar.css"; // Importera CSS-filen för ytterligare styling
 import logo from "../assets/svg/troja_logo.svg"; // Importera SVG-filen
 
@@ -23,6 +23,8 @@ const drawerWidth = 190;
 const miniDrawerWidth = 60;
 
 const NavBar = ({ openNav, setOpenNav }) => {
+  const navigate = useNavigate();
+
   const handleDrawerOpen = () => {
     setOpenNav(true);
   };
@@ -31,12 +33,17 @@ const NavBar = ({ openNav, setOpenNav }) => {
     setOpenNav(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   const navItems = [
     { text: "Hem", icon: <HomeIcon className="menuIcons" />, path: "/home" },
     { text: "Kunder", icon: <PeopleIcon className="menuIcons" />, path: "/customers" },
     { text: "Utskick", icon: <MailIcon className="menuIcons" />, path: "/mailing" },
     { text: "Inställningar", icon: <SettingsIcon className="menuIcons" />, path: "/settings" },
-    { text: "Logga ut", icon: <LogoutIcon className="menuIcons" />, path: "/logout" },
+    { text: "Logga ut", icon: <LogoutIcon className="menuIcons" />, action: handleLogout },
     {
       text: "Fäll in",
       icon: openNav ? <ChevronLeftIcon className="menuIcons" /> : <ChevronRightIcon className="menuIcons" />,

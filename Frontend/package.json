@@ -13,6 +13,7 @@
     "@beefree.io/sdk": "^7.1.0-feat-exec-command.1",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
+    "@mailupinc/bee-plugin": "^2.3.0",
     "@mui/icons-material": "^6.1.10",
     "@mui/material": "^6.1.10",
     "@mui/styles": "^6.1.10",

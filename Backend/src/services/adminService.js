@@ -14,7 +14,7 @@ const findAdminByUsername = async (username) => {
 };
 
 const generateToken = (admin) => {
-    return jwt.sign({ id: admin.id, username: admin.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    return jwt.sign({ id: admin.id, username: admin.username }, process.env.JWT_SECRET);
 };
 
 module.exports = { createAdmin, findAdminByUsername, generateToken };

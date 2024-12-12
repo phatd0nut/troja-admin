@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginContainer from "../components/LoginContainer";
 import LoadingCircle from "../components/LoadingCircle"; // Importera LoadingCircle-komponenten
@@ -12,7 +12,17 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // Tillstånd för att spåra laddningsstatus
+  const [checkingToken, setCheckingToken] = useState(true); // Tillstånd för att spåra tokenkontroll
   const navigate = useNavigate(); // Använd useNavigate för att omdirigera
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/home");
+    } else {
+      setCheckingToken(false); // Tokenkontroll är klar
+    }
+  }, [navigate]);
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -47,6 +57,10 @@ const AdminLogin = () => {
     }
   };
   
+  if (checkingToken) {
+    return null; // Rendera ingenting medan vi kontrollerar token
+  }
+
   return (
     <div className="adminLoginWrapper">
       {loading ? (
