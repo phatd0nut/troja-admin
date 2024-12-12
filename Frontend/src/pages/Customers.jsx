@@ -3,7 +3,7 @@ import CustomerTable from "../components/CustomerTable";
 import Toolbar from "../components/Toolbar";
 import CustomerFilter from "../components/CustomerFilter";
 import Button from "../components/Button";
-import { Typography } from "../utils/MaterialUI";
+import { Typography, SyncIcon } from "../utils/MaterialUI";
 
 const Customers = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,7 +19,7 @@ const Customers = () => {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" endIcon={<SyncIcon/>}>
           Synkronisera kunder
         </Button>
       </Toolbar>

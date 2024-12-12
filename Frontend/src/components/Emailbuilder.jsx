@@ -19,8 +19,7 @@ const EmailBuilder = forwardRef((props, ref) => {
     sendEmail: async () => {
       if (bee) {
         return new Promise((resolve, reject) => {
-          bee.send({}, (jsonFile, htmlFile) => {
-            console.log("onSend:", htmlFile);
+          bee.send({}, (htmlFile) => {
             props.sendEmail(htmlFile); // Anropa sendEmail-funktionen från props
             resolve(htmlFile);
           });
@@ -32,13 +31,12 @@ const EmailBuilder = forwardRef((props, ref) => {
   useEffect(() => {
     const initBee = async () => {
       try {
-        console.log("Initializing BeeFree SDK...");
         const beeInstance = new BeefreeSDK();
         await beeInstance.getToken(clientId, clientSecret);
 
         const beeConfig = {
-          uid: "TrojaAdmin", // Ersätt med ditt faktiska uid
-          container: "beeEditor", // Använd id istället för direkt referens
+          uid: "TrojaAdmin",
+          container: "beeEditor",
           language: "sv-SE",
           onSave: (jsonFile) => {
             saveTemplateLocally(jsonFile); // Spara endast JSON-filen lokalt
@@ -48,11 +46,10 @@ const EmailBuilder = forwardRef((props, ref) => {
           },
         };
 
-        const template = {}; // Lägg till din mall här
+        const template = {};
 
         beeInstance.start(beeConfig, template);
         setBee(beeInstance);
-        console.log("BeeFree SDK initialized.");
       } catch (error) {
         console.error("Error initializing BeeFree:", error);
       }

@@ -1,7 +1,14 @@
 import React, { useRef } from "react";
-import { Paper, Box, Typography, Button } from "../utils/MaterialUI";
+import {
+  Paper,
+  Typography,
+  SendIcon,
+  DownloadIcon,
+  GroupAddIcon,
+} from "../utils/MaterialUI";
 import Toolbar from "../components/Toolbar";
 import EmailBuilder from "../components/Emailbuilder";
+import Button from "../components/Button";
 import axios from "axios";
 
 const Mailing = () => {
@@ -26,20 +33,22 @@ const Mailing = () => {
       const token = localStorage.getItem("token");
 
       console.log(token);
-      
 
       // Skicka POST-förfrågan till backendens mailservice med autentisering
-      const response = await axios.post("http://localhost:3000/admin/send-email", {
-        to: "ez222dc@student.lnu.se",
-        subject: "Test Email",
-        html: htmlContent,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.post(
+        "http://localhost:3000/admin/send-email",
+        {
+          to: "ez222dc@student.lnu.se",
+          subject: "Test Email",
+          html: htmlContent,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
-      console.log("Email sent response:", response);
       alert("Email sent successfully!");
     } catch (error) {
       console.error("Error sending email:", error);
@@ -62,14 +71,28 @@ const Mailing = () => {
             id="fileInput"
           />
           <label htmlFor="fileInput">
-            <Button variant="contained" color="primary" component="span">
-              Ladda mall
+            <Button
+              variant="contained"
+              color="primary"
+              component="span"
+              endIcon={<DownloadIcon/>}
+            >
+              Importera mall
             </Button>
           </label>
+          <Button variant="contained" color="primary"
+          endIcon={<GroupAddIcon/>}>
+            Välj Kundgrupper
+          </Button>
         </div>
-        <Button variant="contained" color="primary" onClick={async () => {
-          await emailBuilderRef.current.sendEmail();
-        }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={async () => {
+            await emailBuilderRef.current.sendEmail();
+          }}
+          endIcon={<SendIcon />}
+        >
           Skicka mail
         </Button>
       </Toolbar>
