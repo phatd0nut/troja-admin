@@ -1,4 +1,4 @@
-const { createAdmin, findAdminByUsername, generateToken } = require('../services/adminService');
+const { createAdmin, findAdminByUsername, updateAdminDetails, generateToken } = require('../services/adminService');
 const bcrypt = require('bcrypt');
 
 const adminLogin = async (req, res) => {
@@ -24,9 +24,37 @@ const registerAdmin = async (req, res) => {
     }
 };
 
+
+const changeAdminDetails = async (req, res) => {
+    const { currentPassword, newName, newPassword, confirmPassword } = req.body;
+    const adminId = req.user.id; 
+
+    try {
+        
+        const admin = await findAdminByUsername(req.user.username); 
+
+        
+        const isPasswordValid = await bcrypt.compare(currentPassword, admin.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Current password is incorrect' });
+        }
+
+        
+        if (newPassword && newPassword !== confirmPassword) {
+            return res.status(400).json({ message: 'New password and confirmation do not match' });
+        }
+
+        
+        await updateAdminDetails(adminId, newName, newPassword);
+        res.status(200).json({ message: 'Admin details updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating admin details', error: error.message });
+    }
+};
+
 const fetchData = async (req, res) => {
     
     res.status(200).json({ message: 'Data fetched successfully' });
 };
 
-module.exports = { adminLogin, registerAdmin, fetchData };
+module.exports = { adminLogin, registerAdmin, changeAdminDetails, fetchData };
