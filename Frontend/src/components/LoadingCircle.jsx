@@ -4,7 +4,7 @@ import { CircularProgress } from "../utils/MaterialUI";
 const LoadingCircle = ({
   id,
   className = "loadingCircle",
-  size,
+  size = 88,
   ...props
 }) => {
   return (
