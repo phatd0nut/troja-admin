@@ -20,7 +20,7 @@ const AdminLogin = () => {
     if (token) {
       navigate("/home");
     } else {
-      setCheckingToken(false); // Tokenkontroll är klar
+      setCheckingToken(false); 
     }
   }, [navigate]);
 
@@ -45,8 +45,9 @@ const AdminLogin = () => {
     setLoading(true); // Sätt laddningsstatus till true
     try {
       const data = await loginAdmin(username, password);
-      // Spara token och annan data i localStorage eller state
+      // Spara token och användarnamn i localStorage
       localStorage.setItem("token", data.token);
+      localStorage.setItem("username", data.username);
       // Fördröj navigeringen till /home med 2 sekunder
       await new Promise((resolve) => setTimeout(resolve, 2000));
       navigate("/home");
@@ -67,7 +68,7 @@ const AdminLogin = () => {
         <Dialog open={loading}>
           <DialogContent className="standardDialog">
             <h2>Loggar in...</h2>
-            <LoadingCircle size={80} />
+            <LoadingCircle />
           </DialogContent>
         </Dialog>
       ) : (

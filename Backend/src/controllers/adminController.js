@@ -7,7 +7,7 @@ const adminLogin = async (req, res) => {
 
     if (adminUser && await bcrypt.compare(password, adminUser.password)) {
         const token = generateToken(adminUser);
-        res.status(200).json({ message: 'Login successful', token });
+        res.status(200).json({ message: 'Login successful', token, username: adminUser.username });
     } else {
         res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -53,7 +53,6 @@ const changeAdminDetails = async (req, res) => {
 };
 
 const fetchData = async (req, res) => {
-    
     res.status(200).json({ message: 'Data fetched successfully' });
 };
 

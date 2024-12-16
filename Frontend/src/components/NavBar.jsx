@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   CssBaseline,
   Drawer,
@@ -14,16 +14,20 @@ import {
   ChevronRightIcon,
   LogoutIcon,
   Box,
+  Dialog,
+  DialogContent,
 } from "../utils/MaterialUI";
 import { Link, useNavigate } from "react-router-dom";
 import "./NavBar.css"; // Importera CSS-filen för ytterligare styling
 import logo from "../assets/svg/troja_logo.svg"; // Importera SVG-filen
+import Button from "../components/Button";
 
 const drawerWidth = 190;
 const miniDrawerWidth = 60;
 
 const NavBar = ({ openNav, setOpenNav }) => {
   const navigate = useNavigate();
+  const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
 
   const handleDrawerOpen = () => {
     setOpenNav(true);
@@ -35,7 +39,16 @@ const NavBar = ({ openNav, setOpenNav }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("username");
     navigate("/login");
+  };
+
+  const handleOpenLogoutDialog = () => {
+    setOpenLogoutDialog(true);
+  };
+
+  const handleCloseLogoutDialog = () => {
+    setOpenLogoutDialog(false);
   };
 
   const navItems = [
@@ -43,7 +56,7 @@ const NavBar = ({ openNav, setOpenNav }) => {
     { text: "Kunder", icon: <PeopleIcon className="menuIcons" />, path: "/customers" },
     { text: "Utskick", icon: <MailIcon className="menuIcons" />, path: "/mailing" },
     { text: "Inställningar", icon: <SettingsIcon className="menuIcons" />, path: "/settings" },
-    { text: "Logga ut", icon: <LogoutIcon className="menuIcons" />, action: handleLogout },
+    { text: "Logga ut", icon: <LogoutIcon className="menuIcons" />, action: handleOpenLogoutDialog },
     {
       text: "Fäll in",
       icon: openNav ? <ChevronLeftIcon className="menuIcons" /> : <ChevronRightIcon className="menuIcons" />,
@@ -146,6 +159,20 @@ const NavBar = ({ openNav, setOpenNav }) => {
           ))}
         </List>
       </Drawer>
+
+      <Dialog open={openLogoutDialog} onClose={handleCloseLogoutDialog}>
+        <DialogContent className="standardDialog">
+          <h2>Är du säker på att du vill logga ut?</h2>
+          <div id="logoutDialogBtns">
+          <Button variant="contained" onClick={handleLogout}>
+            Ja, logga ut
+          </Button>
+          <Button onClick={handleCloseLogoutDialog}>
+            Avbryt
+          </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

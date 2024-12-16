@@ -35,6 +35,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import DownloadIcon from '@mui/icons-material/Download';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SyncIcon from '@mui/icons-material/Sync';
+import SaveIcon from '@mui/icons-material/Save';
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
@@ -53,8 +54,14 @@ import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import Chip from '@mui/material/Chip';
+import Avatar from '@mui/material/Avatar';
+import Badge from '@mui/material/Badge';
+import Switch from '@mui/material/Switch';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { TablePagination } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 
 // Skapa ett tema
 const theme = createTheme({
@@ -133,4 +140,11 @@ export {
   DownloadIcon,
   GroupAddIcon,
   SyncIcon,
+  SaveIcon,
+  Avatar,
+  Badge,
+  styled,
+  Switch,
+  ArrowDropUpIcon,
+  ArrowDropDownIcon,
 };

@@ -50,7 +50,9 @@ const InputField = ({
                 }
                 onClick={handleClickShowPassword}
                 onMouseDown={handleMouseDownPassword}
-                edge="end"
+                edge="start"
+                sx={{  
+                  "&:hover": { color: "#ffffff", backgroundColor: "#dc2e34" } }}
               >
                 {showPassword ? <VisibilityOff /> : <Visibility />}
               </IconButton>
