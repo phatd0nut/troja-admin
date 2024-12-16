@@ -1,25 +1,37 @@
-const axios = require("axios");
-const fs = require("fs").promises;
-const path = require("path");
-const cron = require("node-cron");
-require('dotenv').config();
-const { insertDataFromJson } = require('./dataInsertationService'); 
-const dataDir = path.resolve(__dirname, "../data"); 
+/**
+ * ApiService.js är en fil som innehåller funktioner för att hämta data från API:et och logga det
+ * @module ApiService
+ */
+
+const axios = require("axios"); //importerar axios för att kunna göra HTTP-förfrågningar
+const fs = require("fs").promises; //importerar fs för att kunna läsa och skriva filer
+const path = require("path"); //importerar path för att kunna arbeta med filsystemets vägar
+const cron = require("node-cron"); //importerar cron för att kunna köra en cron-jobb
+require('dotenv').config(); //importerar dotenv för att kunna läsa miljövariabler från en .env-fil
+const { insertDataFromJson } = require('./dataInsertationService'); //importerar insertDataFromJson för att kunna infoga data från en json-fil
+const dataDir = path.resolve(__dirname, "../data"); //skapar en variabel för att kunna använda filsystemets vägar
 const filePath = path.join(dataDir, "tempData.json");
 
-const baseUrl = process.env.BASE_URL;
-const TSapi = process.env.TSapi; 
-const eogRequestCode = process.env.EOGREQUESTCODE;
-const beginAt = 0; 
-const limit = 500; 
+const baseUrl = process.env.BASE_URL; //skapar en variabel för att kunna använda miljövariabeln BASE_URL
+const TSapi = process.env.TSapi; //skapar en variabel för att kunna använda miljövariabeln TSapi
+const eogRequestCode = process.env.EOGREQUESTCODE; //skapar en variabel för att kunna använda miljövariabeln EOGREQUESTCODE
+const beginAt = 0; //skapar en variabel för att kunna använda miljövariabeln beginAt
+const limit = 500; //skapar en variabel för att kunna använda miljövariabeln limit
 
-let lastFetchTime = null;
-let isFetching = false;
-let isWriting = false;
+let lastFetchTime = null; //skapar en variabel för att kunna använda miljövariabeln lastFetchTime
+let isFetching = false; //skapar en variabel för att kunna använda miljövariabeln isFetching
+let isWriting = false; //skapar en variabel för att kunna använda miljövariabeln isWriting
 
 const tasks = {};
 let deletionTime = "0 3 * * *"; // Default to 3 AM every day
-
+/**
+ * Hämtar data från API:et med försök att hantera fel
+ * @param {string} url - URL:en för API:et
+ * @param {object} params - parametrarna för förfrågan
+ * @param {number} retries - antalet försök att hämta data
+ * @param {number} delay - fördröjningen mellan försöken i millisekunder
+ * @returns {Promise<object>} - dataen från API:et
+ */
 const fetchWithRetry = async (url, params, retries = 3, delay = 1000) => {
     for (let i = 0; i < retries; i++) {
         try {
@@ -55,50 +67,60 @@ const fetchWithRetry = async (url, params, retries = 3, delay = 1000) => {
     }
 };
 
+/**
+ * Hämtar data från API:et och loggar det
+ */
 const fetchDataAndLog = async () => {
     if (isWriting) {
         console.log('Skipping fetch as file is being written.');
         return;
     }
-
+    //skapar en URL för att hämta data från API:et
     const url = `${baseUrl}${eogRequestCode}/${beginAt}/${limit}?key=${TSapi}`;
     let allData = [];
     /* let currentBeginAt = 0;
     const limit = 5; */
-
+    //skapar en set för att kunna lagra CRM-id:n
     let existingCrmIds = new Set();
 
     try {
+        //läser in data från en fil
         const existingData = await fs.readFile(filePath, 'utf-8');
         if (existingData) {
+            //parsar dataen till en JSON-fil
             const parsedData = JSON.parse(existingData);
             allData = parsedData; 
+            //lägger till CRM-id:n i setten
             parsedData.forEach(user => existingCrmIds.add(user.Crmid));
         }
     } catch (error) {
+        //loggar felet om det uppstår
         console.error("Error reading existing data:", error.message);
     }
 
     try {
+        //skapar en katalog för att kunna lagra dataen
         await fs.mkdir(dataDir, { recursive: true });
-
+        //hämtar data från API:et
         const response = await fetchWithRetry(url);
 
+        //kontrollerar om det finns några köp i svaret
         if (!response || !response.purchases || response.purchases.length === 0) {
             console.error('No purchases found in the response:', response);
             return;
         }
 
         const data = response.purchases;
-
+        //loopar igenom alla köp
         data.forEach(item => {
             const purchase = item.purchase;
             console.log('Processing purchase:', purchase);
-
+            //skapar en variabel för att kunna använda miljövariabeln createdDate
             const createdDate = new Date(purchase.createdUtc);
             const isValidPurchase = createdDate >= new Date('2024-01-01T00:01:01.01Z') && (purchase.status == "Completed" || purchase.status == "Refunded");
-
+            //kontrollerar om köpet är en giltigt köp
             if (isValidPurchase) {
+
                 const user = {
                     Crmid: purchase.crmId,
                     status: purchase.status,
@@ -138,11 +160,14 @@ const fetchDataAndLog = async () => {
                         eventId: good.eventId
                     })) : []
                 };
-
+                //kontrollerar om CRM-id:n redan finns i setten
                 if (!existingCrmIds.has(user.Crmid)) {
-                    allData.push(user);
+                    //lägger till köpet i allData
+                    allData.push(user); 
+                    //lägger till CRM-id:n i setten
                     existingCrmIds.add(user.Crmid); 
                 } else {
+                    //loggar att köpet redan finns
                     console.log(`Skipping duplicate CRM ID: ${user.Crmid}`);
                 }
             } else {
@@ -162,6 +187,10 @@ const fetchDataAndLog = async () => {
     }
 };
 
+/**
+ * Sätter tiden för att ta bort dataen
+ * @param {string} time - tiden för att ta bort dataen
+ */
 const setDeletionTime = (time) => {
     deletionTime = time;
 
@@ -184,6 +213,9 @@ const setDeletionTime = (time) => {
     });
 };
 
+/**
+ * Schemalägger uppgifter
+ */
 const scheduleTasks = () => {
     const fetchInterval = process.env.FETCH_INTERVAL || '0 0 * * *';
 
