@@ -4,21 +4,21 @@
  * author: @LNU4 @phatd0nut @Github
  */
 
-const express = require("express");
-const cors = require("cors");
-const logger = require('./logger');
-const adminRoutes = require('./routes/adminRoutes');
-const {fetchDataAndLog} = require('./services/apiService');
-const { insertDataFromJson } = require('./services/dataInsertationService');
-const cron = require('node-cron');
+const express = require("express"); //importerar express 
+const cors = require("cors"); //importerar cors för att kunna skapa en cors-policy
+const logger = require('./logger'); //importerar logger för att kunna logga meddelanden
+const adminRoutes = require('./routes/adminRoutes'); //importerar adminRoutes för att kunna skapa en router för admin-relaterade routes
+const {fetchDataAndLog} = require('./services/apiService'); //importerar fetchDataAndLog för att kunna hämta data från API:et och logga det
+const { insertDataFromJson } = require('./services/dataInsertationService'); //importerar insertDataFromJson för att kunna infoga data från en json-fil
+const cron = require('node-cron'); //importerar cron för att kunna köra en cron-jobb
 
-const app = express();
-const port = 3000;
+const app = express(); //skapar en express-app
+const port = 3000; //skapar en port för att kunna starta servern
 
-app.use(express.json());
-app.use(cors());
+app.use(express.json()); //använder express.json() för att kunna parsa JSON-data
+app.use(cors()); //använder cors() för att kunna skapa en cors-policy
 
-app.use('/admin', adminRoutes);
+app.use('/admin', adminRoutes); //använder adminRoutes för att kunna skapa en router för admin-relaterade routes
 
 /* 
 cron.schedule('* * * * *', async () => {
@@ -41,7 +41,7 @@ app.get('/test-insert', async (req, res) => {
     }
 });
 
-
+//startar servern på port 3000
 app.listen(port, () => {
     logger.info(`Server is running on port ${port}`); 
 });

@@ -1,15 +1,15 @@
 const winston = require('winston');
 const path = require('path');
-
-// Create a logs directory if it doesn't exist
 const logsDir = path.join(__dirname, 'logs');
 const fs = require('fs');
-
+//skapar en loggfil om den inte redan finns
 if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir);
 }
 
-
+/**
+ * skapar en logger
+ */
 const logger = winston.createLogger({
     level: 'info',
     format: winston.format.combine(

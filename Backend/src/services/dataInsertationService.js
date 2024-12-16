@@ -1,9 +1,15 @@
+/**
+ * mattar in data från en JSON-fil till databasen
+ */
 const fs = require("fs").promises;
 const path = require("path");
 const pool = require("../config/db");
 
 const filePath = path.join(__dirname, "../data/tempData.json");
 
+/**
+ * Inserts data from a JSON file into the database
+ */
 const insertDataFromJson = async () => {
     try {
         const data = await fs.readFile(filePath, 'utf-8');
@@ -42,6 +48,11 @@ const insertDataFromJson = async () => {
     }
 };
 
+/**
+ * Sorterar köpen efter datum
+ * @param {Array<object>} purchases - köpen
+ * @returns {Array<object>} - sorterade köpen
+ */
 const sortPurchasesByDate = (purchases) => {
     return purchases.sort((a, b) => {
         const dateA = new Date(a.createdUtc);
@@ -50,6 +61,11 @@ const sortPurchasesByDate = (purchases) => {
     });
 };
 
+/**
+ * matar in kunderna i databasen
+ * @param {object} purchase - köpet
+ * @returns {Promise<number>} - kundens ID
+ */
 const insertOrUpdateCustomer = async (purchase) => {
     const {
         userrefno: userRefNo,
@@ -114,6 +130,12 @@ const insertOrUpdateCustomer = async (purchase) => {
     }
 };
 
+/**
+ * matar in köpen i databasen
+ * @param {object} purchase - köpet
+ * @param {number} customerId - kundens ID
+ * @returns {Promise<number>} - köpets ID
+ */
 const insertOrUpdatePurchase = async (purchase, customerId) => {
     const {
         Crmid: crmId,
@@ -156,6 +178,11 @@ const insertOrUpdatePurchase = async (purchase, customerId) => {
     }
 };
 
+/**
+ * matar in evenemang i databasen
+ * @param {Array<object>} events - evenemang
+ * @param {number} purchaseId - köpets ID
+ */
 const insertOrUpdateEvents = async (events, purchaseId) => {
     for (const event of events) {
         const {
@@ -212,6 +239,11 @@ const insertOrUpdateEvents = async (events, purchaseId) => {
     }
 };
 
+/**
+ * matar in varor i databasen
+ * @param {Array<object>} goods - varor
+ * @param {number} purchaseId - köpets ID
+ */
 const insertOrUpdateGoods = async (goods, purchaseId) => {
     for (const good of goods) {
         const {
@@ -284,6 +316,11 @@ const insertOrUpdateGoods = async (goods, purchaseId) => {
     }
 };
 
+/**
+ * matar in kampanjer i databasen
+ * @param {Array<object>} campaigns - kampanjer
+ * @param {number} purchaseId - köpets ID
+ */
 const insertOrUpdateCampaigns = async (campaigns, purchaseId) => {
     for (const campaign of campaigns) {
         const {
