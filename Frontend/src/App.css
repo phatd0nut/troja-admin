@@ -6,7 +6,8 @@
 }
 
 body {
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .button {
@@ -78,9 +79,36 @@ body {
   margin-bottom: 40px;
 }
 
+#mailingPaper {
+  height: 100%;
+}
+
 #mailingPaper,
 #tablePaper {
-  height: 100%;
+  max-height: 100%;
+}
+
+.tableContainer, .settingsContainer {
+  max-height: 100%;
+  overflow: auto; /* Lägg till overflow: auto för att möjliggöra scrollning */
+}
+
+.tableContainer table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableContainer tbody {
+  display: block;
+  max-height: 100%; /* Justera denna höjd efter behov */
+  overflow: auto; /* Lägg till overflow: auto för att möjliggöra scrollning inom tbody */
+}
+
+.tableContainer thead,
+.tableContainer tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
 }
 
 .toolbar {
@@ -104,4 +132,21 @@ body {
 
 #beeEditor {
   height: 100%;
-} 
+}
+
+
+/* Large devices (desktops, 992px and up) */
+@media (max-width: 992px) {
+  .homeWrapper,
+  .customersWrapper,
+  .mailingWrapper,
+  .settingsWrapper {
+    width: 80vw !important;
+    height: 45vh !important;
+  }
+
+  .content.withNavBar {
+    margin-left: 10px;
+    width: calc(100% - 10px);
+  }
+}

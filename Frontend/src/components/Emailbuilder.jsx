@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react";
 import BeefreeSDK from "@beefree.io/sdk";
-import axios from "axios";
 
 // Hämta miljövariabler från .env-filen
 const clientId = import.meta.env.VITE_CLIENT_ID;
