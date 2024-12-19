@@ -46,15 +46,14 @@ const SettingsContainer = () => {
   return (
     <Paper className="settingsContainer" elevation={3}>
       <Stack
-        direction={{ sm: "column", md: "row" }}
         divider={<Divider orientation="vertical" flexItem />}
         sx={{
-          flexWrap: "wrap",
           width: "100%",
           height: "100%",
+          minWidth: "80%",
           justifyContent: "space-evenly",
           alignItems: "flex-start",
-          flexDirection: "column",
+          flexDirection: "row",
         }}
       >
         <div className="settingsItem" style={{ alignItems: "flex-start" }}>
@@ -98,7 +97,7 @@ const SettingsContainer = () => {
             variant="contained"
             onClick={handleSaveChanges}
             endIcon={<SaveIcon />}
-            sx={{ marginTop: "16px" }}
+            sx={{ marginTop: "16px", marginBottom: "16px" }}
           >
             Spara ändringar
           </Button>
