@@ -50,7 +50,6 @@ const InputField = ({
                 }
                 onClick={handleClickShowPassword}
                 onMouseDown={handleMouseDownPassword}
-                edge="start"
                 sx={{  
                   "&:hover": { color: "#ffffff", backgroundColor: "#dc2e34" } }}
               >

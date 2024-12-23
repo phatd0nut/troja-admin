@@ -1,28 +1,64 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Stack, Paper, Divider } from "../utils/MaterialUI"; // Importera Box, Paper, Stack och Typography korrekt
 
 import trjLogo from "../assets/img/trj.png"; // Importera bilden korrekt
 import panternLogo from "../assets/img/IK_Pantern_logo.png"; // Importera bilden korrekt
 
 const InfoContainer = () => {
+  const [showDivider, setShowDivider] = useState(true);
+  const [pSize, setPSize] = useState(0);
+  const [imgSize, setImgSize] = useState(0);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1154) {
+        setShowDivider(false);
+        setPSize("0.8rem");
+        setImgSize("50px");
+      } else if (window.innerWidth < 1581) {
+        setShowDivider(false);
+        setPSize("1rem");
+        setImgSize("75px");
+      } else {
+        setShowDivider(true);
+        setPSize("1.2rem");
+        setImgSize("100px");
+      }
+    };
+
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Kör funktionen en gång vid montering
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
-    <Paper className="infoContainer" elevation={3}>
+    <Paper
+      className="infoContainer"
+      elevation={3}
+      sx={{ overflow: "auto", minHeight: "50%", fontSize: pSize }}
+    >
       <Stack
         spacing={8}
         direction={{ sm: "column", md: "row" }}
-        divider={<Divider orientation="vertical" flexItem />}
+        divider={
+          showDivider ? <Divider orientation="vertical" flexItem /> : null
+        }
         sx={{ flexWrap: "wrap", width: "100%" }}
       >
         <div className="infoItem">
           <h2>Nästkommande matcher</h2>
           <div className="nextMatch">
-            <img src={trjLogo} />
+            <img src={trjLogo} alt="" style={{ width: imgSize }} />
             <div className="nextMatchPDiv">
               <p>Fredag den 6 december</p>
               <p>19:00</p>
               <p>Ljungby Arena</p>
             </div>
-            <img src={panternLogo} />
+            <img src={panternLogo} alt="" style={{ width: imgSize }} />
           </div>
         </div>
         <div className="infoItem">

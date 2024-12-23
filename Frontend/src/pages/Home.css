@@ -59,5 +59,12 @@
 .ticketStats p {
   display: flex;
   justify-content: space-between;
-  margin: 8px 10px; /* Lägg till margin mellan p-elementen */
+}
+
+.latestMail p, .ticketStats p {
+  margin: 8px 10px;
+}
+
+.infoItem {
+  white-space: nowrap;
 }

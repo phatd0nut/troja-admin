@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import AdminLogin from './pages/AdminLogin';
@@ -25,6 +25,19 @@ const App = () => {
 const AppContent = ({ openNav, setOpenNav }) => {
   const location = useLocation();
   const showNavBar = location.pathname !== '/login';
+
+  useEffect(() => {
+    if (location.pathname === '/login') {
+      document.body.style.overflowY = 'hidden';
+    } else {
+      document.body.style.overflowY = 'auto';
+    }
+
+    // Återställ overflowY när komponenten avmonteras
+    return () => {
+      document.body.style.overflowY = 'auto';
+    };
+  }, [location.pathname]);
 
   return (
     <div className="appContainer">
