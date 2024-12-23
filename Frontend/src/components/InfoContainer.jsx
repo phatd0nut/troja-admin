@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Stack, Paper, Divider } from "../utils/MaterialUI"; // Importera Box, Paper, Stack och Typography korrekt
-
-import trjLogo from "../assets/img/trj.png"; // Importera bilden korrekt
-import panternLogo from "../assets/img/IK_Pantern_logo.png"; // Importera bilden korrekt
+import { Stack, Paper, Divider } from "../utils/MaterialUI"; 
+import FetchUpcomingEvents from "../services/FetchUpcomingEvents";
 
 const InfoContainer = () => {
   const [showDivider, setShowDivider] = useState(true);
@@ -25,7 +23,6 @@ const InfoContainer = () => {
         setImgSize("100px");
       }
     };
-
 
     window.addEventListener("resize", handleResize);
     handleResize(); // Kör funktionen en gång vid montering
@@ -51,15 +48,7 @@ const InfoContainer = () => {
       >
         <div className="infoItem">
           <h2>Nästkommande matcher</h2>
-          <div className="nextMatch">
-            <img src={trjLogo} alt="" style={{ width: imgSize }} />
-            <div className="nextMatchPDiv">
-              <p>Fredag den 6 december</p>
-              <p>19:00</p>
-              <p>Ljungby Arena</p>
-            </div>
-            <img src={panternLogo} alt="" style={{ width: imgSize }} />
-          </div>
+          <FetchUpcomingEvents imgSize={imgSize} />
         </div>
         <div className="infoItem">
           <h2>Biljettstatistik</h2>
