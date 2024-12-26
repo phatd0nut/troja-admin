@@ -33,158 +33,175 @@ let deletionTime = "0 3 * * *"; // Default to 3 AM every day
  * @returns {Promise<object>} - dataen från API:et
  */
 const fetchWithRetry = async (url, params, retries = 3, delay = 1000) => {
-    for (let i = 0; i < retries; i++) {
-        try {
-            const response = await axios.get(url, {
-                headers: {
-                    'Authorization': `Basic ${Buffer.from(`${process.env.TS_Username}:${process.env.TS_Password}`).toString('base64')}`,
-                    'User-Agent': 'MyApp/1.0',
-                    'Content-Type': 'application/json',
-                },
-            });
-            console.log('API Response:', response.data);
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                console.error(`Attempt ${i + 1} failed:`, {
-                    status: error.response.status,
-                    headers: error.response.headers,
-                    data: error.response.data,
-                });
-            } else if (error.request) {
-                console.error(`Attempt ${i + 1} failed: No response received.`);
-            } else {
-                console.error(`Attempt ${i + 1} failed:`, error.message);
-            }
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'Authorization': `Basic ${Buffer.from(`${process.env.TS_Username}:${process.env.TS_Password}`).toString('base64')}`,
+          'User-Agent': 'MyApp/1.0',
+          'Content-Type': 'application/json',
+        },
+      });
+      //console.log('API Response:', response.data);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        console.error(`Attempt ${i + 1} failed:`, {
+          status: error.response.status,
+          headers: error.response.headers,
+          data: error.response.data,
+        });
+      } else if (error.request) {
+        console.error(`Attempt ${i + 1} failed: No response received.`);
+      } else {
+        console.error(`Attempt ${i + 1} failed:`, error.message);
+      }
 
-            if (i < retries - 1) {
-                await new Promise((resolve) => setTimeout(resolve, delay));
-                delay *= 2; 
-            } else {
-                throw error;
-            }
-        }
+      if (i < retries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        delay *= 2;
+      } else {
+        throw error;
+      }
     }
+  }
 };
 
 /**
  * Hämtar data från API:et och loggar det
  */
 const fetchDataAndLog = async () => {
-    if (isWriting) {
-        console.log('Skipping fetch as file is being written.');
-        return;
-    }
-    //skapar en URL för att hämta data från API:et
-    const url = `${baseUrl}${eogRequestCode}/${beginAt}/${limit}?key=${TSapi}`;
-    let allData = [];
-    /* let currentBeginAt = 0;
-    const limit = 5; */
-    //skapar en set för att kunna lagra CRM-id:n
-    let existingCrmIds = new Set();
+  if (isWriting) {
+    console.log('Skipping fetch as file is being written.');
+    return;
+  }
 
-    try {
-        //läser in data från en fil
-        const existingData = await fs.readFile(filePath, 'utf-8');
-        if (existingData) {
-            //parsar dataen till en JSON-fil
-            const parsedData = JSON.parse(existingData);
-            allData = parsedData; 
-            //lägger till CRM-id:n i setten
-            parsedData.forEach(user => existingCrmIds.add(user.Crmid));
+  let allData = [];
+  let existingCrmIds = new Set();
+  let currentBeginAt = beginAt; 
+  const limit = 500;
+
+/*   try {
+    const existingData = await fs.readFile(filePath, 'utf-8');
+    if (existingData) {
+      const parsedData = JSON.parse(existingData);
+      parsedData.forEach(user => existingCrmIds.add(user.Crmid));
+      allData = [...parsedData]; 
+    }
+  } catch (error) {
+    console.error("Error reading existing data:", error.message);
+  }
+ */
+  try {
+    await fs.mkdir(dataDir, { recursive: true });
+
+    let hasMoreData = true;
+
+    while (hasMoreData) {
+      const url = `${baseUrl}${eogRequestCode}/${currentBeginAt}/${limit}?key=${TSapi}`;
+      console.log(`Current fetched url: ${url}`);
+      const response = await fetchWithRetry(url);
+
+      if (!response) {
+        console.error('No purchases found in the response:', response);
+        break; 
+      }
+
+      const data = response.purchases;
+      console.log(`Fetched ${data.length} records starting from ${currentBeginAt}`);
+
+      //let newCrmIdsCount = 0;
+      
+     // console.log(`Current data length: ${data.length}`);
+      data.forEach(item => {
+        const purchase = item.purchase;
+        const createdDate = new Date(purchase.createdUtc);
+        const isValidPurchase = createdDate >= new Date('2024-01-01T00:01:01.01Z') &&
+          (purchase.status === "Completed" || purchase.status === "Refunded");
+
+        if (isValidPurchase) {
+          const user = {
+            Crmid: purchase.crmId,
+            status: purchase.status,
+            userrefno: purchase.userrefno,
+            firstname: purchase.firstname,
+            lastname: purchase.lastname,
+            email: purchase.email,
+            mobilePhoneNo: purchase.mobilePhoneNo,
+            acceptInfo: purchase.acceptInfo,
+            createdUtc: purchase.createdUtc,
+            postalAddressLineOne: purchase.postalAddressLineOne,
+            zipcode: purchase.zipcode,
+            city: purchase.city,
+            isCompany: purchase.isCompany,
+            companyName: purchase.companyName,
+            campaigns: purchase.campaigns?.map(campaign => ({
+              id: campaign.id,
+              communicationId: campaign.communicationId,
+              activationCode: campaign.activationCode,
+              internalReference: campaign.internalReference
+            })) || [],
+            events: purchase.events?.map(event => ({
+              id: event.id,
+              name: event.name,
+              start: event.start,
+              end: event.end,
+              address: (event.venue.address && event.venue.zipcode && event.venue.city && event.venue.country) ?
+                `${event.venue.address} ${event.venue.zipcode} ${event.venue.city} ${event.venue.country}` : null,
+            })) || [],
+            goods: purchase.goods?.map(good => ({
+              goodsid: good.goodsid,
+              name: good.name,
+              receipttext: good.receiptText,
+              type: good.type,
+              artno: good.artno,
+              priceIncVatAfterDiscount: good.priceIncVatAfterDiscount,
+              eventId: good.eventId
+            })) || []
+          };
+
+          if (!existingCrmIds.has(user.Crmid)) {
+            allData.push(user);
+            existingCrmIds.add(user.Crmid);
+           // newCrmIdsCount++;
+          } else {
+           // console.log(`Skipping duplicate CRM ID: ${user.Crmid}`);
+          }
+
+         /*  if (user.Crmid > maxCrmId) {
+            maxCrmId = user.Crmid; 
+          } */
+        } else {
+         // console.log(`Skipping purchase due to criteria: ${purchase.crmId}`);
         }
-    } catch (error) {
-        //loggar felet om det uppstår
-        console.error("Error reading existing data:", error.message);
+      });
+      //let newCrmIdsCount =  data.length;
+      console.log(data[data.length - 1]);
+      let maxCrmId = data[data.length - 1].purchase.crmId;
+      
+      isWriting = true;
+      await fs.writeFile(filePath, JSON.stringify(allData, null, 2) + '\n');
+      console.log(`Data logged to tempData.json: ${allData.length} records written.`);
+
+     
+      if (data.length < limit) {
+        console.log('Less than 500 records fetched, stopping fetch.');
+        hasMoreData = false;
+        break;
+
+      }
+      currentBeginAt = maxCrmId; 
+      console.log(`Updating currentBeginAt to ${currentBeginAt}`);
+      console.log(`Current url: ${url}`);
+      
     }
 
-    try {
-        //skapar en katalog för att kunna lagra dataen
-        await fs.mkdir(dataDir, { recursive: true });
-        //hämtar data från API:et
-        const response = await fetchWithRetry(url);
-
-        //kontrollerar om det finns några köp i svaret
-        if (!response || !response.purchases || response.purchases.length === 0) {
-            console.error('No purchases found in the response:', response);
-            return;
-        }
-
-        const data = response.purchases;
-        //loopar igenom alla köp
-        data.forEach(item => {
-            const purchase = item.purchase;
-            console.log('Processing purchase:', purchase);
-            //skapar en variabel för att kunna använda miljövariabeln createdDate
-            const createdDate = new Date(purchase.createdUtc);
-            const isValidPurchase = createdDate >= new Date('2024-01-01T00:01:01.01Z') && (purchase.status == "Completed" || purchase.status == "Refunded");
-            //kontrollerar om köpet är en giltigt köp
-            if (isValidPurchase) {
-
-                const user = {
-                    Crmid: purchase.crmId,
-                    status: purchase.status,
-                    userrefno: purchase.userrefno,
-                    firstname: purchase.firstname,
-                    lastname: purchase.lastname,
-                    email: purchase.email,
-                    mobilePhoneNo: purchase.mobilePhoneNo,
-                    acceptInfo: purchase.acceptInfo,
-                    createdUtc: purchase.createdUtc,
-                    postalAddressLineOne: purchase.postalAddressLineOne,
-                    zipcode: purchase.zipcode,
-                    city: purchase.city,
-                    isCompany: purchase.isCompany,
-                    companyName: purchase.companyName,
-                    campaigns: purchase.campaigns && purchase.campaigns.length > 0 ? purchase.campaigns.map(campaign => ({
-                        id: campaign.id, 
-                        communicationId: campaign.communicationId, 
-                        activationCode: campaign.activationCode, 
-                        internalReference: campaign.internalReference 
-                    })) : [],
-                    events: purchase.events && purchase.events.length > 0 ? purchase.events.map(event => ({
-                        id: event.id, 
-                        name: event.name,
-                        start: event.start,
-                        end: event.end, 
-                        address: (event.venue.address && event.venue.zipcode && event.venue.city && event.venue.country) ? 
-                        `${event.venue.address} ${event.venue.zipcode} ${event.venue.city} ${event.venue.country}` : null,
-                    })) : [],
-                    goods: purchase.goods && purchase.goods.length > 0 ? purchase.goods.map(good => ({
-                        goodsid: good.goodsid,
-                        name: good.name,
-                        receipttext: good.receiptText,
-                        type: good.type,
-                        artno: good.artno,
-                        priceIncVatAfterDiscount: good.priceIncVatAfterDiscount,
-                        eventId: good.eventId
-                    })) : []
-                };
-                //kontrollerar om CRM-id:n redan finns i setten
-                if (!existingCrmIds.has(user.Crmid)) {
-                    //lägger till köpet i allData
-                    allData.push(user); 
-                    //lägger till CRM-id:n i setten
-                    existingCrmIds.add(user.Crmid); 
-                } else {
-                    //loggar att köpet redan finns
-                    console.log(`Skipping duplicate CRM ID: ${user.Crmid}`);
-                }
-            } else {
-                console.log(`Skipping purchase due to criteria: ${purchase.crmId}`);
-            }
-        });
-
-        isWriting = true;
-        await fs.writeFile(filePath, JSON.stringify(allData, null, 2) + '\n'); 
-        console.log(`Data logged to tempData.json: ${allData.length} records written.`);
-       // await insertDataFromJson();
-        lastFetchTime = new Date();
-    } catch (error) {
-        console.error("Error fetching data:", error.response?.data || error.message);
-    } finally {
-        isWriting = false;
-    }
+    lastFetchTime = new Date();
+  } catch (error) {
+    console.error("Error fetching data:", error.response?.data || error.message);
+  } finally {
+    isWriting = false;
+  }
 };
 
 /**
@@ -192,49 +209,49 @@ const fetchDataAndLog = async () => {
  * @param {string} time - tiden för att ta bort dataen
  */
 const setDeletionTime = (time) => {
-    deletionTime = time;
+  deletionTime = time;
 
-    if (tasks.deletionTask) {
-        tasks.deletionTask.stop();
-        delete tasks.deletionTask;
+  if (tasks.deletionTask) {
+    tasks.deletionTask.stop();
+    delete tasks.deletionTask;
+  }
+
+  tasks.deletionTask = cron.schedule(deletionTime, async () => {
+    if (isFetching) {
+      console.log('Skipping deletion during fetch.');
+      return;
     }
-
-    tasks.deletionTask = cron.schedule(deletionTime, async () => {
-        if (isFetching) {
-            console.log('Skipping deletion during fetch.');
-            return;
-        }
-        try {
-            await fs.unlink(filePath);
-            console.log('Cached data deleted based on updated schedule.');
-        } catch (error) {
-            console.error('Error deleting cached data:', error);
-        }
-    });
+    try {
+      await fs.unlink(filePath);
+      console.log('Cached data deleted based on updated schedule.');
+    } catch (error) {
+      console.error('Error deleting cached data:', error);
+    }
+  });
 };
 
 /**
  * Schemalägger uppgifter
  */
 const scheduleTasks = () => {
-    const fetchInterval = process.env.FETCH_INTERVAL || '0 0 * * *';
+  const fetchInterval = process.env.FETCH_INTERVAL || '0 0 * * *';
 
-    cron.schedule(fetchInterval, async () => {
-        if (isFetching) {
-            console.log('Fetch in progress, skipping...');
-            return;
-        }
-        isFetching = true;
-        try {
-            await fetchDataAndLog();
-        } catch (error) {
-            console.error('Error in scheduled fetch:', error.message);
-        } finally {
-            isFetching = false;
-        }
-    });
+  cron.schedule(fetchInterval, async () => {
+    if (isFetching) {
+      console.log('Fetch in progress, skipping...');
+      return;
+    }
+    isFetching = true;
+    try {
+      await fetchDataAndLog();
+    } catch (error) {
+      console.error('Error in scheduled fetch:', error.message);
+    } finally {
+      isFetching = false;
+    }
+  });
 
-    setDeletionTime(deletionTime);
+  setDeletionTime(deletionTime);
 };
 
 scheduleTasks();
