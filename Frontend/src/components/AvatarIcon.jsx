@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar, Badge, styled } from "../utils/MaterialUI";
-import logo from "../assets/img/trj.png";
+import logo from "../assets/img/logos/iftroja-ljungby.png";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {

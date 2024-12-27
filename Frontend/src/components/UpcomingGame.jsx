@@ -1,29 +1,38 @@
 import React from 'react';
-import trj from '../assets/img/trj.png';
-import IK_Pantern_logo from '../assets/img/IK_Pantern_logo.png';
+import TeamLogos from '../utils/TeamLogos';
 
 const UpcomingGame = ({ game, imgSize }) => {
-    const { name, startUtc } = game;
+  const { name, startUtc } = game;
 
-    // Formatera startUtc för att visa datumet och tiden
-    const eventDate = new Date(startUtc);
-    const [formattedDate, formattedTime] = eventDate.toISOString().split('T');
+  // Formatera startUtc för att visa datumet och tiden
+  const eventDate = new Date(startUtc);
+  const [formattedDate, formattedTime] = eventDate.toISOString().split('T');
+  const time = formattedTime.substring(0, 5);
 
-    // Extrahera endast HH:MM från tiden
-    const time = formattedTime.substring(0, 5);
+  // Dela upp matchnamnet vid " - " för att få hem- och bortalaget
+  const [homeTeam, awayTeam] = name.split(" - ").map(team => team.trim());
 
-    console.log(game);
+  // Funktion för att hämta bildens URL baserat på lagets namn
+  const getImageForTeam = (team) => {
+    // Direkt användning av lagnamnet utan formatering
+    const logo = TeamLogos[team];  // Hämta bilden från TeamLogos
+    return logo || '/path/to/default/logo.png';  // Fallback om ingen bild hittas
+  };
 
-    return (
-        <div className="nextMatch">
-            <img src={trj} alt="" style={{ width: imgSize }} />
-            <div className="nextMatchPDiv">
-                <p>{name}</p>
-                <p>{formattedDate} | {time}</p>
-            </div>
-            <img src={IK_Pantern_logo} alt="" style={{ width: imgSize }} />
-        </div>
-    );
+  // Hämta bilder för hemma- och bortalag
+  const homeLogo = getImageForTeam(homeTeam);
+  const awayLogo = getImageForTeam(awayTeam);
+
+  return (
+    <div className="nextMatch">
+      <img className="homeLogo" src={homeLogo} alt={homeTeam} style={{ width: imgSize }} />
+      <div className="nextMatchPDiv">
+        <p>{name}</p>
+        <p>{formattedDate} | {time}</p>
+      </div>
+      <img className="awayLogo" src={awayLogo} alt={awayTeam} style={{ width: imgSize }} />
+    </div>
+  );
 };
 
 export default UpcomingGame;
