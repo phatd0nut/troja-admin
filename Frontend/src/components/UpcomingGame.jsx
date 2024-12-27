@@ -16,7 +16,7 @@ const UpcomingGame = ({ game, imgSize }) => {
   const getImageForTeam = (team) => {
     // Direkt användning av lagnamnet utan formatering
     const logo = TeamLogos[team];  // Hämta bilden från TeamLogos
-    return logo || '/path/to/default/logo.png';  // Fallback om ingen bild hittas
+    return logo || TeamLogos.defaultLogo;  // Fallback till defaultLogo om ingen bild hittas
   };
 
   // Hämta bilder för hemma- och bortalag

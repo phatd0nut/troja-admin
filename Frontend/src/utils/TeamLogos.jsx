@@ -34,6 +34,7 @@ import vallentuna from "../assets/img/logos/vallentuna.png";
 import vasterviks from "../assets/img/logos/västerviks.png";
 import visbyRoma from "../assets/img/logos/visbyroma.png";
 import wings from "../assets/img/logos/wings.png";
+import defaultLogo from "../assets/img/logos/defaultlogo.png";
 
 const TeamLogos = {
   "Alvesta SK": alvesta,
@@ -72,6 +73,7 @@ const TeamLogos = {
   "Västerviks IK": vasterviks,
   "Visby/Roma HK": visbyRoma,
   "Wings HC": wings,
+  defaultLogo
 };
 
 export default TeamLogos;
