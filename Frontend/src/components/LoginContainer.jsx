@@ -2,6 +2,7 @@ import React from "react";
 import InputField from "./InputField";
 import "./LoginContainer.css"; // Importera CSS-filen
 import Button from "./Button";
+import { Typography } from "../utils/MaterialUI"; // Importera Typography
 
 const LoginContainer = ({
   username,
@@ -11,6 +12,7 @@ const LoginContainer = ({
   showPassword,
   handleClickShowPassword,
   handleMouseDownPassword,
+  error,
 }) => {
   // Kontrollera om både användarnamn och lösenord är ifyllda
   const isFormValid = username.trim() !== "" && password.trim() !== "";
@@ -18,6 +20,7 @@ const LoginContainer = ({
   return (
     <div className="loginWrapper">
       <div className="loginContainer">
+        {error && <Typography color="error">{error}</Typography>}
         <InputField
           label="Användarnamn"
           type="text"

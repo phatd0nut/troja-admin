@@ -76,6 +76,7 @@ const Mailing = () => {
               color="primary"
               component="span"
               endIcon={<DownloadIcon/>}
+              sx={{ height: "100%" }}
             >
               Importera mall
             </Button>
