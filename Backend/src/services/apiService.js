@@ -11,7 +11,6 @@ require('dotenv').config(); //importerar dotenv för att kunna läsa miljövaria
 const { insertDataFromJson } = require('./dataInsertationService'); //importerar insertDataFromJson för att kunna infoga data från en json-fil
 const dataDir = path.resolve(__dirname, "../data"); //skapar en variabel för att kunna använda filsystemets vägar
 const filePath = path.join(dataDir, "tempData.json");
-
 const baseUrl = process.env.BASE_URL; //skapar en variabel för att kunna använda miljövariabeln BASE_URL
 const TSapi = process.env.TSapi; //skapar en variabel för att kunna använda miljövariabeln TSapi
 const eogRequestCode = process.env.EOGREQUESTCODE; //skapar en variabel för att kunna använda miljövariabeln EOGREQUESTCODE
@@ -120,6 +119,7 @@ const fetchDataAndLog = async () => {
           (purchase.status === "Completed" || purchase.status === "Refunded");
 
         if (isValidPurchase) {
+          const currentDate = new Date();
           const user = {
             Crmid: purchase.crmId,
             status: purchase.status,
@@ -135,6 +135,7 @@ const fetchDataAndLog = async () => {
             city: purchase.city,
             isCompany: purchase.isCompany,
             companyName: purchase.companyName,
+            addition_date: currentDate,
             campaigns: purchase.campaigns?.map(campaign => ({
               id: campaign.id,
               communicationId: campaign.communicationId,
@@ -187,8 +188,13 @@ const fetchDataAndLog = async () => {
       if (data.length < limit) {
         console.log('Less than 500 records fetched, stopping fetch.');
         hasMoreData = false;
+        try {
+          await insertDataFromJson(); 
+          console.log('Data insertion triggered successfully.');
+      } catch (error) {
+          console.error('Error during data insertion:', error.message);
+      }
         break;
-
       }
       currentBeginAt = maxCrmId; 
       console.log(`Updating currentBeginAt to ${currentBeginAt}`);

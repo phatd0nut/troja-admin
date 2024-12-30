@@ -84,7 +84,7 @@ const insertOrUpdateCustomer = async (purchase) => {
     if (!userRefNo || !firstName || !lastName || !email) {
         throw new Error(`Missing required fields in purchase with Crmid: ${purchase.Crmid}`);
     }
-    const currentDate = new Date();
+
     const [userResult] = await pool.query(
         `INSERT INTO \`Customer\` 
         (userRefNo, firstName, lastName, email, phoneNumber, postalAddress, zipcode, city, isCompany, companyName, acceptInfo)
@@ -99,8 +99,7 @@ const insertOrUpdateCustomer = async (purchase) => {
             city = VALUES(city),
             isCompany = VALUES(isCompany),
             companyName = VALUES(companyName),
-            acceptInfo = VALUES(acceptInfo),
-            addition_date = VALUES(addition_date)`,
+            acceptInfo = VALUES(acceptInfo)`,
         [
             userRefNo,
             firstName,
@@ -112,8 +111,7 @@ const insertOrUpdateCustomer = async (purchase) => {
             city,
             isCompany ? 1 : 0,
             companyName,
-            acceptInfo ? 1 : 0,
-            currentDate
+            acceptInfo ? 1 : 0
         ]
     );
 
