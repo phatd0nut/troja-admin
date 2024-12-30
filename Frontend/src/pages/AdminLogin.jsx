@@ -11,6 +11,7 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false); // Tillstånd för att spåra laddningsstatus
+  const [error, setError] = useState('');
   const [checkingToken, setCheckingToken] = useState(true); // Tillstånd för att spåra tokenkontroll
   const navigate = useNavigate(); // Använd useNavigate för att omdirigera
 
@@ -42,6 +43,7 @@ const AdminLogin = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true); // Sätt laddningsstatus till true
+    setError(''); // Återställ felmeddelandet
     try {
       const data = await loginAdmin(username, password);
       // Spara token och användarnamn i localStorage
@@ -51,7 +53,12 @@ const AdminLogin = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       navigate("/home");
     } catch (error) {
-      setError("Login failed. Please check your username and password.");
+      console.error("Error logging in:", error);
+      if (error.message === 'Unauthorized') {
+        setError("Fel användarnamn eller lösenord.");
+      } else {
+        setError("Ett fel uppstod. Försök igen senare.");
+      }
     } finally {
       setLoading(false); // Sätt laddningsstatus till false
     }
@@ -80,6 +87,7 @@ const AdminLogin = () => {
             showPassword={showPassword}
             handleClickShowPassword={handleClickShowPassword}
             handleMouseDownPassword={handleMouseDownPassword}
+            error={error}
           />
         </form>
       )}

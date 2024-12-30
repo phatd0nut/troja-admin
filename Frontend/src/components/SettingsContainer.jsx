@@ -6,16 +6,27 @@ import {
   Typography,
   SaveIcon,
   Switch,
+  Dialog,
+  DialogContent,
+  DialogActions,
 } from "../utils/MaterialUI";
 import InputField from "./InputField";
 import Button from "./Button";
 import MaintenanceClock from "./MaintenanceClock";
+import LoadingCircle from "./LoadingCircle"; // Importera LoadingCircle
+import axios from 'axios';
 
 const SettingsContainer = () => {
   const [newUsername, setNewUsername] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // Lägg till loading state
+  const [updateSuccess, setUpdateSuccess] = useState(false); // Lägg till updateSuccess state
+  const [error, setError] = useState(""); // Lägg till error state
 
   const handleUsernameChange = (event) => {
     setNewUsername(event.target.value);
@@ -33,14 +44,69 @@ const SettingsContainer = () => {
     setConfirmPassword(event.target.value);
   };
 
-  const handleSaveChanges = () => {
-    // Implementera logik för att spara ändringar
+  const handleClickShowCurrentPassword = () => {
+    setShowCurrentPassword(!showCurrentPassword);
+  };
+
+  const handleClickShowNewPassword = () => {
+    setShowNewPassword(!showNewPassword);
+  };
+
+  const handleClickShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
+  const handleSaveChanges = async () => {
+    if (newPassword !== confirmPassword) {
+      setError('New password and confirmation do not match');
+      return;
+    }
+
+    // Logga ändringarna som skickas
     console.log("Spara ändringar:", {
       newUsername,
       currentPassword,
       newPassword,
       confirmPassword,
     });
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put('http://localhost:3000/admin/change-details', {
+        currentPassword: currentPassword,
+        newName: newUsername,
+        newPassword: newPassword,
+        confirmPassword: confirmPassword
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      // Uppdatera användarnamnet i localStorage
+      if (newUsername) {
+        localStorage.setItem("username", newUsername);
+      }
+
+      // Visa laddningsmodal och uppdatera sidan efter 2 sekunder
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        setUpdateSuccess(true);
+      }, 2000);
+    } catch (error) {
+      console.error('Error updating admin details:', error);
+      setError('Nuvarande lösenord är felaktigt');
+    }
+  };
+
+  const handleCloseSuccessDialog = () => {
+    setUpdateSuccess(false);
+    window.location.reload();
   };
 
   return (
@@ -69,14 +135,21 @@ const SettingsContainer = () => {
             autoComplete="username"
           />
           <Divider sx={{ width: "342px", my: 2 }} />
-          <InputField
-            id="current-password"
-            label="Nuvarande lösenord"
-            type="password"
-            value={currentPassword}
-            onChange={handleCurrentPasswordChange}
-            autoComplete="current-password"
-          />
+          <Stack direction="column-reverse">
+            <InputField
+              id="current-password"
+              label="Nuvarande lösenord"
+              type="password"
+              value={currentPassword}
+              onChange={handleCurrentPasswordChange}
+              autoComplete="current-password"
+              showPasswordToggle
+              showPassword={showCurrentPassword}
+              handleClickShowPassword={handleClickShowCurrentPassword}
+              handleMouseDownPassword={handleMouseDownPassword}
+            />
+            {error && <Typography color="error" sx={{ mb: 3 }}>{error}</Typography>}
+          </Stack>
           <InputField
             id="new-password"
             label="Nytt lösenord"
@@ -84,6 +157,10 @@ const SettingsContainer = () => {
             value={newPassword}
             onChange={handleNewPasswordChange}
             autoComplete="new-password"
+            showPasswordToggle
+            showPassword={showNewPassword}
+            handleClickShowPassword={handleClickShowNewPassword}
+            handleMouseDownPassword={handleMouseDownPassword}
           />
           <InputField
             id="confirm-password"
@@ -92,6 +169,10 @@ const SettingsContainer = () => {
             value={confirmPassword}
             onChange={handleConfirmPasswordChange}
             autoComplete="new-password"
+            showPasswordToggle
+            showPassword={showConfirmPassword}
+            handleClickShowPassword={handleClickShowConfirmPassword}
+            handleMouseDownPassword={handleMouseDownPassword}
           />
           <Button
             variant="contained"
@@ -129,6 +210,20 @@ const SettingsContainer = () => {
           </div>
         </div>
       </Stack>
+      <Dialog open={loading}>
+        <DialogContent className="standardDialog">
+          <h2>Uppdaterar kontoinformation...</h2>
+          <LoadingCircle />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={updateSuccess} onClose={handleCloseSuccessDialog}>
+        <DialogContent className="standardDialog" sx={{ textAlign: 'center' }}>
+          <h2>Användarkontot har uppdaterats.</h2>
+          <Button onClick={handleCloseSuccessDialog} color="primary" variant="contained">
+            OK
+          </Button>
+        </DialogContent>
+      </Dialog>
     </Paper>
   );
 };
