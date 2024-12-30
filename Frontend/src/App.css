@@ -6,14 +6,21 @@
 }
 
 body {
-  overflow-y: auto;
   overflow-x: hidden;
 }
 
+.appContainer {
+  overflow-y: auto !important;
+  display: flex;
+}
 .button {
   font-weight: bold !important;
-  padding: 16px 16px !important;
-  height: 100% !important;
+  padding: 16px 16px ;
+  height: 100% ;
+}
+
+.clockAdjustBtn {
+  padding: 1px 1px !important;
 }
 
 .button:hover {
@@ -37,9 +44,7 @@ body {
   gap: 40px;
 }
 
-.appContainer {
-  display: flex;
-}
+
 
 .content {
   padding: 20px;
@@ -86,6 +91,12 @@ body {
 #mailingPaper,
 #tablePaper {
   max-height: 100%;
+}
+
+.nextMatchPDiv {
+  display: flex;
+  flex-direction: column;
+  wrap: nowrap;
 }
 
 .tableContainer, .settingsContainer {

@@ -24,6 +24,7 @@
   background-color: white;
   border-radius: 8px;
   text-align: center;
+  white-space: nowrap;
 }
 
 .infoItem h2 {
@@ -50,14 +51,18 @@
 
 .nextMatch {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   flex-direction: row;
   gap: 80px;
+  margin-bottom: 16px;
 }
 
 .ticketStats p {
   display: flex;
   justify-content: space-between;
-  margin: 8px 10px; /* Lägg till margin mellan p-elementen */
+}
+
+.latestMail p, .ticketStats p {
+  margin: 8px 10px;
 }

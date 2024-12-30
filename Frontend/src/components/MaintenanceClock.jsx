@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
-import { Box, Button, Grid } from "@mui/material";
+import { Box, ArrowDropDownIcon, ArrowDropUpIcon } from "../utils/MaterialUI";
+import Button from "./Button";
 import dayjs from "dayjs";
 
 export default function MaintenanceClock() {
@@ -28,14 +29,14 @@ export default function MaintenanceClock() {
     >
       <div className="timeAdjustment">
         <div className="timeSection">
-          <Button onClick={handleIncreaseHours}>↑</Button>
-          <Box>{time.format("HH")}</Box>
-          <Button onClick={handleDecreaseHours}>↓</Button>
+          <Button className="clockAdjustBtn" onClick={handleIncreaseHours}><ArrowDropUpIcon/></Button>
+          <Box sx={{ paddingTop: "5px", paddingBottom: "5px", fontWeight: "bold", fontSize: "1.1rem" }}>{time.format("HH")}</Box>
+          <Button className="clockAdjustBtn" onClick={handleDecreaseHours}><ArrowDropDownIcon/></Button>
         </div>
         <div className="timeSection">
-          <Button onClick={handleIncreaseMinutes}>↑</Button>
-          <Box>{time.format("mm")}</Box>
-          <Button onClick={handleDecreaseMinutes}>↓</Button>
+          <Button className="clockAdjustBtn" onClick={handleIncreaseMinutes}><ArrowDropUpIcon/></Button>
+          <Box sx={{ paddingTop: "5px", paddingBottom: "5px", fontWeight: "bold", fontSize: "1.1rem" }}>{time.format("mm")}</Box>
+          <Button className="clockAdjustBtn" onClick={handleDecreaseMinutes}><ArrowDropDownIcon/></Button>
         </div>
       </div>
     </Box>

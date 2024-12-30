@@ -21,6 +21,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./NavBar.css"; // Importera CSS-filen för ytterligare styling
 import logo from "../assets/svg/troja_logo.svg"; // Importera SVG-filen
 import Button from "../components/Button";
+import LoadingCircle from "./LoadingCircle";
 
 const drawerWidth = 190;
 const miniDrawerWidth = 60;
@@ -28,6 +29,7 @@ const miniDrawerWidth = 60;
 const NavBar = ({ openNav, setOpenNav }) => {
   const navigate = useNavigate();
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleDrawerOpen = () => {
     setOpenNav(true);
@@ -38,9 +40,13 @@ const NavBar = ({ openNav, setOpenNav }) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    navigate("/login");
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
+      navigate("/login");
+    }, 2000);
   };
 
   const handleOpenLogoutDialog = () => {
@@ -53,13 +59,33 @@ const NavBar = ({ openNav, setOpenNav }) => {
 
   const navItems = [
     { text: "Hem", icon: <HomeIcon className="menuIcons" />, path: "/home" },
-    { text: "Kunder", icon: <PeopleIcon className="menuIcons" />, path: "/customers" },
-    { text: "Utskick", icon: <MailIcon className="menuIcons" />, path: "/mailing" },
-    { text: "Inställningar", icon: <SettingsIcon className="menuIcons" />, path: "/settings" },
-    { text: "Logga ut", icon: <LogoutIcon className="menuIcons" />, action: handleOpenLogoutDialog },
+    {
+      text: "Kunder",
+      icon: <PeopleIcon className="menuIcons" />,
+      path: "/customers",
+    },
+    {
+      text: "Utskick",
+      icon: <MailIcon className="menuIcons" />,
+      path: "/mailing",
+    },
+    {
+      text: "Inställningar",
+      icon: <SettingsIcon className="menuIcons" />,
+      path: "/settings",
+    },
+    {
+      text: "Logga ut",
+      icon: <LogoutIcon className="menuIcons" />,
+      action: handleOpenLogoutDialog,
+    },
     {
       text: "Fäll in",
-      icon: openNav ? <ChevronLeftIcon className="menuIcons" /> : <ChevronRightIcon className="menuIcons" />,
+      icon: openNav ? (
+        <ChevronLeftIcon className="menuIcons" />
+      ) : (
+        <ChevronRightIcon className="menuIcons" />
+      ),
       action: openNav ? handleDrawerClose : handleDrawerOpen,
     },
   ];
@@ -162,14 +188,20 @@ const NavBar = ({ openNav, setOpenNav }) => {
 
       <Dialog open={openLogoutDialog} onClose={handleCloseLogoutDialog}>
         <DialogContent className="standardDialog">
-          <h2>Är du säker på att du vill logga ut?</h2>
+          <h2>
+            {loading ? "Loggar ut..." : "Är du säker på att du vill logga ut?"}
+          </h2>
           <div id="logoutDialogBtns">
-          <Button variant="contained" onClick={handleLogout}>
-            Ja, logga ut
-          </Button>
-          <Button onClick={handleCloseLogoutDialog}>
-            Avbryt
-          </Button>
+            {loading ? (
+              <LoadingCircle />
+            ) : (
+              <>
+                <Button variant="contained" onClick={handleLogout}>
+                  Ja, logga ut
+                </Button>
+                <Button onClick={handleCloseLogoutDialog}>Avbryt</Button>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>

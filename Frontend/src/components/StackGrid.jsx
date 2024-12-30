@@ -5,7 +5,7 @@ const StackGrid = () => {
   return (
     <Stack
       className="stackGrid"
-      direction={{ sm: 'column', md: 'row'}} // Responsiv direction
+      direction={{ xs: 'column', sm: 'row', md: 'row'}} // Responsiv direction
       spacing={{ xs: 1, sm: 2, md: 4, lg: 12 }} // Responsiv spacing
     >
       <Box
