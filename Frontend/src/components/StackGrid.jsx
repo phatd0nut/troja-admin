@@ -1,5 +1,5 @@
 import React from "react";
-import { Stack, Paper, Box, Typography } from "../utils/MaterialUI"; // Importera Stack, Divider, Paper och Box korrekt
+import { Stack, Paper, Box, Typography } from "../utils/MaterialUI";
 
 const StackGrid = () => {
   return (

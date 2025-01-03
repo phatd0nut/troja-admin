@@ -12,8 +12,12 @@ import {
   Pagination,
   TableSortLabel,
 } from "../utils/MaterialUI";
+import { fetchAllCustomers } from "../services/customerService";
 
-const CustomerTable = ({ searchQuery, searchCriteria }) => {
+const CustomerTable = ({ searchQuery }) => {
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [order, setOrder] = useState(null);
   const [orderBy, setOrderBy] = useState(null);
@@ -24,8 +28,7 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
       const availableHeight = window.innerHeight;
       if (availableHeight < 960) {
         setRowsPerPage(5);
-      }
-      else if (availableHeight < 1200) {
+      } else if (availableHeight < 1200) {
         setRowsPerPage(10);
       } else {
         setRowsPerPage(15);
@@ -38,6 +41,21 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
+  }, []);
+
+  useEffect(() => {
+    const getCustomers = async () => {
+      try {
+        const data = await fetchAllCustomers();
+        setCustomers(data);
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+        setLoading(false);
+      }
+    };
+
+    getCustomers();
   }, []);
 
   const handleRequestSort = (property) => {
@@ -56,190 +74,27 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
     setPage(value);
   };
 
-  const rows = [
-    {
-      name: "John Doe",
-      address: "Testvägen 1",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "Jane Doe",
-      address: "Testvägen 2",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "John Smith",
-      address: "Testvägen 3",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "Jane Smith",
-      address: "Testvägen 4",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "John Johnson",
-      address: "Testvägen 5",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "Jane Johnson",
-      address: "Testvägen 6",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "John Jackson",
-      address: "Testvägen 7",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "Jane Jackson",
-      address: "Testvägen 8",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "John Doe",
-      address: "Testvägen 1",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "Jane Doe",
-      address: "Testvägen 2",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "John Smith",
-      address: "Testvägen 3",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "Jane Smith",
-      address: "Testvägen 4",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "John Johnson",
-      address: "Testvägen 5",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "Jane Johnson",
-      address: "Testvägen 6",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "John Jackson",
-      address: "Testvägen 7",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "Jane Jackson",
-      address: "Testvägen 8",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "John Doe",
-      address: "Testvägen 1",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "Jane Doe",
-      address: "Testvägen 2",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "John Smith",
-      address: "Testvägen 3",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    {
-      name: "Jane Smith",
-      address: "Testvägen 4",
-      postcode: "12345",
-      city: "Teststad",
-      phone: "070-123 45 67",
-      email: "",
-    },
-    // Lägg till fler rader här
+  const columns = [
+    { id: "name", label: "Namn" },
+    { id: "email", label: "Email" },
+    { id: "phoneNumber", label: "Telefon" },
+    { id: "postalAddress", label: "Adress" },
+    { id: "zipcode", label: "Postnummer" },
+    { id: "city", label: "Stad" },
+    { id: "points", label: "Poäng" },
+    { id: "acceptInfo", label: "Nyhetsbrev" },
   ];
 
-  const criteriaMapping = {
-    Namn: "name",
-    Adress: "address",
-    Postnummer: "postcode",
-    Stad: "city",
-    Telefon: "phone",
-    Email: "email",
-  };
-
-  const filteredRows =
-    searchCriteria.length > 0
-      ? rows.filter((row) =>
-          searchCriteria.some((criteria) =>
-            row[criteriaMapping[criteria]]
-              ?.toString()
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-          )
+  const filteredRows = searchQuery
+    ? customers.filter((row) =>
+        columns.some((column) =>
+          row[column.id]
+            ?.toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
         )
-      : rows;
+      )
+    : customers;
 
   const sortedRows = filteredRows.sort((a, b) => {
     if (orderBy) {
@@ -256,6 +111,7 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
 
   const renderTableSortLabel = (columnId, label) => (
     <TableCell
+      key={columnId}
       sx={{
         color: "#ffffff",
         fontWeight: "bold",
@@ -293,6 +149,14 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
     </TableCell>
   );
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <Paper id="tablePaper" elevation={3}>
       <TableContainer className="tableContainer">
@@ -301,12 +165,9 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
             sx={{ backgroundColor: "#dc2e34", position: "sticky", top: 0 }}
           >
             <TableRow>
-              {renderTableSortLabel("name", "Namn")}
-              {renderTableSortLabel("address", "Adress")}
-              {renderTableSortLabel("postcode", "Postnummer")}
-              {renderTableSortLabel("city", "Stad")}
-              {renderTableSortLabel("phone", "Telefon")}
-              {renderTableSortLabel("email", "Email")}
+              {columns.map((column) =>
+                renderTableSortLabel(column.id, column.label)
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -322,12 +183,17 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
                     },
                   }}
                 >
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.address}</TableCell>
-                  <TableCell>{row.postcode}</TableCell>
-                  <TableCell>{row.city}</TableCell>
-                  <TableCell>{row.phone}</TableCell>
-                  <TableCell>{row.email}</TableCell>
+                  {columns.map((column) => (
+                    <TableCell key={column.id}>
+                      {column.id === "name"
+                        ? `${row.firstName} ${row.lastName}`
+                        : column.id === "acceptInfo"
+                        ? row[column.id] === 1
+                          ? "Ja"
+                          : "Nej"
+                        : row[column.id]}
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))}
             <Box
