@@ -1,3 +1,4 @@
+// Backend/src/services/apiService.js
 /**
  * ApiService.js är en fil som innehåller funktioner för att hämta data från API:et och logga det
  * @module ApiService
@@ -9,6 +10,7 @@ const path = require("path"); //importerar path för att kunna arbeta med filsys
 const cron = require("node-cron"); //importerar cron för att kunna köra en cron-jobb
 require('dotenv').config(); //importerar dotenv för att kunna läsa miljövariabler från en .env-fil
 const { insertDataFromJson } = require('./dataInsertationService'); //importerar insertDataFromJson för att kunna infoga data från en json-fil
+
 const dataDir = path.resolve(__dirname, "../data"); //skapar en variabel för att kunna använda filsystemets vägar
 const filePath = path.join(dataDir, "tempData.json");
 const baseUrl = process.env.BASE_URL; //skapar en variabel för att kunna använda miljövariabeln BASE_URL
@@ -23,6 +25,7 @@ let isWriting = false; //skapar en variabel för att kunna använda miljövariab
 
 const tasks = {};
 let deletionTime = "0 3 * * *"; // Default to 3 AM every day
+
 /**
  * Hämtar data från API:et med försök att hantera fel
  * @param {string} url - URL:en för API:et
@@ -41,21 +44,9 @@ const fetchWithRetry = async (url, params, retries = 3, delay = 1000) => {
           'Content-Type': 'application/json',
         },
       });
-      //console.log('API Response:', response.data);
       return response.data;
     } catch (error) {
-      if (error.response) {
-        console.error(`Attempt ${i + 1} failed:`, {
-          status: error.response.status,
-          headers: error.response.headers,
-          data: error.response.data,
-        });
-      } else if (error.request) {
-        console.error(`Attempt ${i + 1} failed: No response received.`);
-      } else {
-        console.error(`Attempt ${i + 1} failed:`, error.message);
-      }
-
+      handleFetchError(error, i);
       if (i < retries - 1) {
         await new Promise((resolve) => setTimeout(resolve, delay));
         delay *= 2;
@@ -63,6 +54,25 @@ const fetchWithRetry = async (url, params, retries = 3, delay = 1000) => {
         throw error;
       }
     }
+  }
+};
+
+/**
+ * Hanterar fel vid hämtning av data
+ * @param {object} error - felobjektet
+ * @param {number} attempt - aktuellt försök
+ */
+const handleFetchError = (error, attempt) => {
+  if (error.response) {
+    console.error(`Attempt ${attempt + 1} failed:`, {
+      status: error.response.status,
+      headers: error.response.headers,
+      data: error.response.data,
+    });
+  } else if (error.request) {
+    console.error(`Attempt ${attempt + 1} failed: No response received.`);
+  } else {
+    console.error(`Attempt ${attempt + 1} failed:`, error.message);
   }
 };
 
@@ -77,23 +87,10 @@ const fetchDataAndLog = async () => {
 
   let allData = [];
   let existingCrmIds = new Set();
-  let currentBeginAt = beginAt; 
-  const limit = 500;
+  let currentBeginAt = beginAt;
 
-/*   try {
-    const existingData = await fs.readFile(filePath, 'utf-8');
-    if (existingData) {
-      const parsedData = JSON.parse(existingData);
-      parsedData.forEach(user => existingCrmIds.add(user.Crmid));
-      allData = [...parsedData]; 
-    }
-  } catch (error) {
-    console.error("Error reading existing data:", error.message);
-  }
- */
   try {
     await fs.mkdir(dataDir, { recursive: true });
-
     let hasMoreData = true;
 
     while (hasMoreData) {
@@ -103,15 +100,12 @@ const fetchDataAndLog = async () => {
 
       if (!response) {
         console.error('No purchases found in the response:', response);
-        break; 
+        break;
       }
 
       const data = response.purchases;
       console.log(`Fetched ${data.length} records starting from ${currentBeginAt}`);
 
-      //let newCrmIdsCount = 0;
-      
-     // console.log(`Current data length: ${data.length}`);
       data.forEach(item => {
         const purchase = item.purchase;
         const createdDate = new Date(purchase.createdUtc);
@@ -164,42 +158,29 @@ const fetchDataAndLog = async () => {
           if (!existingCrmIds.has(user.Crmid)) {
             allData.push(user);
             existingCrmIds.add(user.Crmid);
-           // newCrmIdsCount++;
-          } else {
-           // console.log(`Skipping duplicate CRM ID: ${user.Crmid}`);
           }
-
-         /*  if (user.Crmid > maxCrmId) {
-            maxCrmId = user.Crmid; 
-          } */
-        } else {
-         // console.log(`Skipping purchase due to criteria: ${purchase.crmId}`);
         }
       });
-      //let newCrmIdsCount =  data.length;
-      console.log(data[data.length - 1]);
-      let maxCrmId = data[data.length - 1].purchase.crmId;
-      
+
+      const maxCrmId = data[data.length - 1].purchase.crmId;
+
       isWriting = true;
       await fs.writeFile(filePath, JSON.stringify(allData, null, 2) + '\n');
       console.log(`Data logged to tempData.json: ${allData.length} records written.`);
 
-     
       if (data.length < limit) {
         console.log('Less than 500 records fetched, stopping fetch.');
         hasMoreData = false;
         try {
-          await insertDataFromJson(); 
+          await insertDataFromJson();
           console.log('Data insertion triggered successfully.');
-      } catch (error) {
+        } catch (error) {
           console.error('Error during data insertion:', error.message);
-      }
+        }
         break;
       }
-      currentBeginAt = maxCrmId; 
+      currentBeginAt = maxCrmId;
       console.log(`Updating currentBeginAt to ${currentBeginAt}`);
-      console.log(`Current url: ${url}`);
-      
     }
 
     lastFetchTime = new Date();
