@@ -77,6 +77,16 @@ const handleFetchError = (error, attempt) => {
 };
 
 /**
+ * Konverterar ett ISO 8601-datum till MySQL-datum
+ * @param {string} isoDate - ISO 8601-datum
+ * @returns {string} - MySQL-datum
+ * @example
+ */
+function convertToMySQLDateTime(isoDate) {
+  return isoDate.slice(0, 19).replace('T', ' ');
+};
+
+/**
  * Hämtar data från API:et och loggar det
  */
 const fetchDataAndLog = async () => {
@@ -111,7 +121,7 @@ const fetchDataAndLog = async () => {
         const createdDate = new Date(purchase.createdUtc);
         const isValidPurchase = createdDate >= new Date('2024-01-01T00:01:01.01Z') &&
           (purchase.status === "Completed" || purchase.status === "Refunded");
-
+      
         if (isValidPurchase) {
           const currentDate = new Date();
           const user = {
@@ -123,7 +133,7 @@ const fetchDataAndLog = async () => {
             email: purchase.email,
             mobilePhoneNo: purchase.mobilePhoneNo,
             acceptInfo: purchase.acceptInfo,
-            createdUtc: purchase.createdUtc,
+            createdUtc: convertToMySQLDateTime(purchase.createdUtc),
             postalAddressLineOne: purchase.postalAddressLineOne,
             zipcode: purchase.zipcode,
             city: purchase.city,
