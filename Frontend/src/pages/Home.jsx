@@ -1,8 +1,7 @@
-import StackGrid from "../components/StackGrid"; // Importera StackGrid-komponenten
+import StackGrid from "../components/StackGrid";
 import InfoContainer from "../components/InfoContainer";
 import "./Home.css";
-import { Typography } from "../utils/MaterialUI"; // Importera Typography korrekt
-
+import { Typography } from "../utils/MaterialUI";
 const Home = () => {
   return (
     <div className="homeWrapper">
