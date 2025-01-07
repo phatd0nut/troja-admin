@@ -5,12 +5,13 @@ import InputField from "../components/InputField";
 
 const searchOptions = [
   { title: "Namn" },
+  { title: "Email" },
+  { title: "Telefon" },
   { title: "Adress" },
   { title: "Postnummer" },
   { title: "Stad" },
-  { title: "Telefon" },
-  { title: "Email" },
-  // Lägg till fler sökalternativ här
+  { title: "Poäng" },
+  { title: "Nyhetsbrev" },
 ];
 
 const CustomerFilter = ({
@@ -29,6 +30,9 @@ const CustomerFilter = ({
     setSearchCriteria(newValue ? [newValue] : []);
     setFilterValue(newValue ? newValue : ""); // Uppdatera filterValue när ett nytt kriterium väljs
   };
+
+  // console.log(searchCriteria, searchQuery);
+  
 
   return (
     <Box id="customerFilter">
