@@ -11,8 +11,10 @@ import {
   Typography,
   Pagination,
   TableSortLabel,
+  Modal,
 } from "../utils/MaterialUI";
 import { fetchAllCustomers } from "../services/customerService";
+import CustomerModal from "./CustomerModal";
 
 const CustomerTable = ({ searchQuery, searchCriteria }) => {
   const [customers, setCustomers] = useState([]);
@@ -22,6 +24,8 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
   const [order, setOrder] = useState(null);
   const [orderBy, setOrderBy] = useState(null);
   const [rowsPerPage, setRowsPerPage] = useState(15);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -72,6 +76,16 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
 
   const handleChangePage = (event, value) => {
     setPage(value);
+  };
+
+  const handleRowClick = (customer) => {
+    setSelectedCustomer(customer);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCustomer(null);
   };
 
   const columns = [
@@ -163,84 +177,95 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
   }
 
   return (
-    <Paper id="tablePaper" elevation={3}>
-      <TableContainer className="tableContainer">
-        <Table>
-          <TableHead
-            sx={{ backgroundColor: "#dc2e34", position: "sticky", top: 0 }}
-          >
-            <TableRow>
-              {columns.map((column) =>
-                renderTableSortLabel(column.id, column.label)
-              )}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortedRows
-              .slice((page - 1) * rowsPerPage, page * rowsPerPage)
-              .map((row, index) => (
-                <TableRow
-                  key={index}
-                  sx={{
-                    "&:hover": {
-                      backgroundColor: "rgba(220, 46, 52, 0.1)",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  {columns.map((column) => (
-                    <TableCell key={column.id}>
-                      {column.id === "name"
-                        ? `${row.firstName} ${row.lastName}`
-                        : column.id === "acceptInfo"
-                        ? row[column.id] === 1
-                          ? "Ja"
-                          : "Nej"
-                        : column.id === "city"
-                        ? row[column.id].charAt(0).toUpperCase() +
-                          row[column.id].slice(1).toLowerCase()
-                        : column.id === "postalAddress" &&
-                          /^\d+$/.test(row[column.id])
-                        ? ""
-                        : row[column.id]}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              p={2}
+    <>
+      <Paper id="tablePaper" elevation={3}>
+        <TableContainer className="tableContainer">
+          <Table>
+            <TableHead
+              sx={{ backgroundColor: "#dc2e34", position: "sticky", top: 0 }}
             >
-              <Typography variant="body2">
-                Sida {page} av {totalPages}
-              </Typography>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handleChangePage}
-                color="primary"
-                shape="rounded"
-                sx={{
-                  "& .MuiPaginationItem-root": {
-                    "&:hover": {
-                      backgroundColor: "black",
-                      color: "white",
-                    },
-                    "&.Mui-selected:hover": {
-                      backgroundColor: "black",
-                      color: "white",
-                    },
-                    fontWeight: "bold",
-                  },
-                }}
-              />
-            </Box>
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
+              <TableRow>
+                {columns.map((column) =>
+                  renderTableSortLabel(column.id, column.label)
+                )}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sortedRows
+                .slice((page - 1) * rowsPerPage, page * rowsPerPage)
+                .map((row, index) => (
+                  <TableRow
+                    key={index}
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "rgba(220, 46, 52, 0.1)",
+                        cursor: "pointer",
+                      },
+                    }}
+                    onClick={() => handleRowClick(row)}
+                  >
+                    {columns.map((column) => (
+                      <TableCell key={column.id}>
+                        {column.id === "name"
+                          ? `${row.firstName} ${row.lastName}`
+                          : column.id === "acceptInfo"
+                          ? row[column.id] === 1
+                            ? "Ja"
+                            : "Nej"
+                          : column.id === "city"
+                          ? row[column.id].charAt(0).toUpperCase() +
+                            row[column.id].slice(1).toLowerCase()
+                          : column.id === "postalAddress" &&
+                            /^\d+$/.test(row[column.id])
+                          ? ""
+                          : row[column.id]}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          p={2}
+        >
+          <Typography variant="body2">
+            Sida {page} av {totalPages}
+          </Typography>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={handleChangePage}
+            color="primary"
+            shape="rounded"
+            sx={{
+              "& .MuiPaginationItem-root": {
+                "&:hover": {
+                  backgroundColor: "black",
+                  color: "white",
+                },
+                "&.Mui-selected:hover": {
+                  backgroundColor: "black",
+                  color: "white",
+                },
+                fontWeight: "bold",
+              },
+            }}
+          />
+        </Box>
+      </Paper>
+      <Modal
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        disableEnforceFocus
+        disableAutoFocus
+      >
+        <CustomerModal customer={selectedCustomer} onClose={handleCloseModal} />
+      </Modal>
+    </>
   );
 };
 

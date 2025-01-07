@@ -21,7 +21,6 @@ const FetchUpcomingEvents = ({ imgSize }) => {
                 return res.json();
             })
             .then(data => {
-                console.log('Data from backend:', data); // Logga resultatet från backend
                 setUpcomingEvents(data);
                 setLoading(false);
             })

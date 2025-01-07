@@ -26,19 +26,6 @@ const AppContent = ({ openNav, setOpenNav }) => {
   const location = useLocation();
   const showNavBar = location.pathname !== '/login';
 
-  useEffect(() => {
-    if (location.pathname === '/login') {
-      document.body.style.overflowY = 'hidden';
-    } else {
-      document.body.style.overflowY = 'auto';
-    }
-
-    // Återställ overflowY när komponenten avmonteras
-    return () => {
-      document.body.style.overflowY = 'auto';
-    };
-  }, [location.pathname]);
-
   return (
     <div className="appContainer">
       {showNavBar && <NavBar openNav={openNav} setOpenNav={setOpenNav} />}
