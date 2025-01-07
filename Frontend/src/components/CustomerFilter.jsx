@@ -29,10 +29,10 @@ const CustomerFilter = ({
   const handleFilterChange = (newValue) => {
     setSearchCriteria(newValue ? [newValue] : []);
     setFilterValue(newValue ? newValue : ""); // Uppdatera filterValue när ett nytt kriterium väljs
+    if (!newValue) {
+      setSearchQuery(""); // Rensa searchQuery när inget kriterium är valt
+    }
   };
-
-  // console.log(searchCriteria, searchQuery);
-  
 
   return (
     <Box id="customerFilter">

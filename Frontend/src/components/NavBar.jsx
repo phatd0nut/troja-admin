@@ -150,7 +150,7 @@ const NavBar = ({ openNav, setOpenNav }) => {
         >
           {navItems.map((item, index) => (
             <ListItem
-              button
+              button="true"
               key={index}
               component={item.path ? Link : "button"}
               to={item.path}

@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Modal from '@mui/material/Modal';
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
@@ -83,6 +84,7 @@ const theme = createTheme({
 
 export {
   Box,
+  Modal,
   CircularProgress,
   IconButton,
   Button,
