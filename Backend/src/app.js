@@ -32,14 +32,14 @@ cron.schedule('* * * * *', async () => {
  * Test route, used to insert data - should be deleted later on N.A 
  * 
  */
-app.get('/test-insert', async (req, res) => {
+/* app.get('/test-insert', async (req, res) => {
     try {
         await insertDataFromJson(); 
         res.send('Data insertion triggered successfully.');
     } catch (error) {
         res.status(500).send('Error during data insertion: ' + error.message);
     }
-});
+}); */
 
 //startar servern på port 3000
 app.listen(port, () => {
