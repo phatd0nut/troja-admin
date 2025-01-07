@@ -14,7 +14,7 @@ import {
 } from "../utils/MaterialUI";
 import { fetchAllCustomers } from "../services/customerService";
 
-const CustomerTable = ({ searchQuery }) => {
+const CustomerTable = ({ searchQuery, searchCriteria }) => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,25 +75,30 @@ const CustomerTable = ({ searchQuery }) => {
   };
 
   const columns = [
-    { id: "name", label: "Namn" },
-    { id: "email", label: "Email" },
-    { id: "phoneNumber", label: "Telefon" },
-    { id: "postalAddress", label: "Adress" },
-    { id: "zipcode", label: "Postnummer" },
-    { id: "city", label: "Stad" },
-    { id: "points", label: "Poäng" },
-    { id: "acceptInfo", label: "Nyhetsbrev" },
+    { id: "name", label: "Namn", mapping: "namn" },
+    { id: "email", label: "Email", mapping: "email" },
+    { id: "phoneNumber", label: "Telefon", mapping: "telefon" },
+    { id: "postalAddress", label: "Adress", mapping: "adress" },
+    { id: "zipcode", label: "Postnummer", mapping: "postnummer" },
+    { id: "city", label: "Stad", mapping: "stad" },
+    { id: "points", label: "Poäng", mapping: "poäng" },
+    { id: "acceptInfo", label: "Nyhetsbrev", mapping: "nyhetsbrev" },
   ];
 
-  const filteredRows = searchQuery
-    ? customers.filter((row) =>
-        columns.some((column) =>
-          row[column.id]
-            ?.toString()
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-        )
-      )
+  const filteredRows = searchQuery && searchCriteria.length > 0
+    ? customers.filter((row) => {
+        const column = columns.find(col => col.mapping === searchCriteria[0].toLowerCase());
+        let value;
+        if (column.id === "name") {
+          value = `${row.firstName} ${row.lastName}`.toLowerCase();
+        } else if (column.id === "acceptInfo") {
+          value = row[column.id] === 1 ? "ja" : "nej";
+        } else {
+          value = row[column.id]?.toString().toLowerCase();
+        }
+        const query = searchQuery.toLowerCase();
+        return value && value.includes(query);
+      })
     : customers;
 
   const sortedRows = filteredRows.sort((a, b) => {
@@ -191,6 +196,12 @@ const CustomerTable = ({ searchQuery }) => {
                         ? row[column.id] === 1
                           ? "Ja"
                           : "Nej"
+                        : column.id === "city"
+                        ? row[column.id].charAt(0).toUpperCase() +
+                          row[column.id].slice(1).toLowerCase()
+                        : column.id === "postalAddress" &&
+                          /^\d+$/.test(row[column.id])
+                        ? ""
                         : row[column.id]}
                     </TableCell>
                   ))}
