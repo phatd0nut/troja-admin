@@ -1,10 +1,11 @@
 const express = require('express');
-const { adminLogin, registerAdmin,changeAdminDetails , fetchData } = require('../controllers/adminController');
+const { adminLogin, registerAdmin,changeAdminDetails , fetchData, fetchCustomerPurchaseCounts } = require('../controllers/adminController');
 const { sendMail } = require('../controllers/mailController');
-const { fetchAllCustomers } = require('../controllers/customerController');
+const { fetchAllCustomers, fetchCustomersGroupedByGoods } = require('../controllers/customerController');
 const { fetchAllEvents, fetchUpcomingEvents } = require('../controllers/eventController');
 const { fetchAllGoods } = require('../controllers/goodsController');
 const { fetchAllPurchases } = require('../controllers/purchaseController');
+
 const authenticateToken = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -19,6 +20,7 @@ router.get('/events', authenticateToken, fetchAllEvents);
 router.get('/goods', authenticateToken, fetchAllGoods);
 router.get('/purchases', authenticateToken, fetchAllPurchases);
 router.get('/upcoming-events', authenticateToken, fetchUpcomingEvents);
-
+router.get('/customer-purchase-counts', authenticateToken, fetchCustomerPurchaseCounts);
+router.get('/customers/grouped-by-goods', authenticateToken, fetchCustomersGroupedByGoods);
 
 module.exports = router;

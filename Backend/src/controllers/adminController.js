@@ -1,5 +1,6 @@
 const { createAdmin, findAdminByUsername, updateAdminDetails, generateToken } = require('../services/adminService');
 const bcrypt = require('bcrypt');
+const { countCustomerPurchasesFromDB } = require('../util/databaseUtils');
 
 const adminLogin = async (req, res) => {
     const { username, password } = req.body;
@@ -52,8 +53,18 @@ const changeAdminDetails = async (req, res) => {
     }
 };
 
+
+const fetchCustomerPurchaseCounts = async (req, res) => {
+    try {
+        const purchaseCounts = await countCustomerPurchasesFromDB();
+        res.status(200).json({ purchaseCounts });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching customer purchase counts', error: error.message });
+    }
+};
+
 const fetchData = async (req, res) => {
     res.status(200).json({ message: 'Data fetched successfully' });
 };
 
-module.exports = { adminLogin, registerAdmin, changeAdminDetails, fetchData };
+module.exports = { adminLogin, registerAdmin, changeAdminDetails, fetchCustomerPurchaseCounts, fetchData };

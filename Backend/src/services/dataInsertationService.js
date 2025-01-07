@@ -259,6 +259,8 @@ const insertOrUpdateGoods = async (goods, purchaseId) => {
             throw new Error(`Missing required fields in goods for purchase crmId: ${purchaseId}`);
         }
 
+        console.log("Inserting goods:", good); // Log the good being inserted
+
         let eventId = null;
         if (eventExternalId && eventExternalId.trim() !== '') {
             const [eventRows] = await pool.query(
@@ -272,50 +274,53 @@ const insertOrUpdateGoods = async (goods, purchaseId) => {
             }
         }
 
-        const [goodsResult] = await pool.query(
-            `INSERT INTO \`Goods\` 
-            (goodsid, name, type, artNo, priceIncVatAfterDiscount, eventId)
-            VALUES (?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE 
-                name = VALUES(name),
-                type = VALUES(type),
-                artNo = VALUES(artNo),
-                priceIncVatAfterDiscount = VALUES(priceIncVatAfterDiscount),
-                eventId = VALUES(eventId)`,
-            [
-                goodsid,
-                name,
-                type,
-                artno || null,
-                parseFloat(priceIncVatAfterDiscount) || 0,
-                eventId
-            ]
-        );
-
-        let goodsId;
-        if (goodsResult.insertId) {
-            goodsId = goodsResult.insertId;
-        } else {
-            const [goodsRows] = await pool.query(
-                `SELECT id FROM \`Goods\` WHERE goodsid = ?`,
-                [goodsid]
+        try {
+            const [goodsResult] = await pool.query(
+                `INSERT INTO \`Goods\` 
+                (goodsid, name, type, artNo, priceIncVatAfterDiscount, eventId)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE 
+                    name = VALUES(name),
+                    type = VALUES(type),
+                    artNo = VALUES(artNo),
+                    priceIncVatAfterDiscount = VALUES(priceIncVatAfterDiscount),
+                    eventId = VALUES(eventId)`,
+                [
+                    goodsid,
+                    name,
+                    type,
+                    artno || null,
+                    parseFloat(priceIncVatAfterDiscount) || 0,
+                    eventId
+                ]
             );
-            if (goodsRows.length > 0) {
-                goodsId = goodsRows[0].id;
-            } else {
-                throw new Error(`No goods found with goodsid: ${goodsid}`);
-            }
-        }
 
-        await pool.query(
-            `INSERT INTO \`PurchaseGoods\` (purchaseId, goodsId)
-            VALUES (?, ?)
-            ON DUPLICATE KEY UPDATE purchaseId = purchaseId`,
-            [purchaseId, goodsId]
-        );
+            let goodsId;
+            if (goodsResult.insertId) {
+                goodsId = goodsResult.insertId;
+            } else {
+                const [goodsRows] = await pool.query(
+                    `SELECT id FROM \`Goods\` WHERE goodsid = ?`,
+                    [goodsid]
+                );
+                if (goodsRows.length > 0) {
+                    goodsId = goodsRows[0].id;
+                } else {
+                    throw new Error(`No goods found with goodsid: ${goodsid}`);
+                }
+            }
+
+            await pool.query(
+                `INSERT INTO \`PurchaseGoods\` (purchaseId, goodsId)
+                VALUES (?, ?)
+                ON DUPLICATE KEY UPDATE purchaseId = purchaseId`,
+                [purchaseId, goodsId]
+            );
+        } catch (error) {
+            console.error(`Error inserting goods with goodsid ${goodsid}:`, error.message);
+        }
     }
 };
-
 /**
  * matar in kampanjer i databasen
  * @param {Array<object>} campaigns - kampanjer
