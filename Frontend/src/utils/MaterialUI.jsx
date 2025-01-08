@@ -10,6 +10,7 @@ import InputLabel from "@mui/material/InputLabel";
 import InputAdornment from "@mui/material/InputAdornment";
 import FormHelperText from "@mui/material/FormHelperText";
 import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import TextField from "@mui/material/TextField";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -29,6 +30,9 @@ import PeopleIcon from "@mui/icons-material/People";
 import MailIcon from "@mui/icons-material/Mail";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SendIcon from "@mui/icons-material/Send";
+import GroupIcon from '@mui/icons-material/Group';
+import GroupAdd from "@mui/icons-material/GroupAdd";
+import GroupRemove from "@mui/icons-material/GroupRemove";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -37,6 +41,8 @@ import DownloadIcon from '@mui/icons-material/Download';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SyncIcon from '@mui/icons-material/Sync';
 import SaveIcon from '@mui/icons-material/Save';
+import CloseIcon from '@mui/icons-material/Close';
+import Check from '@mui/icons-material/Check';
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
@@ -95,6 +101,7 @@ export {
   InputAdornment,
   FormHelperText,
   FormControl,
+  FormControlLabel,
   TextField,
   Visibility,
   VisibilityOff,
@@ -139,10 +146,15 @@ export {
   Chip,
   TableSortLabel,
   SendIcon,
+  GroupIcon,
+  GroupAdd,
+  GroupRemove,
   DownloadIcon,
   GroupAddIcon,
   SyncIcon,
   SaveIcon,
+  CloseIcon,
+  Check,
   Avatar,
   Badge,
   styled,
