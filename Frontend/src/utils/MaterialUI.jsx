@@ -42,6 +42,7 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SyncIcon from '@mui/icons-material/Sync';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
+import SubjectIcon from '@mui/icons-material/Subject';
 import Check from '@mui/icons-material/Check';
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
@@ -154,6 +155,7 @@ export {
   SyncIcon,
   SaveIcon,
   CloseIcon,
+  SubjectIcon,
   Check,
   Avatar,
   Badge,

@@ -39,12 +39,10 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 450px;
-  height: 250px;
+  width: 600px;
+  height: 300px;
   gap: 40px;
 }
-
-
 
 .content {
   padding: 20px;

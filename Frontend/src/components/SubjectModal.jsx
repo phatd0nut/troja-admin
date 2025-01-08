@@ -1,0 +1,112 @@
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Box,
+  Typography,
+  Modal,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+} from "../utils/MaterialUI";
+import Button from "./Button";
+
+const SubjectModal = ({ isOpen, onClose, onSave }) => {
+  const [subject, setSubject] = useState("");
+  const [savedSubjects, setSavedSubjects] = useState([]);
+  const subjectRef = useRef("");
+
+  useEffect(() => {
+    const savedSubjects =
+      JSON.parse(localStorage.getItem("savedSubjects")) || [];
+    setSavedSubjects(savedSubjects);
+  }, []);
+
+  useEffect(() => {
+    subjectRef.current = subject;
+  }, [subject]);
+
+  const handleSaveSubject = () => {
+    const updatedSubjects = [...savedSubjects, subjectRef.current];
+    setSavedSubjects(updatedSubjects);
+    localStorage.setItem("savedSubjects", JSON.stringify(updatedSubjects));
+    onSave(subjectRef.current);
+    onClose();
+  };
+
+  const handleSelectSubject = (selectedSubject) => {
+    setSubject(selectedSubject);
+    subjectRef.current = selectedSubject;
+    onSave(selectedSubject);
+    onClose();
+  };
+
+  const handleClearSubjects = () => {
+    localStorage.removeItem("savedSubjects");
+    setSavedSubjects([]);
+  };
+
+  return (
+    <Modal open={isOpen} onClose={onClose}>
+      <Box sx={{ ...modalStyle, display: 'flex', flexDirection: 'column' }}>
+        <Typography variant="h5" color="primary">Ange rubrik för utskick</Typography>
+        <TextField
+          fullWidth
+          label="Ny rubrik"
+          value={subject}
+          onChange={(e) => {
+            setSubject(e.target.value);
+            subjectRef.current = e.target.value;
+          }}
+          sx={{ mt: 4 }}
+        />
+        <Typography variant="h6" sx={{ mt: 4 }}>
+          Tidigare sparade rubriker
+        </Typography>
+        <List sx={{ mb: 2, maxHeight: 300, overflow: "auto" }}>
+          {savedSubjects.map((savedSubject, index) => (
+            <ListItem
+              button
+              key={index}
+              onClick={() => handleSelectSubject(savedSubject)}
+              sx={{
+                cursor: "pointer",
+                padding: 0,
+                paddingLeft: 1,
+                "&:hover": {
+                  backgroundColor: "rgba(220, 46, 52, 0.1)",
+                },
+              }}
+            >
+              <ListItemText primary={savedSubject} />
+            </ListItem>
+          ))}
+        </List>
+        <Box sx={{ display: 'flex', gap: 2, mt: 'auto' }}>
+          <Button variant="contained" color="primary" onClick={handleSaveSubject}>
+            Spara
+          </Button>
+          <Button variant="outlined" color="secondary" onClick={handleClearSubjects}>
+            Rensa sparade rubriker
+          </Button>
+        </Box>
+      </Box>
+    </Modal>
+  );
+};
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "50%",
+  height: "50%",
+  minWidth: 600,
+  minHeight: 400,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+  outline: "none",
+};
+
+export default SubjectModal;
