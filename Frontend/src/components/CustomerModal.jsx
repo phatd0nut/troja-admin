@@ -36,7 +36,7 @@ const CustomerModal = forwardRef(({ customer, onClose }, ref) => {
           marginBottom: 6,
         }}
       >
-        <Typography variant="h4" component="h3" color="primary">
+        <Typography variant="h4" color="primary">
           {customer.firstName} {customer.lastName} ({customer.points} poäng)
         </Typography>
         <Button onClick={onClose} variant="contained" color="primary">
@@ -58,7 +58,7 @@ const CustomerModal = forwardRef(({ customer, onClose }, ref) => {
         Nyhetsbrev: {customer.acceptInfo === 1 ? "Ja" : "Nej"}
       </Typography>
       <Divider sx={{ mt: 4 }} />
-      <Typography variant="h4" component="h3" color="primary" sx={{ mt: 4 }}>
+      <Typography variant="h4" color="primary" sx={{ mt: 4 }}>
         Senaste köp
       </Typography>
     </Box>

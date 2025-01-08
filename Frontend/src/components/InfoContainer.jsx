@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { Stack, Paper, Divider } from "../utils/MaterialUI"; 
+import { Stack, Paper, Divider } from "../utils/MaterialUI";
 import FetchUpcomingEvents from "../services/FetchUpcomingEvents";
 
 const InfoContainer = () => {
   const [showDivider, setShowDivider] = useState(true);
   const [pSize, setPSize] = useState(0);
   const [imgSize, setImgSize] = useState(0);
+  const [savedSubjects, setSavedSubjects] = useState([]);
+
+  useEffect(() => {
+    const subjects = JSON.parse(localStorage.getItem("savedSubjects")) || [];
+    setSavedSubjects(subjects);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 1154) {
         setShowDivider(false);
-        setPSize("0.8rem");
+        setPSize("0.7rem");
         setImgSize("50px");
       } else if (window.innerWidth < 1581) {
         setShowDivider(false);
-        setPSize("1rem");
+        setPSize("0.8rem");
         setImgSize("75px");
       } else {
         setShowDivider(true);
@@ -70,10 +76,14 @@ const InfoContainer = () => {
         <div className="infoItem">
           <h2>Senaste mailutskick</h2>
           <div className="latestMail">
-            <p>Mailutskick 1</p>
-            <p>Mailutskick 2</p>
-            <p>Mailutskick 3</p>
-            <p>Mailutskick 4</p>
+            {savedSubjects.length > 0 ? (
+              [...savedSubjects]
+                .reverse()
+                .slice(0, 10)
+                .map((subject, index) => <p key={index}>{subject}</p>)
+            ) : (
+              <p>Inga tidigare mailutskick</p>
+            )}
           </div>
         </div>
       </Stack>

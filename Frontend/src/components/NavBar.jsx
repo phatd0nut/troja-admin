@@ -199,7 +199,7 @@ const NavBar = ({ openNav, setOpenNav }) => {
                 <Button variant="contained" onClick={handleLogout}>
                   Ja, logga ut
                 </Button>
-                <Button onClick={handleCloseLogoutDialog}>Avbryt</Button>
+                <Button variant="outlined" color="secondary" onClick={handleCloseLogoutDialog}>Avbryt</Button>
               </>
             )}
           </div>

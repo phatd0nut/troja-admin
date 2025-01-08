@@ -44,20 +44,22 @@ const SelectCustomerGroupModal = forwardRef(
     const [searchTerm, setSearchTerm] = useState("");
     const rowsPerPage = 6;
 
-    // Load selected groups and group counts from localStorage
+    // Hämta sparade kundgrupper från localStorage
     useEffect(() => {
-      const savedSelectedGroups = JSON.parse(localStorage.getItem('selectedGroups')) || [];
-      const savedGroupCounts = JSON.parse(localStorage.getItem('groupCounts')) || {};
+      const savedSelectedGroups =
+        JSON.parse(localStorage.getItem("selectedGroups")) || [];
+      const savedGroupCounts =
+        JSON.parse(localStorage.getItem("groupCounts")) || {};
       setSelectedGroups(savedSelectedGroups);
       setGroupCounts(savedGroupCounts);
     }, [setSelectedGroups]);
 
     const saveSelectedGroupsToLocalStorage = (groups) => {
-      localStorage.setItem('selectedGroups', JSON.stringify(groups));
+      localStorage.setItem("selectedGroups", JSON.stringify(groups));
     };
 
     const saveGroupCountsToLocalStorage = (counts) => {
-      localStorage.setItem('groupCounts', JSON.stringify(counts));
+      localStorage.setItem("groupCounts", JSON.stringify(counts));
     };
 
     const uniqueGroups = Array.from(
@@ -72,7 +74,10 @@ const SelectCustomerGroupModal = forwardRef(
       if (checked) {
         updatedGroups = [...selectedGroups, name];
         setGroupCounts((prevCounts) => {
-          const newCounts = { ...prevCounts, [name]: (prevCounts[name] || 0) + 1 };
+          const newCounts = {
+            ...prevCounts,
+            [name]: (prevCounts[name] || 0) + 1,
+          };
           saveGroupCountsToLocalStorage(newCounts);
           return newCounts;
         });
@@ -90,7 +95,10 @@ const SelectCustomerGroupModal = forwardRef(
       } else {
         updatedGroups = [...selectedGroups, goodsName];
         setGroupCounts((prevCounts) => {
-          const newCounts = { ...prevCounts, [goodsName]: (prevCounts[goodsName] || 0) + 1 };
+          const newCounts = {
+            ...prevCounts,
+            [goodsName]: (prevCounts[goodsName] || 0) + 1,
+          };
           saveGroupCountsToLocalStorage(newCounts);
           return newCounts;
         });
@@ -100,7 +108,9 @@ const SelectCustomerGroupModal = forwardRef(
     };
 
     const handleRemoveGroup = (group) => {
-      const updatedGroups = selectedGroups.filter((selectedGroup) => selectedGroup !== group);
+      const updatedGroups = selectedGroups.filter(
+        (selectedGroup) => selectedGroup !== group
+      );
       setSelectedGroups(updatedGroups);
       saveSelectedGroupsToLocalStorage(updatedGroups);
     };
@@ -127,7 +137,7 @@ const SelectCustomerGroupModal = forwardRef(
       group.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Sort groups so that selected groups and frequently selected groups appear first
+    // Visa valda och regelbundet använda grupper först
     const sortedGroups = [...filteredGroups].sort((a, b) => {
       const countA = groupCounts[a] || 0;
       const countB = groupCounts[b] || 0;
@@ -172,17 +182,21 @@ const SelectCustomerGroupModal = forwardRef(
             marginBottom: 6,
           }}
         >
-          <Typography variant="h4" component="h3" color="primary">
+          <Typography variant="h4" color="primary">
             Välj Kundgrupper
           </Typography>
           <Button
-            onClick={onClose}
+            onClick={() => onClose(selectedGroups)}
             variant="contained"
             color="primary"
             endIcon={<CloseIcon />}
-          >
-            Stäng
-          </Button>
+            sx={{
+              "& .MuiButton-endIcon": {
+                margin: 0,
+                padding: 0,
+              },
+            }}
+          />
         </Box>
         <Box
           sx={{
@@ -198,12 +212,15 @@ const SelectCustomerGroupModal = forwardRef(
             onChange={handleSearchChange}
             sx={{ mb: 2 }}
           />
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+          <Box
+            sx={{ display: "flex", gap: 2, alignItems: "center", height: 56 }}
+          >
             <Button
               onClick={handleSelectAll}
               variant="contained"
               color="primary"
               endIcon={<GroupAdd />}
+              sx={{ height: "100%" }}
             >
               Välj alla
             </Button>
@@ -212,6 +229,7 @@ const SelectCustomerGroupModal = forwardRef(
               variant="contained"
               color="primary"
               endIcon={<GroupRemove />}
+              sx={{ height: "100%" }}
             >
               Rensa alla
             </Button>
@@ -348,7 +366,7 @@ const SelectCustomerGroupModal = forwardRef(
           variant="contained"
           color="primary"
           sx={{ mt: 2 }}
-          onClick={onClose}
+          onClick={() => onClose(selectedGroups)}
           endIcon={<Check />}
         >
           Bekräfta val

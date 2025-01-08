@@ -35,7 +35,7 @@ export const fetchCustomersGroupedByGoods = async () => {
 
         const allCustomers = response.data.customers || [];
         const customersWithAcceptInfo = allCustomers.filter(customer => customer.acceptInfo === 1);
-
+        
         return {
             allCustomers,
             customersWithAcceptInfo,

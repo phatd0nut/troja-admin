@@ -6,13 +6,14 @@ const path = require('path');
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const resend = new Resend(process.env.R_CLIENT);
+// const senderAdress = newsletterAddress || "no-reply@troja-ljungby.com"
 
 const sendEmail = async (to, subject, htmlContent) => {
   console.log('Sending email to:', to);
 
   try {
     const response = await resend.emails.send({
-      from: 'ez222dc@resend.dev',
+      from: "no-reply@troja-ljungby.com",
       to,
       subject,
       html: htmlContent,
