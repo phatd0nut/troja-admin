@@ -260,8 +260,8 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
       <Modal
         open={isModalOpen}
         onClose={handleCloseModal}
-        disableEnforceFocus
-        disableAutoFocus
+        // disableEnforceFocus
+        // disableAutoFocus
       >
         <CustomerModal customer={selectedCustomer} onClose={handleCloseModal} />
       </Modal>
