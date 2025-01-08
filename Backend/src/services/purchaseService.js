@@ -8,4 +8,17 @@ const getAllPurchases = async () => {
     return rows;
 };
 
-module.exports = { getAllPurchases };
+const getRecentPurchasesByCustomerId = async (customerId) => {
+    const query = `
+    SELECT p.*, g.name AS goodsName, g.priceIncVatAfterDiscount AS priceAfterVat
+    FROM Purchase p
+    JOIN purchasegoods pg ON p.id = pg.purchaseId
+    JOIN goods g ON pg.goodsId = g.id
+    WHERE p.userRefNo = ?
+    ORDER BY p.createdDateUTC DESC
+    LIMIT 10
+    `;
+    const [rows] = await pool.query(query, [customerId]);
+    return rows;
+};
+module.exports = { getAllPurchases, getRecentPurchasesByCustomerId };
