@@ -10,6 +10,7 @@ const path = require("path"); //importerar path för att kunna arbeta med filsys
 const cron = require("node-cron"); //importerar cron för att kunna köra en cron-jobb
 require('dotenv').config(); //importerar dotenv för att kunna läsa miljövariabler från en .env-fil
 const { insertDataFromJson } = require('./dataInsertationService'); //importerar insertDataFromJson för att kunna infoga data från en json-fil
+const { calculateAndUpdatePointsFromDatabase } = require('./pointsService'); //importerar calculateAndUpdatePointsFromDatabase för att kunna beräkna och uppdatera poängen från databasen
 
 const dataDir = path.resolve(__dirname, "../data"); //skapar en variabel för att kunna använda filsystemets vägar
 const filePath = path.join(dataDir, "tempData.json");
@@ -183,6 +184,7 @@ const fetchDataAndLog = async () => {
         hasMoreData = false;
         try {
           await insertDataFromJson();
+          await calculateAndUpdatePointsFromDatabase();
           console.log('Data insertion triggered successfully.');
         } catch (error) {
           console.error('Error during data insertion:', error.message);
@@ -202,8 +204,8 @@ const fetchDataAndLog = async () => {
 };
 
 /**
- * Sätter tiden för att ta bort dataen
- * @param {string} time - tiden för att ta bort dataen
+ * Sätter tiden för att ta bort datan
+ * @param {string} time - tiden för att ta bort datan
  */
 const setDeletionTime = (time) => {
   deletionTime = time;
