@@ -94,7 +94,6 @@ body {
 .nextMatchPDiv {
   display: flex;
   flex-direction: column;
-  wrap: nowrap;
 }
 
 .tableContainer, .settingsContainer {

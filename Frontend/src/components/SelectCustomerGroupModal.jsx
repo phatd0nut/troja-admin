@@ -187,13 +187,14 @@ const SelectCustomerGroupModal = forwardRef(
           </Typography>
           <Button
             onClick={() => onClose(selectedGroups)}
-            variant="contained"
-            color="primary"
+            variant="text"
+            color="secondary"
             endIcon={<CloseIcon />}
             sx={{
               "& .MuiButton-endIcon": {
                 margin: 0,
                 padding: 0,
+
               },
             }}
           />
@@ -269,7 +270,7 @@ const SelectCustomerGroupModal = forwardRef(
                           ? ""
                           : "inherit",
                         "&:hover": {
-                          backgroundColor: "rgba(220, 46, 52, 0.1)",
+                          backgroundColor: "rgba(220, 46, 52, 0.2)",
                         },
                       }}
                     >

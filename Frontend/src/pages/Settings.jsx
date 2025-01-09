@@ -34,7 +34,6 @@ const Settings = () => {
           </Typography>
           </div>
         </div>
-        <Button variant="contained" endIcon={<SaveIcon/>}>Spara Inställningar</Button>
       </Toolbar>
       <SettingsContainer />
     </div>

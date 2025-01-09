@@ -198,7 +198,7 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
                     key={index}
                     sx={{
                       "&:hover": {
-                        backgroundColor: "rgba(220, 46, 52, 0.1)",
+                        backgroundColor: "rgba(220, 46, 52, 0.2)",
                         cursor: "pointer",
                       },
                     }}
