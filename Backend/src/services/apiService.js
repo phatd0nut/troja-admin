@@ -25,7 +25,7 @@ let isFetching = false; //skapar en variabel för att kunna använda miljövaria
 let isWriting = false; //skapar en variabel för att kunna använda miljövariabeln isWriting
 
 const tasks = {};
-let deletionTime = "0 3 * * *"; // Default to 3 AM every day
+//let deletionTime = "0 3 * * *"; // Default to 3 AM every day
 
 /**
  * Hämtar data från API:et med försök att hantera fel
@@ -88,6 +88,15 @@ function convertToMySQLDateTime(isoDate) {
 };
 
 /**
+ * Beräknar datumet ett år tillbaka från idag
+ * @returns {Date} - Datumet ett år tillbaka
+ */
+const getOneYearBackDate = () => {
+  const currentDate = new Date();
+  return new Date(currentDate.setFullYear(currentDate.getFullYear() - 1));
+};
+
+/**
  * Hämtar data från API:et och loggar det
  */
 const fetchDataAndLog = async () => {
@@ -120,6 +129,8 @@ const fetchDataAndLog = async () => {
       data.forEach(item => {
         const purchase = item.purchase;
         const createdDate = new Date(purchase.createdUtc);
+
+        // byt till getOneYearBackDate() istället för new Date('2024-01-01T00:01:01.01Z') om man vill hämta data från ett år tillbaka dynamiskt
         const isValidPurchase = createdDate >= new Date('2024-01-01T00:01:01.01Z') &&
           (purchase.status === "Completed" || purchase.status === "Refunded");
       
@@ -186,6 +197,11 @@ const fetchDataAndLog = async () => {
           await insertDataFromJson();
           await calculateAndUpdatePointsFromDatabase();
           console.log('Data insertion triggered successfully.');
+          //tar bort tempData.json efter att data har infogats och poängen har beräknats
+          //-------------------------------------------------------------------------------------
+          await fs.unlink(filePath);
+          console.log('Cached data deleted after insertion and point calculation.');
+          //-------------------------------------------------------------------------------------
         } catch (error) {
           console.error('Error during data insertion:', error.message);
         }
@@ -207,7 +223,7 @@ const fetchDataAndLog = async () => {
  * Sätter tiden för att ta bort datan
  * @param {string} time - tiden för att ta bort datan
  */
-const setDeletionTime = (time) => {
+/* const setDeletionTime = (time) => {
   deletionTime = time;
 
   if (tasks.deletionTask) {
@@ -227,7 +243,7 @@ const setDeletionTime = (time) => {
       console.error('Error deleting cached data:', error);
     }
   });
-};
+}; */
 
 /**
  * Schemalägger uppgifter
@@ -250,9 +266,9 @@ const scheduleTasks = () => {
     }
   });
 
-  setDeletionTime(deletionTime);
+  //setDeletionTime(deletionTime);
 };
 
 scheduleTasks();
 
-module.exports = { fetchDataAndLog, setDeletionTime };
+module.exports = { fetchDataAndLog };

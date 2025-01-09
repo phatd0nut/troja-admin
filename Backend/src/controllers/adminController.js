@@ -1,6 +1,6 @@
 const { createAdmin, findAdminByUsername, updateAdminDetails, generateToken } = require('../services/adminService');
 const bcrypt = require('bcrypt');
-
+const { fetchDataAndLog } = require('../services/apiService');
 
 const adminLogin = async (req, res) => {
     const { username, password } = req.body;
@@ -58,4 +58,13 @@ const fetchData = async (req, res) => {
     res.status(200).json({ message: 'Data fetched successfully' });
 };
 
-module.exports = { adminLogin, registerAdmin, changeAdminDetails, fetchData };
+const triggerFetchData = async (req, res) => {
+    try {
+        await fetchDataAndLog();
+        res.status(200).json({ message: 'Data fetch triggered successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error triggering data fetch', error: error.message });
+    }
+};
+
+module.exports = { adminLogin, registerAdmin, changeAdminDetails, fetchData, triggerFetchData };

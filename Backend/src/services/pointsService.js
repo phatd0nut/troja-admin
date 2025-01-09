@@ -23,30 +23,36 @@ const calculateAndUpdatePointsFromDatabase = async () => {
                 [userRefNo]
             );
 
+            let currentPoints = 0;
             if (customerRows.length > 0) {
-              
-                const currentPoints = customerRows[0].points;
-                let newPoints = currentPoints;
-
-                if (status === "Completed") {
-                    newPoints += price; 
-                } else if (status === "Refunded") {
-                    newPoints -= price; 
-                }
-
-                
-                if (newPoints !== currentPoints) {
-                    await updateCustomerPoints(userRefNo, newPoints);
-                }
+                currentPoints = customerRows[0].points || 0; 
             } else {
-             
                 if (status === "Completed") {
-                    
                     await addNewCustomerWithPoints(userRefNo, price);
-                }
-                else {
+                } else {
                     console.log(`Customer with userRefNo ${userRefNo} does not exist.`);
                 }
+            }
+
+            let newPoints = currentPoints;
+
+            if (status === "Completed") {
+                newPoints += price; 
+            } else if (status === "Refunded") {
+                newPoints -= price; 
+            }
+
+            
+            console.log(`UserRefNo: ${userRefNo}, Current Points: ${currentPoints}, New Points: ${newPoints}`);
+
+            
+            if (newPoints < 0) {
+                console.warn(`Warning: New points for userRefNo ${userRefNo} is negative. Setting to 0.`);
+                newPoints = 0; 
+            }
+
+            if (newPoints !== currentPoints) {
+                await updateCustomerPoints(userRefNo, newPoints);
             }
 
             await markPurchaseAsProcessed(id); 
