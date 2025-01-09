@@ -78,58 +78,74 @@ const insertOrUpdateCustomer = async (purchase) => {
         zipcode,
         city,
         isCompany,
-        companyName
+        companyName,
+        createdUtc 
     } = purchase;
 
     if (!userRefNo || !firstName || !lastName || !email) {
         throw new Error(`Missing required fields in purchase with Crmid: ${purchase.Crmid}`);
     }
 
-    const [userResult] = await pool.query(
-        `INSERT INTO \`Customer\` 
-        (userRefNo, firstName, lastName, email, phoneNumber, postalAddress, zipcode, city, isCompany, companyName, acceptInfo)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE 
-            firstName = VALUES(firstName),
-            lastName = VALUES(lastName),
-            email = VALUES(email),
-            phoneNumber = VALUES(phoneNumber),
-            postalAddress = VALUES(postalAddress),
-            zipcode = VALUES(zipcode),
-            city = VALUES(city),
-            isCompany = VALUES(isCompany),
-            companyName = VALUES(companyName),
-            acceptInfo = VALUES(acceptInfo)`,
-        [
-            userRefNo,
-            firstName,
-            lastName,
-            email,
-            phoneNumber,
-            postalAddress,
-            zipcode,
-            city,
-            isCompany ? 1 : 0,
-            companyName,
-            acceptInfo ? 1 : 0
-        ]
+    // Fetch existing customer record
+    const [customerRows] = await pool.query(
+        `SELECT id, addition_date FROM \`Customer\` WHERE userRefNo = ?`,
+        [userRefNo]
     );
 
-    if (userResult.insertId) {
-        return userResult.insertId;
-    } else {
-        const [customerRows] = await pool.query(
-            `SELECT id FROM \`Customer\` WHERE userRefNo = ?`,
-            [userRefNo]
-        );
-        if (customerRows.length > 0) {
-            return customerRows[0].id;
-        } else {
-            throw new Error(`No customer found with userRefNo: ${userRefNo}`);
+    if (customerRows.length > 0) {
+        const existingCustomer = customerRows[0];
+        const existingAdditionDate = new Date(existingCustomer.addition_date);
+        const newPurchaseDate = new Date(createdUtc); 
+
+   
+        if (newPurchaseDate > existingAdditionDate) {
+            await pool.query(
+                `UPDATE \`Customer\` 
+                SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, postalAddress = ?, 
+                    zipcode = ?, city = ?, isCompany = ?, companyName = ?, acceptInfo = ?, 
+                    addition_date = NOW() 
+                WHERE userRefNo = ?`,
+                [
+                    firstName,
+                    lastName,
+                    email,
+                    phoneNumber,
+                    postalAddress,
+                    zipcode,
+                    city,
+                    isCompany ? 1 : 0,
+                    companyName,
+                    acceptInfo ? 1 : 0,
+                    userRefNo
+                ]
+            );
         }
+        return existingCustomer.id; // Return existing customer ID
+    } else {
+        // Insert new customer if not found
+        const [userResult] = await pool.query(
+            `INSERT INTO \`Customer\` 
+            (userRefNo, firstName, lastName, email, phoneNumber, postalAddress, zipcode, city, isCompany, companyName, acceptInfo, addition_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                userRefNo,
+                firstName,
+                lastName,
+                email,
+                phoneNumber,
+                postalAddress,
+                zipcode,
+                city,
+                isCompany ? 1 : 0,
+                companyName,
+                acceptInfo ? 1 : 0,
+                new Date() 
+            ]
+        );
+
+        return userResult.insertId; 
     }
 };
-
 /**
  * matar in köpen i databasen
  * @param {object} purchase - köpet
