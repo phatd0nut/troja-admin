@@ -1,5 +1,5 @@
 const express = require('express');
-const { adminLogin, registerAdmin,changeAdminDetails , fetchData } = require('../controllers/adminController');
+const { adminLogin, registerAdmin,changeAdminDetails , fetchData, triggerFetchData } = require('../controllers/adminController');
 const { sendMail } = require('../controllers/mailController');
 const { fetchAllCustomers, fetchCustomersGroupedByGoods } = require('../controllers/customerController');
 const { fetchAllEvents, fetchUpcomingEvents } = require('../controllers/eventController');
@@ -22,6 +22,8 @@ router.get('/purchases', authenticateToken, fetchAllPurchases);
 router.get('/upcoming-events', authenticateToken, fetchUpcomingEvents);
 router.get('/customer-purchase-counts', authenticateToken, fetchCustomerPurchaseCounts);
 router.get('/customers/grouped-by-goods', authenticateToken, fetchCustomersGroupedByGoods);
-router.get('/customer/:userRefNo/recent-purchases', authenticateToken, fetchRecentPurchases); 
+router.get('/customer/:userRefNo/recent-purchases', authenticateToken, fetchRecentPurchases);
+router.post('/trigger-fetch', authenticateToken, triggerFetchData); 
+
 
 module.exports = router;
