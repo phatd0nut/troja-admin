@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Stack, Paper, Divider } from "../utils/MaterialUI";
 import FetchUpcomingEvents from "../services/FetchUpcomingEvents";
+import { fetchPurchaseCounts } from "../services/customerService";
 
 const InfoContainer = () => {
   const [showDivider, setShowDivider] = useState(true);
   const [pSize, setPSize] = useState(0);
   const [imgSize, setImgSize] = useState(0);
   const [savedSubjects, setSavedSubjects] = useState([]);
+  const [recentPurchases, setRecentPurchases] = useState([]);
 
   useEffect(() => {
     const subjects = JSON.parse(localStorage.getItem("savedSubjects")) || [];
@@ -38,6 +40,27 @@ const InfoContainer = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const loadPurchases = async () => {
+      try {
+        const data = await fetchPurchaseCounts();
+        const purchases = Object.entries(data.purchaseCounts).map(
+          ([email, info]) => ({
+            email,
+            name: `${info.firstName} ${info.lastName}`,
+            tickets: info.purchases.Ticket || 0,
+          })
+        );
+        console.log(purchases);
+
+        setRecentPurchases(purchases);
+      } catch (error) {
+        console.error("Error loading purchases:", error);
+      }
+    };
+    loadPurchases();
+  }, []);
+
   return (
     <Paper
       className="infoContainer"
@@ -57,20 +80,17 @@ const InfoContainer = () => {
           <FetchUpcomingEvents imgSize={imgSize} />
         </div>
         <div className="infoItem">
-          <h2>Biljettstatistik</h2>
-          <div className="ticketStats">
-            <p>
-              Troja Ljungby IF - IK Pantern Ståplats <span>240st</span>
-            </p>
-            <p>
-              Troja Ljungby IF - IK Pantern Ståplats <span>240st</span>
-            </p>
-            <p>
-              Troja Ljungby IF - IK Pantern Ståplats <span>240st</span>
-            </p>
-            <p>
-              Troja Ljungby IF - IK Pantern Ståplats <span>240st</span>
-            </p>
+          <h2>Flest köpta biljetter</h2>
+                  <div className="purchaseStats">
+            {recentPurchases
+              .filter(purchase => purchase.tickets > 0)
+              .sort((a, b) => b.tickets - a.tickets)
+              .slice(0, 16)
+              .map((purchase, index) => (
+                <p key={index}>
+                  {purchase.name} <span>{purchase.tickets}st</span>
+                </p>
+              ))}
           </div>
         </div>
         <div className="infoItem">
@@ -79,7 +99,7 @@ const InfoContainer = () => {
             {savedSubjects.length > 0 ? (
               [...savedSubjects]
                 .reverse()
-                .slice(0, 10)
+                .slice(0, 16)
                 .map((subject, index) => <p key={index}>{subject}</p>)
             ) : (
               <p>Inga tidigare mailutskick</p>

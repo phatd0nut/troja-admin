@@ -58,11 +58,11 @@
   margin-bottom: 16px;
 }
 
-.ticketStats p {
+.purchaseStats p {
   display: flex;
   justify-content: space-between;
 }
 
-.latestMail p, .ticketStats p {
+.latestMail p, .purchaseStats p {
   margin: 8px 10px;
 }
