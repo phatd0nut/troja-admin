@@ -1,4 +1,4 @@
-const { getAllCustomers, getCustomersGroupedByGoods } = require('../services/customerService');
+const { getAllCustomers, getCustomersGroupedByGoods, getCustomersLastMonth, getCustomersLastYear } = require('../services/customerService');
 
 const fetchAllCustomers = async (req, res) => {
     try {
@@ -18,4 +18,22 @@ const fetchCustomersGroupedByGoods = async (req, res) => {
     }
 };
 
-module.exports = { fetchAllCustomers, fetchCustomersGroupedByGoods };
+const fetchCustomersLastMonth = async (req, res) => {
+    try {
+        const customers = await getCustomersLastMonth();
+        res.status(200).json(customers);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching customers from last month', error: error.message });
+    }
+};
+
+const fetchCustomersLastYear = async (req, res) => {
+    try {
+        const customers = await getCustomersLastYear();
+        res.status(200).json(customers);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching customers from last year', error: error.message });
+    }
+};
+
+module.exports = { fetchAllCustomers, fetchCustomersGroupedByGoods, fetchCustomersLastMonth, fetchCustomersLastYear };

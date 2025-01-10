@@ -131,7 +131,7 @@ const fetchDataAndLog = async () => {
         const createdDate = new Date(purchase.createdUtc);
 
         // byt till getOneYearBackDate() istället för new Date('2024-01-01T00:01:01.01Z') om man vill hämta data från ett år tillbaka dynamiskt
-        const isValidPurchase = createdDate >= new Date('2024-01-01T00:01:01.01Z') &&
+        const isValidPurchase = createdDate >= getOneYearBackDate() &&
           (purchase.status === "Completed" || purchase.status === "Refunded");
       
         if (isValidPurchase) {
@@ -199,8 +199,8 @@ const fetchDataAndLog = async () => {
           console.log('Data insertion triggered successfully.');
           //tar bort tempData.json efter att data har infogats och poängen har beräknats
           //-------------------------------------------------------------------------------------
-          await fs.unlink(filePath);
-          console.log('Cached data deleted after insertion and point calculation.');
+          //await fs.unlink(filePath);
+          //console.log('Cached data deleted after insertion and point calculation.');
           //-------------------------------------------------------------------------------------
         } catch (error) {
           console.error('Error during data insertion:', error.message);
@@ -258,7 +258,7 @@ const scheduleTasks = () => {
     }
     isFetching = true;
     try {
-      await fetchDataAndLog();
+      await AndLog();
     } catch (error) {
       console.error('Error in scheduled fetch:', error.message);
     } finally {

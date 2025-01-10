@@ -1,5 +1,5 @@
 /**
- * mattar in data från en JSON-fil till databasen
+ * infogar data från en JSON-fil till databasen
  */
 const fs = require("fs").promises;
 const path = require("path");
@@ -8,7 +8,7 @@ const pool = require("../config/db");
 const filePath = path.join(__dirname, "../data/tempData.json");
 
 /**
- * Inserts data from a JSON file into the database
+ * infogar data från en JSON-fil till databasen
  */
 const insertDataFromJson = async () => {
     try {
@@ -62,7 +62,7 @@ const sortPurchasesByDate = (purchases) => {
 };
 
 /**
- * matar in kunderna i databasen
+ * infogar kunderna i databasen
  * @param {object} purchase - köpet
  * @returns {Promise<number>} - kundens ID
  */
@@ -86,7 +86,7 @@ const insertOrUpdateCustomer = async (purchase) => {
         throw new Error(`Missing required fields in purchase with Crmid: ${purchase.Crmid}`);
     }
 
-    // Fetch existing customer record
+    // hämtar befintlig kund från databasen
     const [customerRows] = await pool.query(
         `SELECT id, addition_date FROM \`Customer\` WHERE userRefNo = ?`,
         [userRefNo]
@@ -103,7 +103,7 @@ const insertOrUpdateCustomer = async (purchase) => {
                 `UPDATE \`Customer\` 
                 SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, postalAddress = ?, 
                     zipcode = ?, city = ?, isCompany = ?, companyName = ?, acceptInfo = ?, 
-                    addition_date = NOW() 
+                    addition_date = NOW(), createdUtc = ?
                 WHERE userRefNo = ?`,
                 [
                     firstName,
@@ -116,17 +116,18 @@ const insertOrUpdateCustomer = async (purchase) => {
                     isCompany ? 1 : 0,
                     companyName,
                     acceptInfo ? 1 : 0,
+                    createdUtc,
                     userRefNo
                 ]
             );
         }
         return existingCustomer.id; // Return existing customer ID
     } else {
-        // Insert new customer if not found
+        // infogar ny kund om den inte hittas
         const [userResult] = await pool.query(
             `INSERT INTO \`Customer\` 
-            (userRefNo, firstName, lastName, email, phoneNumber, postalAddress, zipcode, city, isCompany, companyName, acceptInfo, addition_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            (userRefNo, firstName, lastName, email, phoneNumber, postalAddress, zipcode, city, isCompany, companyName, acceptInfo, addition_date, createdUtc)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 userRefNo,
                 firstName,
@@ -139,7 +140,8 @@ const insertOrUpdateCustomer = async (purchase) => {
                 isCompany ? 1 : 0,
                 companyName,
                 acceptInfo ? 1 : 0,
-                new Date() 
+                new Date(),
+                createdUtc
             ]
         );
 
@@ -147,7 +149,7 @@ const insertOrUpdateCustomer = async (purchase) => {
     }
 };
 /**
- * matar in köpen i databasen
+ * infogar köpen i databasen
  * @param {object} purchase - köpet
  * @param {number} customerId - kundens ID
  * @returns {Promise<number>} - köpets ID
@@ -195,7 +197,7 @@ const insertOrUpdatePurchase = async (purchase, customerId) => {
 };
 
 /**
- * matar in evenemang i databasen
+ * infogar evenemang i databasen
  * @param {Array<object>} events - evenemang
  * @param {number} purchaseId - köpets ID
  */
@@ -256,7 +258,7 @@ const insertOrUpdateEvents = async (events, purchaseId) => {
 };
 
 /**
- * matar in varor i databasen
+ * infogar varor i databasen
  * @param {Array<object>} goods - varor
  * @param {number} purchaseId - köpets ID
  */
@@ -338,7 +340,7 @@ const insertOrUpdateGoods = async (goods, purchaseId) => {
     }
 };
 /**
- * matar in kampanjer i databasen
+ * infogar kampanjer i databasen
  * @param {Array<object>} campaigns - kampanjer
  * @param {number} purchaseId - köpets ID
  */

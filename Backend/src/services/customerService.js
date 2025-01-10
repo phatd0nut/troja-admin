@@ -21,5 +21,26 @@ const getCustomersGroupedByGoods = async () => {
     const [rows] = await pool.query(query);
     return rows;
 };
+const getCustomersLastMonth = async () => {
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    
+    const [rows] = await pool.query(
+        `SELECT * FROM customer WHERE createdUtc >= ?`,
+        [lastMonth]
+    );
+    return rows;
+};
 
-module.exports = { getAllCustomers, getCustomersGroupedByGoods };
+const getCustomersLastYear = async () => {
+    const lastYear = new Date();
+    lastYear.setFullYear(lastYear.getFullYear() - 1);
+    
+    const [rows] = await pool.query(
+        `SELECT * FROM customer WHERE createdUtc >= ?`,
+        [lastYear]
+    );
+    return rows;
+};
+
+module.exports = { getAllCustomers, getCustomersGroupedByGoods, getCustomersLastMonth, getCustomersLastYear };
