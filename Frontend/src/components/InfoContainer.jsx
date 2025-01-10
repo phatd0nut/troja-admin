@@ -17,7 +17,7 @@ const InfoContainer = () => {
     const handleResize = () => {
       if (window.innerWidth < 1154) {
         setShowDivider(false);
-        setPSize("0.7rem");
+        setPSize("0.8rem");
         setImgSize("50px");
       } else if (window.innerWidth < 1581) {
         setShowDivider(false);

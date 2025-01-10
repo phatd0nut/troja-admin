@@ -41,6 +41,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SyncIcon from '@mui/icons-material/Sync';
 import SaveIcon from '@mui/icons-material/Save';
+import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import SubjectIcon from '@mui/icons-material/Subject';
 import Check from '@mui/icons-material/Check';
@@ -154,6 +155,7 @@ export {
   GroupAddIcon,
   SyncIcon,
   SaveIcon,
+  DeleteIcon,
   CloseIcon,
   SubjectIcon,
   Check,

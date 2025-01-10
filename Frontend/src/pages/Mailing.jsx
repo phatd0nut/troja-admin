@@ -90,7 +90,7 @@ const Mailing = () => {
 
       setRecipientsCount(emailAddresses.length);
 
-      // Skicka en separat begäran för varje e-postadress
+      // Skicka ett separat e-postmeddelande till varje e-postadress
       for (const email of testEmailAddresses) {
         try {
           const response = await axios.post(

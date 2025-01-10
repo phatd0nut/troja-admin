@@ -180,7 +180,7 @@ const SettingsContainer = () => {
             endIcon={<SaveIcon />}
             sx={{ marginTop: "16px", marginBottom: "16px" }}
           >
-            Spara ändringar
+            Spara kontoändringar
           </Button>
         </div>
         <div className="settingsItem" style={{ alignItems: "flex-start" }}>

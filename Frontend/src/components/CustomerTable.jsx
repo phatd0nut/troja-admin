@@ -89,14 +89,14 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
   };
 
   const columns = [
-    { id: "name", label: "Namn", mapping: "namn" },
-    { id: "email", label: "Email", mapping: "email" },
-    { id: "phoneNumber", label: "Telefon", mapping: "telefon" },
-    { id: "postalAddress", label: "Adress", mapping: "adress" },
-    { id: "zipcode", label: "Postnummer", mapping: "postnummer" },
-    { id: "city", label: "Stad", mapping: "stad" },
-    { id: "points", label: "Poäng", mapping: "poäng" },
-    { id: "acceptInfo", label: "Nyhetsbrev", mapping: "nyhetsbrev" },
+    { id: "name", label: "Namn", mapping: "namn", colSpan: 2 },
+    { id: "email", label: "Email", mapping: "email", colSpan: 2 },
+    { id: "phoneNumber", label: "Telefon", mapping: "telefon", colSpan: 1 },
+    { id: "postalAddress", label: "Adress", mapping: "adress", colSpan: 2 },
+    { id: "zipcode", label: "Postnummer", mapping: "postnummer", colSpan: 1 },
+    { id: "city", label: "Stad", mapping: "stad", colSpan: 1 },
+    { id: "points", label: "Poäng", mapping: "poäng", colSpan: 1 },
+    { id: "acceptInfo", label: "Nyhetsbrev", mapping: "nyhetsbrev", colSpan: 1 }
   ];
 
   const filteredRows = searchQuery && searchCriteria.length > 0
@@ -131,6 +131,7 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
   const renderTableSortLabel = (columnId, label) => (
     <TableCell
       key={columnId}
+      colSpan={columns.find(col => col.id === columnId).colSpan}
       sx={{
         color: "#ffffff",
         fontWeight: "bold",
@@ -182,7 +183,7 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
         <TableContainer className="tableContainer">
           <Table>
             <TableHead
-              sx={{ backgroundColor: "#dc2e34", position: "sticky", top: 0 }}
+              sx={{ backgroundColor: "#dc2e34", position: "sticky" }}
             >
               <TableRow>
                 {columns.map((column) =>
@@ -191,38 +192,41 @@ const CustomerTable = ({ searchQuery, searchCriteria }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedRows
-                .slice((page - 1) * rowsPerPage, page * rowsPerPage)
-                .map((row, index) => (
-                  <TableRow
-                    key={index}
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "rgba(220, 46, 52, 0.1)",
-                        cursor: "pointer",
-                      },
-                    }}
-                    onClick={() => handleRowClick(row)}
-                  >
-                    {columns.map((column) => (
-                      <TableCell key={column.id}>
-                        {column.id === "name"
-                          ? `${row.firstName} ${row.lastName}`
-                          : column.id === "acceptInfo"
-                          ? row[column.id] === 1
-                            ? "Ja"
-                            : "Nej"
-                          : column.id === "city"
-                          ? row[column.id].charAt(0).toUpperCase() +
-                            row[column.id].slice(1).toLowerCase()
-                          : column.id === "postalAddress" &&
-                            /^\d+$/.test(row[column.id])
-                          ? ""
-                          : row[column.id]}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
+            {sortedRows
+  .slice((page - 1) * rowsPerPage, page * rowsPerPage)
+  .map((row, index) => (
+    <TableRow
+      key={index}
+      sx={{
+        "&:hover": {
+          backgroundColor: "rgba(220, 46, 52, 0.2)",
+          cursor: "pointer",
+        },
+      }}
+      onClick={() => handleRowClick(row)}
+    >
+      {columns.map((column) => (
+        <TableCell 
+          key={column.id}
+          colSpan={column.colSpan}
+        >
+          {column.id === "name"
+            ? `${row.firstName} ${row.lastName}`
+            : column.id === "acceptInfo"
+            ? row[column.id] === 1
+              ? "Ja"
+              : "Nej"
+            : column.id === "city"
+            ? row[column.id].charAt(0).toUpperCase() +
+              row[column.id].slice(1).toLowerCase()
+            : column.id === "postalAddress" &&
+              /^\d+$/.test(row[column.id])
+            ? ""
+            : row[column.id]}
+        </TableCell>
+      ))}
+    </TableRow>
+  ))}
             </TableBody>
           </Table>
         </TableContainer>

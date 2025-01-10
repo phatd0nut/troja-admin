@@ -7,6 +7,9 @@ import {
   List,
   ListItem,
   ListItemText,
+  CloseIcon,
+  SaveIcon,
+  DeleteIcon,
 } from "../utils/MaterialUI";
 import Button from "./Button";
 
@@ -47,8 +50,24 @@ const SubjectModal = ({ isOpen, onClose, onSave }) => {
 
   return (
     <Modal open={isOpen} onClose={onClose}>
-      <Box sx={{ ...modalStyle, display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="h5" color="primary">Ange rubrik för utskick</Typography>
+      <Box sx={{ ...modalStyle, display: "flex", flexDirection: "column" }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography variant="h5" color="primary">
+            Ange rubrik för utskick
+          </Typography>
+          <Button
+            onClick={onClose}
+            variant="text"
+            color="secondary"
+            endIcon={<CloseIcon />}
+            sx={{
+              "& .MuiButton-endIcon": {
+                margin: 0,
+                padding: 0,
+              },
+            }}
+          />
+        </Box>
         <TextField
           fullWidth
           label="Ny rubrik"
@@ -73,7 +92,7 @@ const SubjectModal = ({ isOpen, onClose, onSave }) => {
                 padding: 0,
                 paddingLeft: 1,
                 "&:hover": {
-                  backgroundColor: "rgba(220, 46, 52, 0.1)",
+                  backgroundColor: "rgba(220, 46, 52, 0.2)",
                 },
               }}
             >
@@ -81,11 +100,21 @@ const SubjectModal = ({ isOpen, onClose, onSave }) => {
             </ListItem>
           ))}
         </List>
-        <Box sx={{ display: 'flex', gap: 2, mt: 'auto' }}>
-          <Button variant="contained" color="primary" onClick={handleSaveSubject}>
+        <Box sx={{ display: "flex", gap: 2, mt: "auto" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSaveSubject}
+            endIcon={<SaveIcon />}
+          >
             Spara
           </Button>
-          <Button variant="outlined" color="secondary" onClick={handleClearSubjects}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={handleClearSubjects}
+            endIcon={<DeleteIcon />}
+          >
             Rensa sparade rubriker
           </Button>
         </Box>
