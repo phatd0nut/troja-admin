@@ -117,12 +117,12 @@ const SettingsContainer = () => {
           width: "100%",
           height: "100%",
           minWidth: "80%",
-          justifyContent: "space-evenly",
+          // justifyContent: "space-evenly",
           alignItems: "flex-start",
-          flexDirection: "row",
+          flexDirection: "column",
         }}
       >
-        <div className="settingsItem" style={{ alignItems: "flex-start" }}>
+        <div className="settingsItem" style={{ alignItems: "start" }}>
           <Typography variant="h5" sx={{ marginBottom: "16px" }}>
             Kontoinställningar
           </Typography>
@@ -183,7 +183,7 @@ const SettingsContainer = () => {
             Spara kontoändringar
           </Button>
         </div>
-        <div className="settingsItem" style={{ alignItems: "flex-start" }}>
+        {/* <div className="settingsItem" style={{ alignItems: "flex-start" }}>
           <Typography variant="h5" sx={{ marginBottom: "16px" }}>
             Systeminställningar
           </Typography>
@@ -208,7 +208,7 @@ const SettingsContainer = () => {
             </div>
             <MaintenanceClock />
           </div>
-        </div>
+        </div> */}
       </Stack>
       <Dialog open={loading}>
         <DialogContent className="standardDialog">
