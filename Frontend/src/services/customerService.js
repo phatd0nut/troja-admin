@@ -5,7 +5,6 @@ const BASE_URL = `${import.meta.env.VITE_BASE_URL}`;
 const CUSTOMERS_URL = `${import.meta.env.VITE_CUSTOMERS_ENDPOINT}`;
 const CUSTOMER_URL = `${import.meta.env.VITE_CUSTOMER_ENDPOINT}`;
 const GROUPED_BY_GOODS_URL = `${import.meta.env.VITE_GROUPED_BY_GOODS_ENDPOINT}`;
-const CUSTOMER_REF_ENDPOINT = `${import.meta.env.VITE_CUSTOMER_REF_ENDPOINT}`;
 const RECENT_PURCHASES_ENDPOINT = `${import.meta.env.VITE_RECENT_PURCHASES_ENDPOINT}`;
 
 const token = localStorage.getItem('token');
