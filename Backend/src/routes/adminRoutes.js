@@ -4,7 +4,7 @@ const { sendMail } = require('../controllers/mailController');
 const { fetchAllCustomers, fetchCustomersGroupedByGoods, fetchCustomersLastMonth, fetchCustomersLastYear } = require('../controllers/customerController');
 const { fetchAllEvents, fetchUpcomingEvents } = require('../controllers/eventController');
 const { fetchAllGoods } = require('../controllers/goodsController');
-const { fetchAllPurchases, fetchCustomerPurchaseCounts, fetchRecentPurchases, fetchAllPurchasesWithDetails } = require('../controllers/purchaseController');
+const { fetchAllPurchases, fetchCustomerPurchaseCounts, fetchRecentPurchases, fetchRecentPurchasesWithDetails } = require('../controllers/purchaseController');
 
 const authenticateToken = require('../middleware/authMiddleware');
 
@@ -26,6 +26,6 @@ router.get('/customer/:userRefNo/recent-purchases', authenticateToken, fetchRece
 router.post('/trigger-fetch', authenticateToken, triggerFetchData);
 router.get('/customers/last-month', fetchCustomersLastMonth);
 router.get('/customers/last-year', fetchCustomersLastYear);
-router.get('/purchases/details', authenticateToken, fetchAllPurchasesWithDetails);
+router.get('/purchases/recent-with-details', authenticateToken, fetchRecentPurchasesWithDetails);
 
 module.exports = router;
