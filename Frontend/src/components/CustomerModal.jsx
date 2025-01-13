@@ -22,6 +22,8 @@ const CustomerModal = forwardRef(({ customer, onClose }, ref) => {
       const getPurchases = async () => {
         try {
           const data = await fetchCustomerPurchases(customer.userRefNo);
+          console.log(data);
+          
           setPurchases(data);
         } catch (error) {
           console.error("Error fetching purchases:", error);

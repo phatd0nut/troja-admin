@@ -8,6 +8,8 @@ const GROUPED_BY_GOODS_URL = `${import.meta.env.VITE_GROUPED_BY_GOODS_ENDPOINT}`
 const RECENT_PURCHASES_ENDPOINT = `${import.meta.env.VITE_RECENT_PURCHASES_ENDPOINT}`;
 const TRIGGER_FETCH_URL = import.meta.env.VITE_TRIGGER_FETCH_ENDPOINT;
 const PURCHASE_COUNTS_URL = import.meta.env.VITE_PURCHASE_COUNTS_ENDPOINT;
+const LAST_MONTH_PURCHASES_URL = import.meta.env.VITE_LAST_MONTH_PURCHASES_ENDPOINT;
+// const LAST_YEAR_PURCHASES_URL = import.meta.env.VITE_LAST_YEAR_PURCHASES_ENDPOINT;
 
 const token = localStorage.getItem('token');
 
@@ -85,7 +87,7 @@ export const triggerFetchData = async () => {
     }
 };
 
-export const fetchPurchaseCounts = async () => {
+export const fetchTicketCounts = async () => {
     try {
         const response = await axios.get(`${BASE_URL}${PURCHASE_COUNTS_URL}`, {
             headers: {
@@ -100,3 +102,35 @@ export const fetchPurchaseCounts = async () => {
         throw error;
     }
 };
+
+export const fetchNewCustomersLastMonth = async () => {
+    try {
+        const response = await axios.get(BASE_URL + CUSTOMERS_URL + LAST_MONTH_PURCHASES_URL, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.error('Error fetching new customers last month:', error);
+        throw error;
+    }
+};
+
+// export const fetchNewCustomersLastYear = async () => {
+//     try {
+//         const response = await axios.get(BASE_URL + CUSTOMERS_URL + LAST_YEAR_PURCHASES_URL, {
+//             headers: {
+//                 'Authorization': `Bearer ${token}`,
+//                 'Content-Type': 'application/json',
+//             },
+//         });
+//         return response.data;
+//     }
+//     catch (error) {
+//         console.error('Error fetching new customers last year:', error);
+//         throw error;
+//     }
+// };
