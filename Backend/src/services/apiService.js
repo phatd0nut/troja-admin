@@ -93,7 +93,8 @@ function convertToMySQLDateTime(isoDate) {
  */
 const getOneYearBackDate = () => {
   const currentDate = new Date();
-  return new Date(currentDate.setFullYear(currentDate.getFullYear() - 1));
+  const lastYear = currentDate.getFullYear() - 1; 
+  return new Date(lastYear, 0, 1); 
 };
 
 /**
@@ -199,8 +200,8 @@ const fetchDataAndLog = async () => {
           console.log('Data insertion triggered successfully.');
           //tar bort tempData.json efter att data har infogats och poängen har beräknats
           //-------------------------------------------------------------------------------------
-          //await fs.unlink(filePath);
-          //console.log('Cached data deleted after insertion and point calculation.');
+           await fs.unlink(filePath);
+           console.log('Cached data deleted after insertion and point calculation.');
           //-------------------------------------------------------------------------------------
         } catch (error) {
           console.error('Error during data insertion:', error.message);

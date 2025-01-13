@@ -9,6 +9,10 @@ const getAllCustomers = async () => {
     return rows;
 };
 
+/**
+ * Hämtar kunder grupperade efter varor
+ * @returns {Promise<Array<object>>} - kunder grupperade efter varor
+ */
 const getCustomersGroupedByGoods = async () => {
     const query = `
         SELECT g.name AS goodsName, c.*
@@ -21,26 +25,42 @@ const getCustomersGroupedByGoods = async () => {
     const [rows] = await pool.query(query);
     return rows;
 };
+
+/**
+ * Hämtar antalet kunder från senaste månaden
+ * @returns {Promise<number>} - antalet kunder från senaste månaden
+ */
 const getCustomersLastMonth = async () => {
     const lastMonth = new Date();
     lastMonth.setMonth(lastMonth.getMonth() - 1);
-    
-    const [rows] = await pool.query(
-        `SELECT * FROM customer WHERE createdUtc >= ?`,
-        [lastMonth]
-    );
-    return rows;
-};
+    lastMonth.setDate(1); 
 
+    const currentDate = new Date();
+    currentDate.setMonth(currentDate.getMonth(), 0); 
+
+    const [rows] = await pool.query(
+        `SELECT COUNT(*) AS count FROM customer WHERE createdUtc >= ? AND createdUtc <= ?`,
+        [lastMonth, currentDate] 
+    );
+    return rows[0].count; 
+};
+/**
+ * Hämtar antalet kunder från senaste året
+ * @returns {Promise<number>} - antalet kunder från senaste året
+ */
 const getCustomersLastYear = async () => {
     const lastYear = new Date();
     lastYear.setFullYear(lastYear.getFullYear() - 1);
+    lastYear.setMonth(0); 
+    lastYear.setDate(1); 
+
+    const currentDate = new Date(); 
     
     const [rows] = await pool.query(
-        `SELECT * FROM customer WHERE createdUtc >= ?`,
-        [lastYear]
+        `SELECT COUNT(*) AS count FROM customer WHERE createdUtc >= ? AND createdUtc <= ?`,
+        [lastYear, currentDate] 
     );
-    return rows;
+    return rows[0].count;
 };
 
 module.exports = { getAllCustomers, getCustomersGroupedByGoods, getCustomersLastMonth, getCustomersLastYear };
