@@ -37,4 +37,21 @@ const getRecentPurchasesWithDetails = async () => {
     const [rows] = await pool.query(query);
     return rows;
 };
-module.exports = { getAllPurchases, getRecentPurchasesByCustomerId, getRecentPurchasesWithDetails };
+
+const getTotalRevenueByRecentEvents = async () => {
+    const query = `
+    SELECT e.id AS eventId, e.name AS eventName, e.start, e.end, SUM(g.priceIncVatAfterDiscount) AS totalRevenue
+    FROM purchase p
+    JOIN purchaseevent pe ON p.id = pe.purchaseId
+    JOIN purchasegoods pg ON p.id = pg.purchaseId
+    JOIN goods g ON pg.goodsId = g.id 
+    JOIN event e ON pe.eventId = e.id  
+    WHERE p.status = 'Completed'  
+    AND g.type NOT IN ('SeasonToken') 
+    GROUP BY e.id, e.name, e.start, e.end
+    ORDER BY e.end DESC; 
+    `;
+    const [rows] = await pool.query(query);
+    return rows;
+};
+module.exports = { getAllPurchases, getRecentPurchasesByCustomerId, getRecentPurchasesWithDetails, getTotalRevenueByRecentEvents};
