@@ -60,6 +60,11 @@ const SettingsContainer = () => {
     event.preventDefault();
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    handleSaveChanges();
+  };
+
   const handleSaveChanges = async () => {
     if (newPassword !== confirmPassword) {
       setError('New password and confirmation do not match');
@@ -67,12 +72,12 @@ const SettingsContainer = () => {
     }
 
     // Logga ändringarna som skickas
-    console.log("Spara ändringar:", {
-      newUsername,
-      currentPassword,
-      newPassword,
-      confirmPassword,
-    });
+    // console.log("Spara ändringar:", {
+    //   newUsername,
+    //   currentPassword,
+    //   newPassword,
+    //   confirmPassword,
+    // });
 
     try {
       const token = localStorage.getItem('token');
@@ -111,17 +116,17 @@ const SettingsContainer = () => {
 
   return (
     <Paper className="settingsContainer" elevation={3}>
-      <Stack
-        divider={<Divider orientation="vertical" flexItem />}
-        sx={{
-          width: "100%",
-          height: "100%",
-          minWidth: "80%",
-          // justifyContent: "space-evenly",
-          alignItems: "flex-start",
-          flexDirection: "column",
-        }}
-      >
+    <Stack
+      divider={<Divider orientation="vertical" flexItem />}
+      sx={{
+        width: "100%",
+        height: "100%",
+        minWidth: "80%",
+        alignItems: "flex-start",
+        flexDirection: "column",
+      }}
+    >
+      <form onSubmit={handleSubmit} className="settingsForm">
         <div className="settingsItem" style={{ alignItems: "start" }}>
           <Typography variant="h5" sx={{ marginBottom: "16px" }}>
             Kontoinställningar
@@ -147,6 +152,7 @@ const SettingsContainer = () => {
               showPassword={showCurrentPassword}
               handleClickShowPassword={handleClickShowCurrentPassword}
               handleMouseDownPassword={handleMouseDownPassword}
+              required
             />
             {error && <Typography color="error" sx={{ mb: 3 }}>{error}</Typography>}
           </Stack>
@@ -175,14 +181,15 @@ const SettingsContainer = () => {
             handleMouseDownPassword={handleMouseDownPassword}
           />
           <Button
+            type="submit"
             variant="contained"
-            onClick={handleSaveChanges}
             endIcon={<SaveIcon />}
             sx={{ marginTop: "16px", marginBottom: "16px" }}
           >
             Spara kontoändringar
           </Button>
         </div>
+      </form>
         {/* <div className="settingsItem" style={{ alignItems: "flex-start" }}>
           <Typography variant="h5" sx={{ marginBottom: "16px" }}>
             Systeminställningar
@@ -209,7 +216,7 @@ const SettingsContainer = () => {
             <MaintenanceClock />
           </div>
         </div> */}
-      </Stack>
+    </Stack>
       <Dialog open={loading}>
         <DialogContent className="standardDialog">
           <h2>Uppdaterar kontoinformation...</h2>

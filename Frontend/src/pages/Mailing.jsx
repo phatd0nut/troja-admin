@@ -23,7 +23,7 @@ import SubjectModal from "../components/SubjectModal";
 
 const Mailing = () => {
   const emailBuilderRef = useRef(null);
-  const subjectRef = useRef(""); // Add subject ref
+  const subjectRef = useRef("");
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const MAIL_URL = import.meta.env.VITE_SEND_MAIL_ENDPOINT;
   const [customerGroups, setCustomerGroups] = useState({
@@ -36,7 +36,6 @@ const Mailing = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [recipientsCount, setRecipientsCount] = useState(0);
-  console.log(subjectRef.current);
 
   // Hämta sparade grupper från localStorage när komponenten laddas
   useEffect(() => {
@@ -57,19 +56,19 @@ const Mailing = () => {
     }
   };
 
-  // Använd testadresser för att skicka e-post
-  const testEmailAddresses = ["ez222dc@student.lnu.se"];
+  // // Använd testadresser för att skicka e-post
+  // const testEmailAddresses = ["ez222dc@student.lnu.se"];
 
-  // Testfunktion för att logga e-postadresser
-  const logEmailAddresses = () => {
-    // Samla in e-postadresser från valda kundgrupper inom customersWithAcceptInfo
-    const emailAddresses = customerGroups.customersWithAcceptInfo
-      .filter((customer) => selectedGroups.includes(customer.goodsName))
-      .map((customer) => customer.email);
+  // // Testfunktion för att logga e-postadresser
+  // const logEmailAddresses = () => {
+  //   // Samla in e-postadresser från valda kundgrupper inom customersWithAcceptInfo
+  //   const emailAddresses = customerGroups.customersWithAcceptInfo
+  //     .filter((customer) => selectedGroups.includes(customer.goodsName))
+  //     .map((customer) => customer.email);
 
-    console.log("Selected email addresses:", emailAddresses);
-    console.log("With subject:", subject);
-  };
+  //   console.log("Selected email addresses:", emailAddresses);
+  //   console.log("With subject:", subject);
+  // };
 
   const handleSendEmail = async (htmlContent) => {
     if (!htmlContent || !subjectRef.current) {
@@ -91,7 +90,7 @@ const Mailing = () => {
       setRecipientsCount(emailAddresses.length);
 
       // Skicka ett separat e-postmeddelande till varje e-postadress
-      for (const email of testEmailAddresses) {
+      for (const email of emailAddresses) {
         try {
           const response = await axios.post(
             BASE_URL + MAIL_URL,
@@ -106,7 +105,6 @@ const Mailing = () => {
               },
             }
           );
-          console.log(`Email sent successfully to ${email}:`, response.data);
         } catch (error) {
           console.error("Error sending email, error: ", error);
           setMessage(`Fel vid utskick av e-post: ${error.message}`);
@@ -114,7 +112,7 @@ const Mailing = () => {
       }
 
       setMessage(
-        `E-postmeddelanden skickades framgångsrikt till ${testEmailAddresses.length} mottagare!`
+        `E-postmeddelanden skickades framgångsrikt till ${emailAddresses.length} mottagare!`
       );
     } catch (error) {
       console.error("Error sending emails:", error);

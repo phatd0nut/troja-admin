@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Stack, Paper, Divider } from "../utils/MaterialUI";
 import FetchUpcomingEvents from "../services/FetchUpcomingEvents";
-import { fetchPurchaseCounts } from "../services/customerService";
+import { fetchTicketCounts } from "../services/customerService";
 
 const InfoContainer = () => {
   const [showDivider, setShowDivider] = useState(true);
@@ -43,7 +43,7 @@ const InfoContainer = () => {
   useEffect(() => {
     const loadPurchases = async () => {
       try {
-        const data = await fetchPurchaseCounts();
+        const data = await fetchTicketCounts();
         const purchases = Object.entries(data.purchaseCounts).map(
           ([email, info]) => ({
             email,
@@ -51,8 +51,6 @@ const InfoContainer = () => {
             tickets: info.purchases.Ticket || 0,
           })
         );
-        console.log(purchases);
-
         setRecentPurchases(purchases);
       } catch (error) {
         console.error("Error loading purchases:", error);
