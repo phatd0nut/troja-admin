@@ -36,6 +36,8 @@ const getCustomersLastMonth = async () => {
     lastMonth.setDate(1); 
 
     const currentDate = new Date();
+    currentDate.setMonth(currentDate.getMonth(), 0); 
+
     const [rows] = await pool.query(
         `SELECT COUNT(*) AS count FROM customer WHERE createdUtc >= ? AND createdUtc <= ?`,
         [lastMonth, currentDate] 

@@ -121,7 +121,7 @@ const insertOrUpdateCustomer = async (purchase) => {
                 ]
             );
         }
-        return existingCustomer.id; // Return existing customer ID
+        return existingCustomer.id; 
     } else {
         // infogar ny kund om den inte hittas
         const [userResult] = await pool.query(
@@ -180,7 +180,6 @@ const insertOrUpdatePurchase = async (purchase, customerId) => {
             createdUtc
         ]
     );
-
     if (purchaseResult.insertId) {
         return purchaseResult.insertId;
     } else {
@@ -277,7 +276,6 @@ const insertOrUpdateGoods = async (goods, purchaseId) => {
             throw new Error(`Missing required fields in goods for purchase crmId: ${purchaseId}`);
         }
 
-        console.log("Inserting goods:", good); // Log the good being inserted
 
         let eventId = null;
         if (eventExternalId && eventExternalId.trim() !== '') {

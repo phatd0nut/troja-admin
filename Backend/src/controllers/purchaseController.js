@@ -1,6 +1,6 @@
 const { getAllPurchases } = require('../services/purchaseService');
 const { countCustomerPurchasesFromDB } = require('../util/databaseUtils');
-const { getRecentPurchasesByCustomerId } = require('../services/purchaseService');
+const { getRecentPurchasesByCustomerId, getAllPurchasesWithDetails } = require('../services/purchaseService');
 
 const fetchAllPurchases = async (req, res) => {
     try {
@@ -32,4 +32,14 @@ const fetchRecentPurchases = async (req, res) => {
     }
 };
 
-module.exports = { fetchAllPurchases, fetchCustomerPurchaseCounts, fetchRecentPurchases };
+const fetchAllPurchasesWithDetails = async (req, res) => {
+    try {
+        const purchases = await getAllPurchasesWithDetails();
+        res.status(200).json(purchases);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching all purchases with details', error: error.message });
+    }
+};
+
+
+module.exports = { fetchAllPurchases, fetchCustomerPurchaseCounts, fetchRecentPurchases, fetchAllPurchasesWithDetails };

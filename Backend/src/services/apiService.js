@@ -200,8 +200,8 @@ const fetchDataAndLog = async () => {
           console.log('Data insertion triggered successfully.');
           //tar bort tempData.json efter att data har infogats och poängen har beräknats
           //-------------------------------------------------------------------------------------
-          await fs.unlink(filePath);
-          console.log('Cached data deleted after insertion and point calculation.');
+           await fs.unlink(filePath);
+           console.log('Cached data deleted after insertion and point calculation.');
           //-------------------------------------------------------------------------------------
         } catch (error) {
           console.error('Error during data insertion:', error.message);
