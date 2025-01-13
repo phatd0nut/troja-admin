@@ -1,6 +1,6 @@
 const { getAllPurchases } = require('../services/purchaseService');
 const { countCustomerPurchasesFromDB } = require('../util/databaseUtils');
-const { getRecentPurchasesByCustomerId, getRecentPurchasesWithDetails } = require('../services/purchaseService');
+const { getRecentPurchasesByCustomerId, getRecentPurchasesWithDetails, getTotalRevenueByRecentEvents } = require('../services/purchaseService');
 
 const fetchAllPurchases = async (req, res) => {
     try {
@@ -41,5 +41,14 @@ const fetchRecentPurchasesWithDetails = async (req, res) => {
     }
 };
 
+const fetchTotalRevenueByRecentEvents= async (req, res) => {
+    try {
+        const totalRevenue = await getTotalRevenueByRecentEvents();
+        res.status(200).json(totalRevenue);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching total revenue by recent events', error: error.message });
+    }
+};
 
-module.exports = { fetchAllPurchases, fetchCustomerPurchaseCounts, fetchRecentPurchases, fetchRecentPurchasesWithDetails };
+module.exports = { fetchAllPurchases, fetchCustomerPurchaseCounts, fetchRecentPurchases, fetchRecentPurchasesWithDetails, fetchTotalRevenueByRecentEvents};
+
