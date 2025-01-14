@@ -1,7 +1,16 @@
+/**
+ * purchaseController.js är en fil som innehåller funktioner för att hantera köp i och från databasen
+ */
 const { getAllPurchases } = require('../services/purchaseService');
 const { countCustomerPurchasesFromDB } = require('../util/databaseUtils');
 const { getRecentPurchasesByCustomerId, getRecentPurchasesWithDetails, getTotalRevenueByRecentEvents } = require('../services/purchaseService');
 
+/**
+ * Hämtar alla köp från databasen
+ * @param {object} req - request objekt
+ * @param {object} res - response objekt
+ * @returns {Promise<void>} - inget returnerat
+ */
 const fetchAllPurchases = async (req, res) => {
     try {
         const purchases = await getAllPurchases();
@@ -11,7 +20,12 @@ const fetchAllPurchases = async (req, res) => {
     }
 };
 
-
+/**
+ * Hämtar antalet köp för varje kund från databasen
+ * @param {object} req - request objekt
+ * @param {object} res - response objekt
+ * @returns {Promise<void>} - inget returnerat
+ */
 const fetchCustomerPurchaseCounts = async (req, res) => {
     try {
         const purchaseCounts = await countCustomerPurchasesFromDB();
@@ -21,6 +35,12 @@ const fetchCustomerPurchaseCounts = async (req, res) => {
     }
 };
 
+/**
+ * Hämtar de senaste 10 köpen för en given kund
+ * @param {object} req - request objekt
+ * @param {object} res - response objekt
+ * @returns {Promise<void>} - inget returnerat
+ */
 const fetchRecentPurchases = async (req, res) => {
     const userRefNo = req.params.userRefNo; 
 
@@ -32,6 +52,12 @@ const fetchRecentPurchases = async (req, res) => {
     }
 };
 
+/**
+ * Hämtar detaljerade köp från databasen
+ * @param {object} req - request objekt
+ * @param {object} res - response objekt
+ * @returns {Promise<void>} - inget returnerat
+ */
 const fetchRecentPurchasesWithDetails = async (req, res) => {
     try {
         const purchases = await getRecentPurchasesWithDetails();
@@ -41,6 +67,12 @@ const fetchRecentPurchasesWithDetails = async (req, res) => {
     }
 };
 
+/**
+ * Hämtar totala intäkter för de senaste evenemangen
+ * @param {object} req - request objekt
+ * @param {object} res - response objekt
+ * @returns {Promise<void>} - inget returnerat
+ */
 const fetchTotalRevenueByRecentEvents= async (req, res) => {
     try {
         const totalRevenue = await getTotalRevenueByRecentEvents();
@@ -50,5 +82,6 @@ const fetchTotalRevenueByRecentEvents= async (req, res) => {
     }
 };
 
+//exporterar fetchAllPurchases, fetchCustomerPurchaseCounts, fetchRecentPurchases, fetchRecentPurchasesWithDetails, fetchTotalRevenueByRecentEvents för att kunna använda dem i andra filer
 module.exports = { fetchAllPurchases, fetchCustomerPurchaseCounts, fetchRecentPurchases, fetchRecentPurchasesWithDetails, fetchTotalRevenueByRecentEvents};
 

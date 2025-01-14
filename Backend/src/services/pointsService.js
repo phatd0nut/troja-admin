@@ -1,3 +1,6 @@
+/**
+ * pointsService.js är en fil som innehåller funktioner för att kalkylera och uppdatera poäng för kunder
+ */
 const pool = require("../config/db");
 
 /**
@@ -116,5 +119,5 @@ const addNewCustomerWithPoints = async (userRefNo, points) => {
         console.error(`Error adding new customer with userRefNo ${userRefNo}:`, error.message);
     }
 };
-
+//exporterar calculateAndUpdatePointsFromDatabase för att kunna använda den i andra filer
 module.exports = { calculateAndUpdatePointsFromDatabase };

@@ -1,3 +1,6 @@
+/**
+ * goodsService.js är en fil som innehåller funktioner för att hantera varor i och från databasen
+ */
 const pool = require('../config/db');
 /**
  * Hämtar alla varor från databasen

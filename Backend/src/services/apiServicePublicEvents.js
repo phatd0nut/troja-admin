@@ -1,3 +1,7 @@
+/**
+ * ApiServicePublicEvents.js är en fil som innehåller funktioner för att hämta data från API:et och logga det
+ */
+
 const axios = require('axios');
 const path = require('path');
 const fs = require('fs');
@@ -17,6 +21,10 @@ if (!fs.existsSync(cacheDir)) {
 }
 const cacheFilePath = path.resolve(cacheDir, 'publicEventsCache.json');
 
+/**
+ * Hämtar public events från API:et och sparar dem i en cache-fil
+ * @returns {Promise<Array>} - public events
+ */
 const getPublicEvents = async () => {
     const now = new Date();
 
@@ -70,5 +78,5 @@ const getPublicEvents = async () => {
         console.error('Error fetching public events:', error);
     }
 };
-
+//exporterar getPublicEvents för att kunna använda den i andra filer
 module.exports = { getPublicEvents };

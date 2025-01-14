@@ -371,5 +371,5 @@ const insertOrUpdateCampaigns = async (campaigns, purchaseId) => {
         );
     }
 };
-
+//exporterar insertDataFromJson för att kunna använda den i andra filer
 module.exports = { insertDataFromJson };

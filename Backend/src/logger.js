@@ -22,4 +22,5 @@ const logger = winston.createLogger({
     ],
 });
 
+//exporterar logger för att kunna använda den i andra filer
 module.exports = logger;

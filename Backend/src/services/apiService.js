@@ -1,7 +1,5 @@
-// Backend/src/services/apiService.js
 /**
- * ApiService.js är en fil som innehåller funktioner för att hämta data från API:et och logga det
- * @module ApiService
+ * ApiService.js är en fil som innehåller funktioner för att hämta data från API:et och logga det i en json-fil
  */
 
 const axios = require("axios"); //importerar axios för att kunna göra HTTP-förfrågningar
@@ -25,7 +23,7 @@ let isFetching = false; //skapar en variabel för att kunna använda miljövaria
 let isWriting = false; //skapar en variabel för att kunna använda miljövariabeln isWriting
 
 const tasks = {};
-//let deletionTime = "0 3 * * *"; // Default to 3 AM every day
+
 
 /**
  * Hämtar data från API:et med försök att hantera fel
@@ -88,7 +86,7 @@ function convertToMySQLDateTime(isoDate) {
 };
 
 /**
- * Beräknar datumet ett år tillbaka från idag
+ * Beräknar datumet ett år tillbaka från första januari i det aktuella året
  * @returns {Date} - Datumet ett år tillbaka
  */
 const getOneYearBackDate = () => {
@@ -131,7 +129,7 @@ const fetchDataAndLog = async () => {
         const purchase = item.purchase;
         const createdDate = new Date(purchase.createdUtc);
 
-        // byt till getOneYearBackDate() istället för new Date('2024-01-01T00:01:01.01Z') om man vill hämta data från ett år tillbaka dynamiskt
+    
         const isValidPurchase = createdDate >= getOneYearBackDate() &&
           (purchase.status === "Completed" || purchase.status === "Refunded");
       
@@ -221,32 +219,6 @@ const fetchDataAndLog = async () => {
 };
 
 /**
- * Sätter tiden för att ta bort datan
- * @param {string} time - tiden för att ta bort datan
- */
-/* const setDeletionTime = (time) => {
-  deletionTime = time;
-
-  if (tasks.deletionTask) {
-    tasks.deletionTask.stop();
-    delete tasks.deletionTask;
-  }
-
-  tasks.deletionTask = cron.schedule(deletionTime, async () => {
-    if (isFetching) {
-      console.log('Skipping deletion during fetch.');
-      return;
-    }
-    try {
-      await fs.unlink(filePath);
-      console.log('Cached data deleted based on updated schedule.');
-    } catch (error) {
-      console.error('Error deleting cached data:', error);
-    }
-  });
-}; */
-
-/**
  * Schemalägger uppgifter
  */
 const scheduleTasks = () => {
@@ -267,7 +239,6 @@ const scheduleTasks = () => {
     }
   });
 
-  //setDeletionTime(deletionTime);
 };
 
 scheduleTasks();

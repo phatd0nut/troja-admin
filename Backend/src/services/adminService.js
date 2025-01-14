@@ -1,6 +1,5 @@
 /**
  * AdminService.js är en fil som innehåller funktioner för att hantera admin-relaterade uppgifter
- * @module AdminService
  */
 
 const pool = require('../config/db'); //importerar pool för att kunna komma åt databasen

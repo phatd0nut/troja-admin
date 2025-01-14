@@ -1,3 +1,6 @@
+/**
+ * mailService.js är en fil som innehåller funktioner för att skicka e-post
+ */
 const { Resend } = require('resend');
 const dotenv = require('dotenv');
 const path = require('path');
@@ -6,8 +9,12 @@ const path = require('path');
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const resend = new Resend(process.env.R_CLIENT);
-// const senderAdress = newsletterAddress || "no-reply@troja-ljungby.com"
-
+/**
+ * Skickar ett e-postmeddelande till en given mottagare
+ * @param {string} to - mottagarens e-postadress
+ * @param {string} subject - ämnesraden för e-postmeddelandet
+ * @param {string} htmlContent - innehållet i e-postmeddelandet
+ */
 const sendEmail = async (to, subject, htmlContent) => {
   console.log('Sending email to:', to);
 
