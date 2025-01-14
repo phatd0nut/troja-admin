@@ -12,6 +12,21 @@ import Button from "./Button";
 import { fetchCustomerPurchases } from "../services/customerService";
 import { useEffect, useState } from "react";
 
+/**
+ * @description CustomerModal är en React-komponent som visar en modal med kundinformation och deras senaste köp.
+ * 
+ * @component CustomerModal
+ * @param {Object} props - Komponentens props.
+ * @param {Object} props.customer - Kundobjektet som innehåller kundens information.
+ * @param {Function} props.onClose - Funktion som anropas när modalen stängs.
+ * @param {Object} ref - Referens till modalens DOM-element.
+ * 
+ * @returns {JSX.Element|null} Returnerar en JSX-element som representerar modalen eller null om ingen kund är tillgänglig.
+ * 
+ * @example
+ * // Exempel på användning av CustomerModal
+ * <CustomerModal customer={customerData} onClose={handleClose} ref={modalRef} />
+ */
 const CustomerModal = forwardRef(({ customer, onClose }, ref) => {
   if (!customer) return null;
 

@@ -1,6 +1,27 @@
 import React from 'react';
 import TeamLogos from '../utils/TeamLogos';
 
+/**
+ * @component
+ * UpcomingGame
+ * 
+ * @description
+ * En komponent som visar information om en kommande match, inklusive lagens namn, matchdatum och tid, samt lagens logotyper.
+ * 
+ * @param {Object} props - Komponentens props.
+ * @param {Object} props.game - Objekt som innehåller information om matchen.
+ * @param {string} props.game.name - Namnet på matchen, formaterat som "Hemmalag - Bortalag".
+ * @param {string} props.game.startUtc - Starttiden för matchen i UTC-format.
+ * @param {number} props.imgSize - Storleken på lagens logotyper.
+ * 
+ * @example
+ * <UpcomingGame 
+ *   game={{ name: "Team A - Team B", startUtc: "2023-10-15T18:00:00Z" }} 
+ *   imgSize={50} 
+ * />
+ * 
+ * @returns {JSX.Element} En JSX-element som visar information om den kommande matchen.
+ */
 const UpcomingGame = ({ game, imgSize }) => {
   const { name, startUtc } = game;
 

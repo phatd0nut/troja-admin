@@ -16,6 +16,26 @@ import {
 import { fetchAllCustomers } from "../services/customerService";
 import CustomerModal from "./CustomerModal";
 
+/**
+ * Komponent för att visa en tabell med kunder.
+ *
+ * @component CustomerTable
+ * @param {Object} props - Komponentens props.
+ * @param {string} props.searchQuery - Sökfråga för att filtrera kunder.
+ * @param {Array<string>} props.searchCriteria - Kriterier för att filtrera kunder.
+ *
+ * @returns {JSX.Element} JSX-element som representerar kundtabellen.
+ *
+ * @example
+ * <CustomerTable searchQuery="John" searchCriteria={["name"]} />
+ *
+ * @description
+ * Denna komponent hämtar och visar en lista med kunder i en tabell. Tabellen kan sorteras och filtreras baserat på sökfrågan och kriterierna. 
+ * Antalet rader per sida justeras dynamiskt baserat på fönsterhöjden. Vid klick på en rad öppnas en modal med kundens detaljer.
+ *
+ * @function
+ * @name CustomerTable
+ */
 const CustomerTable = ({ searchQuery, searchCriteria }) => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -21,6 +21,48 @@ import SelectCustomerGroupModal from "../components/SelectCustomerGroupModal";
 import LoadingCircle from "../components/LoadingCircle";
 import SubjectModal from "../components/SubjectModal";
 
+/**
+ * Mailing-komponenten hanterar e-postutskick till kundgrupper.
+ * Den tillåter användaren att importera e-postmallar, välja kundgrupper,
+ * ange en rubrik och skicka e-postmeddelanden till valda kundgrupper.
+ *
+ * @component Mailing
+ * @returns {JSX.Element} JSX-element som representerar Mailing-komponenten.
+ *
+ * @example
+ * <Mailing />
+ *
+ * @description
+ * Mailing-komponenten använder flera hooks och funktioner för att hantera e-postutskick:
+ * - `useRef`: För att referera till e-postbyggaren och rubriken.
+ * - `useState`: För att hantera tillstånd för kundgrupper, modaler, valda grupper, laddning, meddelanden och mottagare.
+ * - `useEffect`: För att hämta sparade grupper från localStorage när komponenten laddas.
+ *
+ * @function
+ * @name Mailing
+ * 
+ * @function handleFileChange
+ * Hanterar filändringar och laddar en e-postmall från en JSON-fil.
+ * @param {Event} event - Filändringshändelsen.
+ *
+ * @function handleSendEmail
+ * Skickar e-postmeddelanden till valda kundgrupper.
+ * @param {string} htmlContent - HTML-innehållet i e-postmeddelandet.
+ *
+ * @function handleSelectCustomerGroups
+ * Hämtar kundgrupper och öppnar modalen för att välja kundgrupper.
+ *
+ * @function handleCloseModal
+ * Stänger modalen och sparar valda kundgrupper i localStorage.
+ * @param {Array} selectedGroups - De valda kundgrupperna.
+ *
+ * @function handleCloseDialog
+ * Stänger dialogen som visar laddningsstatus eller meddelanden.
+ *
+ * @function handleSaveSubject
+ * Sparar den angivna rubriken och stänger rubrikmodalen.
+ * @param {string} newSubject - Den nya rubriken.
+ */
 const Mailing = () => {
   const emailBuilderRef = useRef(null);
   const subjectRef = useRef("");

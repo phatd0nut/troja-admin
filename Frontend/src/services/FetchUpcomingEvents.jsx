@@ -1,6 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import UpcomingGame from '../components/UpcomingGame';
 
+/**
+ * Komponent för att hämta och visa kommande matcher.
+ *
+ * @param {Object} props - Komponentens egenskaper.
+ * @param {string} props.imgSize - Storleken på bilderna som ska visas.
+ *
+ * @component FetchUpcomingEvents
+ *
+ * @example
+ * return (
+ *   <FetchUpcomingEvents imgSize="medium" />
+ * )
+ *
+ * @returns {JSX.Element} En lista med kommande matcher eller en laddnings-/felmeddelande.
+ *
+ * @description
+ * Denna komponent hämtar en lista med kommande matcher från en API-endpoint och visar dem.
+ * Den hanterar laddningstillstånd och felmeddelanden.
+ *
+ * @function
+ * @name FetchUpcomingEvents
+ */
 const FetchUpcomingEvents = ({ imgSize }) => {
     const [upcomingEvents, setUpcomingEvents] = useState([]);
     const [loading, setLoading] = useState(true);

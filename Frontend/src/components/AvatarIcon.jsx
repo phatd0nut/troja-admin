@@ -2,6 +2,26 @@ import React from "react";
 import { Avatar, Badge, styled } from "../utils/MaterialUI";
 import logo from "../assets/img/logos/iftroja-ljungby.png";
 
+/**
+ * @description StyledBadge är en anpassad Badge-komponent med en grön bakgrundsfärg och en pulserande animation.
+ * @component AvatarIcon
+ * @param {object} theme - Temat som används för att hämta bakgrundsfärgen.
+ * 
+ * @example
+ * <StyledBadge
+      overlap="circular"
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      variant="dot"
+    >
+  <Avatar
+      alt={username}
+      src={logo}
+      sx={{ width: 56, height: 56 }}
+    />
+    </StyledBadge>
+ * 
+ * @returns {JSX.Element} En Badge-komponent med anpassad stil och animation.
+ */
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
     backgroundColor: '#44b700',

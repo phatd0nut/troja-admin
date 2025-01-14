@@ -18,14 +18,37 @@ import {
   DialogContent,
 } from "../utils/MaterialUI";
 import { Link, useNavigate } from "react-router-dom";
-import "./NavBar.css"; // Importera CSS-filen för ytterligare styling
-import logo from "../assets/svg/troja_logo.svg"; // Importera SVG-filen
+import "./NavBar.css";
+import logo from "../assets/svg/troja_logo.svg";
 import Button from "../components/Button";
 import LoadingCircle from "./LoadingCircle";
 
+// Värdet för bredden på navigationsmenyn när den är öppen respektive stängd
 const drawerWidth = 190;
 const miniDrawerWidth = 60;
 
+/**
+ * @component NavBar
+ * @description NavBar-komponenten hanterar navigationsmenyn i applikationen.
+ * Den visar olika navigeringsalternativ och hanterar öppning/stängning av menyn samt utloggning.
+ *
+ * @param {Object} props - Komponentens props.
+ * @param {boolean} props.openNav - Anger om navigationsmenyn är öppen eller stängd.
+ * @param {Function} props.setOpenNav - Funktion för att uppdatera tillståndet för navigationsmenyn.
+ *
+ * @returns {JSX.Element} JSX-element som representerar navigationsmenyn.
+ *
+ * @example
+ * <NavBar openNav={openNav} setOpenNav={setOpenNav} />
+ *
+ * @function handleDrawerOpen - Öppnar navigationsmenyn.
+ * @function handleDrawerClose - Stänger navigationsmenyn.
+ * @function handleLogout - Hanterar utloggningsprocessen, inklusive att ta bort token och användarnamn från localStorage och navigera till inloggningssidan.
+ * @function handleOpenLogoutDialog - Öppnar dialogrutan för utloggning.
+ * @function handleCloseLogoutDialog - Stänger dialogrutan för utloggning.
+ *
+ * @constant {Array} navItems - Lista över navigeringsobjekt som innehåller text, ikon och väg eller åtgärd för varje objekt.
+ */
 const NavBar = ({ openNav, setOpenNav }) => {
   const navigate = useNavigate();
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
@@ -94,7 +117,7 @@ const NavBar = ({ openNav, setOpenNav }) => {
     <Box sx={{ display: "flex", height: "100vh" }}>
       <CssBaseline />
       <Drawer
-        className="navbar" // Lägg till klassen navbar
+        className="navbar"
         sx={{
           width: openNav ? drawerWidth : miniDrawerWidth,
           flexShrink: 0,
@@ -108,7 +131,7 @@ const NavBar = ({ openNav, setOpenNav }) => {
             backgroundColor: (theme) => theme.palette.primary.main,
             color: (theme) => theme.palette.primary.contrastText,
             transition: "width 0.3s ease-in-out",
-            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)", // Lägg till box-shadow
+            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -177,8 +200,8 @@ const NavBar = ({ openNav, setOpenNav }) => {
                 primary={item.text}
                 sx={{
                   color: (theme) => theme.palette.primary.contrastText,
-                  transition: "opacity 0.3s ease-in-out", // Lägg till transition för opacity
-                  opacity: openNav ? 1 : 0, // Ändra opacity beroende på om Drawer är öppen eller stängd
+                  transition: "opacity 0.3s ease-in-out",
+                  opacity: openNav ? 1 : 0,
                 }}
               />
             </ListItem>

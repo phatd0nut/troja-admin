@@ -5,17 +5,49 @@ import {
   Divider,
   Typography,
   SaveIcon,
-  Switch,
   Dialog,
   DialogContent,
-  DialogActions,
 } from "../utils/MaterialUI";
 import InputField from "./InputField";
 import Button from "./Button";
-import MaintenanceClock from "./MaintenanceClock";
-import LoadingCircle from "./LoadingCircle"; // Importera LoadingCircle
-import axios from 'axios';
+import LoadingCircle from "./LoadingCircle";
+import axios from "axios";
 
+/**
+ * @component SettingsContainer
+ * @description SettingsContainer-komponenten hanterar användarens kontoinställningar.
+ * Den tillåter användaren att ändra sitt användarnamn och lösenord.
+ * 
+ * @example
+ * return (
+ *   <SettingsContainer />
+ * )
+ * 
+ * @returns {JSX.Element} En komponent som renderar ett formulär för att uppdatera kontoinställningar.
+ * 
+ * @description
+ * Komponentens tillstånd hanterar följande:
+ * - newUsername: Det nya användarnamnet som användaren vill ställa in.
+ * - currentPassword: Det nuvarande lösenordet som användaren måste ange för att verifiera ändringar.
+ * - newPassword: Det nya lösenordet som användaren vill ställa in.
+ * - confirmPassword: Bekräftelse av det nya lösenordet.
+ * - showCurrentPassword, showNewPassword, showConfirmPassword: Booleska värden för att visa eller dölja lösenord.
+ * - loading: Indikerar om uppdateringsprocessen pågår.
+ * - updateSuccess: Indikerar om uppdateringen lyckades.
+ * - error: Felmeddelande om något går fel under uppdateringen.
+ * 
+ * @function handleUsernameChange - Hanterar ändringar i användarnamnsfältet.
+ * @function handleCurrentPasswordChange - Hanterar ändringar i fältet för nuvarande lösenord.
+ * @function handleNewPasswordChange - Hanterar ändringar i fältet för nytt lösenord.
+ * @function handleConfirmPasswordChange - Hanterar ändringar i fältet för bekräftelse av nytt lösenord.
+ * @function handleClickShowCurrentPassword - Växlar visningen av det nuvarande lösenordet.
+ * @function handleClickShowNewPassword - Växlar visningen av det nya lösenordet.
+ * @function handleClickShowConfirmPassword - Växlar visningen av bekräftelsen av det nya lösenordet.
+ * @function handleMouseDownPassword - Förhindrar standardbeteendet vid musnedtryckning på lösenordsfältet.
+ * @function handleSubmit - Hanterar formulärets submit-händelse och anropar handleSaveChanges.
+ * @function handleSaveChanges - Utför API-anropet för att spara ändringarna och hanterar svaren.
+ * @function handleCloseSuccessDialog - Stänger dialogen för framgångsrik uppdatering och laddar om sidan.
+ */
 const SettingsContainer = () => {
   const [newUsername, setNewUsername] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -24,9 +56,9 @@ const SettingsContainer = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false); // Lägg till loading state
-  const [updateSuccess, setUpdateSuccess] = useState(false); // Lägg till updateSuccess state
-  const [error, setError] = useState(""); // Lägg till error state
+  const [loading, setLoading] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   const handleUsernameChange = (event) => {
     setNewUsername(event.target.value);
@@ -67,7 +99,7 @@ const SettingsContainer = () => {
 
   const handleSaveChanges = async () => {
     if (newPassword !== confirmPassword) {
-      setError('New password and confirmation do not match');
+      setError("Nya lösenordet matchar inte det nuvarande lösenordet");
       return;
     }
 
@@ -80,17 +112,21 @@ const SettingsContainer = () => {
     // });
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.put('http://localhost:3000/admin/change-details', {
-        currentPassword: currentPassword,
-        newName: newUsername,
-        newPassword: newPassword,
-        confirmPassword: confirmPassword
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const token = localStorage.getItem("token");
+      await axios.put(
+        "http://localhost:3000/admin/change-details",
+        {
+          currentPassword: currentPassword,
+          newName: newUsername,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
       // Uppdatera användarnamnet i localStorage
       if (newUsername) {
@@ -104,8 +140,8 @@ const SettingsContainer = () => {
         setUpdateSuccess(true);
       }, 2000);
     } catch (error) {
-      console.error('Error updating admin details:', error);
-      setError('Nuvarande lösenord är felaktigt');
+      console.error("Error updating admin details:", error);
+      setError("Nuvarande lösenord är felaktigt");
     }
   };
 
@@ -116,80 +152,88 @@ const SettingsContainer = () => {
 
   return (
     <Paper className="settingsContainer" elevation={3}>
-    <Stack
-      divider={<Divider orientation="vertical" flexItem />}
-      sx={{
-        width: "100%",
-        height: "100%",
-        minWidth: "80%",
-        alignItems: "flex-start",
-        flexDirection: "column",
-      }}
-    >
-      <form onSubmit={handleSubmit} className="settingsForm">
-        <div className="settingsItem" style={{ alignItems: "start" }}>
-          <Typography variant="h5" sx={{ marginBottom: "16px" }}>
-            Kontoinställningar
-          </Typography>
-          <InputField
-            id="new-username"
-            label="Nytt användarnamn"
-            type="text"
-            value={newUsername}
-            onChange={handleUsernameChange}
-            autoComplete="username"
-          />
-          <Divider sx={{ width: "342px", my: 2 }} />
-          <Stack direction="column-reverse">
+      <Stack
+        divider={<Divider orientation="vertical" flexItem />}
+        sx={{
+          width: "100%",
+          height: "100%",
+          minWidth: "80%",
+          alignItems: "flex-start",
+          flexDirection: "column",
+        }}
+      >
+        <form onSubmit={handleSubmit} className="settingsForm">
+          <div className="settingsItem" style={{ alignItems: "start" }}>
+            <Typography variant="h5" sx={{ marginBottom: "16px" }}>
+              Kontoinställningar
+            </Typography>
             <InputField
-              id="current-password"
-              label="Nuvarande lösenord"
-              type="password"
-              value={currentPassword}
-              onChange={handleCurrentPasswordChange}
-              autoComplete="current-password"
-              showPasswordToggle
-              showPassword={showCurrentPassword}
-              handleClickShowPassword={handleClickShowCurrentPassword}
-              handleMouseDownPassword={handleMouseDownPassword}
-              required
+              id="new-username"
+              label="Nytt användarnamn"
+              type="text"
+              value={newUsername}
+              onChange={handleUsernameChange}
+              autoComplete="username"
             />
-            {error && <Typography color="error" sx={{ mb: 3 }}>{error}</Typography>}
-          </Stack>
-          <InputField
-            id="new-password"
-            label="Nytt lösenord"
-            type="password"
-            value={newPassword}
-            onChange={handleNewPasswordChange}
-            autoComplete="new-password"
-            showPasswordToggle
-            showPassword={showNewPassword}
-            handleClickShowPassword={handleClickShowNewPassword}
-            handleMouseDownPassword={handleMouseDownPassword}
-          />
-          <InputField
-            id="confirm-password"
-            label="Bekräfta nytt lösenord"
-            type="password"
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            autoComplete="new-password"
-            showPasswordToggle
-            showPassword={showConfirmPassword}
-            handleClickShowPassword={handleClickShowConfirmPassword}
-            handleMouseDownPassword={handleMouseDownPassword}
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            endIcon={<SaveIcon />}
-            sx={{ marginTop: "16px", marginBottom: "16px" }}
-          >
-            Spara kontoändringar
-          </Button>
-        </div>
-      </form>
+            <Divider sx={{ width: "342px", my: 2 }} />
+            <Stack direction="column-reverse">
+              <InputField
+                id="current-password"
+                label="Nuvarande lösenord"
+                type="password"
+                value={currentPassword}
+                onChange={handleCurrentPasswordChange}
+                autoComplete="current-password"
+                showPasswordToggle
+                showPassword={showCurrentPassword}
+                handleClickShowPassword={handleClickShowCurrentPassword}
+                handleMouseDownPassword={handleMouseDownPassword}
+                required
+              />
+              {error && (
+                <Typography color="error" sx={{ mb: 3 }}>
+                  {error}
+                </Typography>
+              )}
+            </Stack>
+            <InputField
+              id="new-password"
+              label="Nytt lösenord"
+              type="password"
+              value={newPassword}
+              onChange={handleNewPasswordChange}
+              autoComplete="new-password"
+              showPasswordToggle
+              showPassword={showNewPassword}
+              handleClickShowPassword={handleClickShowNewPassword}
+              handleMouseDownPassword={handleMouseDownPassword}
+            />
+            <InputField
+              id="confirm-password"
+              label="Bekräfta nytt lösenord"
+              type="password"
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              autoComplete="new-password"
+              showPasswordToggle
+              showPassword={showConfirmPassword}
+              handleClickShowPassword={handleClickShowConfirmPassword}
+              handleMouseDownPassword={handleMouseDownPassword}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              endIcon={<SaveIcon />}
+              sx={{
+                marginTop: "16px",
+                marginBottom: "16px",
+                width: "355px", // Match width of other form elements
+              }}
+            >
+              Spara kontoändringar
+            </Button>
+          </div>
+        </form>
         {/* <div className="settingsItem" style={{ alignItems: "flex-start" }}>
           <Typography variant="h5" sx={{ marginBottom: "16px" }}>
             Systeminställningar
@@ -216,7 +260,7 @@ const SettingsContainer = () => {
             <MaintenanceClock />
           </div>
         </div> */}
-    </Stack>
+      </Stack>
       <Dialog open={loading}>
         <DialogContent className="standardDialog">
           <h2>Uppdaterar kontoinformation...</h2>
@@ -224,9 +268,13 @@ const SettingsContainer = () => {
         </DialogContent>
       </Dialog>
       <Dialog open={updateSuccess} onClose={handleCloseSuccessDialog}>
-        <DialogContent className="standardDialog" sx={{ textAlign: 'center' }}>
+        <DialogContent className="standardDialog" sx={{ textAlign: "center" }}>
           <h2>Användarkontot har uppdaterats.</h2>
-          <Button onClick={handleCloseSuccessDialog} color="primary" variant="contained">
+          <Button
+            onClick={handleCloseSuccessDialog}
+            color="primary"
+            variant="contained"
+          >
             OK
           </Button>
         </DialogContent>

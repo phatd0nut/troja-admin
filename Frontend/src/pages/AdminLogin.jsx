@@ -1,11 +1,59 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import loginAdmin from "../services/adminService";
 import LoginContainer from "../components/LoginContainer";
-import LoadingCircle from "../components/LoadingCircle"; // Importera LoadingCircle-komponenten
-import { loginAdmin } from "../services/adminService"; // Importera inloggningsfunktionen
-import { Dialog, DialogContent } from "../utils/MaterialUI"; //
-import "./adminLogin.css"; // Importera CSS-filen
+import LoadingCircle from "../components/LoadingCircle";
+import { Dialog, DialogContent } from "../utils/MaterialUI";
+import "./adminLogin.css";
 
+/**
+ * Komponent för administratörsinloggning.
+ * 
+ * @component AdminLogin
+ * @returns {JSX.Element} JSX-element som representerar inloggningssidan för administratörer.
+ * 
+ * @description
+ * Denna komponent hanterar inloggning för administratörer. Den kontrollerar om en token finns i localStorage
+ * och omdirigerar användaren till hemsidan om en token hittas. Om ingen token hittas, visas inloggningsformuläret.
+ * 
+ * @example
+ * <AdminLogin />
+ * 
+ * @function
+ * @name AdminLogin
+ * 
+ * @property {string} username - Användarnamn som användaren anger.
+ * @property {function} setUsername - Funktion för att uppdatera användarnamnet.
+ * @property {string} password - Lösenord som användaren anger.
+ * @property {function} setPassword - Funktion för att uppdatera lösenordet.
+ * @property {boolean} showPassword - Tillstånd för att visa eller dölja lösenordet.
+ * @property {function} setShowPassword - Funktion för att uppdatera tillståndet för att visa eller dölja lösenordet.
+ * @property {boolean} loading - Tillstånd för att spåra laddningsstatus.
+ * @property {function} setLoading - Funktion för att uppdatera laddningsstatus.
+ * @property {string} error - Felmeddelande som visas vid inloggningsfel.
+ * @property {function} setError - Funktion för att uppdatera felmeddelandet.
+ * @property {boolean} checkingToken - Tillstånd för att spåra tokenkontroll.
+ * @property {function} setCheckingToken - Funktion för att uppdatera tillståndet för tokenkontroll.
+ * @property {function} navigate - Funktion för att omdirigera användaren.
+ * 
+ * @function useEffect - Hook som kontrollerar om en token finns i localStorage och omdirigerar användaren om en token hittas.
+ * 
+ * @function handleUsernameChange - Funktion som hanterar ändringar i användarnamnsfältet.
+ * @param {object} event - Event-objektet som triggas vid ändring av användarnamnsfältet.
+ * 
+ * @function handlePasswordChange - Funktion som hanterar ändringar i lösenordsfältet.
+ * @param {object} event - Event-objektet som triggas vid ändring av lösenordsfältet.
+ * 
+ * @function handleClickShowPassword - Funktion som hanterar visning och döljning av lösenordet.
+ * 
+ * @function handleMouseDownPassword - Funktion som förhindrar standardbeteendet vid musnedtryckning på lösenordsfältet.
+ * @param {object} event - Event-objektet som triggas vid musnedtryckning.
+ * 
+ * @function handleSubmit - Funktion som hanterar inlämning av inloggningsformuläret.
+ * @param {object} event - Event-objektet som triggas vid inlämning av formuläret.
+ * 
+ * @returns {JSX.Element|null} Returnerar JSX-element som representerar inloggningssidan eller null medan token kontrolleras.
+ */
 const AdminLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

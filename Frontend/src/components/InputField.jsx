@@ -8,6 +8,27 @@ import {
 } from "../utils/MaterialUI";
 import { Visibility, VisibilityOff } from "../utils/MaterialUI";
 
+/**
+ * @component InputField
+ * @description InputField-komponenten renderar ett formulärkontrollfält med en etikett och ett inmatningsfält.
+ * Den stöder olika typer av inmatningar och kan visa eller dölja lösenord.
+ *
+ * @param {Object} props - Egenskaper som skickas till komponenten.
+ * @param {string} props.id - ID för inmatningsfältet.
+ * @param {string} props.label - Etiketten för inmatningsfältet.
+ * @param {string} props.type - Typen av inmatningsfältet (t.ex. "text", "password").
+ * @param {string} props.value - Värdet av inmatningsfältet.
+ * @param {function} props.onChange - Händelsehanterare för ändring av inmatningsfältet.
+ * @param {string} [props.autoComplete] - Autokompletteringsattribut för inmatningsfältet.
+ * @param {boolean} [props.showPasswordToggle] - Om lösenordsvisningsknappen ska visas.
+ * @param {boolean} [props.showPassword] - Om lösenordet ska visas som text.
+ * @param {function} [props.handleClickShowPassword] - Händelsehanterare för klick på lösenordsvisningsknappen.
+ * @param {function} [props.handleMouseDownPassword] - Händelsehanterare för musnedtryckning på lösenordsvisningsknappen.
+ * @param {string} [props.className] - Ytterligare CSS-klasser för inmatningsfältet.
+ * @param {boolean} [props.disabled] - Om inmatningsfältet ska vara inaktiverat.
+ *
+ * @returns {JSX.Element} En JSX-element som representerar ett inmatningsfält med en etikett.
+ */
 const InputField = ({
   id,
   label,

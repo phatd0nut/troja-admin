@@ -4,6 +4,30 @@ import { Box, ArrowDropDownIcon, ArrowDropUpIcon } from "../utils/MaterialUI";
 import Button from "./Button";
 import dayjs from "dayjs";
 
+/**
+ * @component MaintenanceClock
+ * @description Komponent för att justera underhållsklockan.
+ * 
+ * 
+ * @example
+ * return (
+ *   <MaintenanceClock />
+ * )
+ * 
+ * @returns {JSX.Element} JSX-element som representerar underhållsklockan.
+ * 
+ * @description
+ * Denna komponent tillåter användaren att justera timmar och minuter för en underhållsklocka.
+ * Tiden är initialt inställd till kl 00:00 och kan justeras med knappar för att öka eller minska timmar och minuter.
+ * 
+ * @function
+ * @name MaintenanceClock
+ * 
+ * @property {function} handleIncreaseHours - Funktion för att öka timmar med 1.
+ * @property {function} handleDecreaseHours - Funktion för att minska timmar med 1.
+ * @property {function} handleIncreaseMinutes - Funktion för att öka minuter med 5.
+ * @property {function} handleDecreaseMinutes - Funktion för att minska minuter med 5.
+ */
 export default function MaintenanceClock() {
   const [time, setTime] = useState(dayjs().startOf("day")); // Ställ in tiden till kl 00:00
 
