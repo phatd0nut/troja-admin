@@ -30,6 +30,31 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
   width: "33.33%",
 }));
 
+/**
+ * @component SelectCustomerGroupModal
+ * @description SelectCustomerGroupModal är en React-komponent som visar en modal för att välja kundgrupper.
+ * Den använder sig av Material-UI-komponenter för att skapa ett användarvänligt gränssnitt.
+ * 
+ * @param {Object} props - Komponentens props.
+ * @param {Object} props.customerGroups - Objekt som innehåller alla kundgrupper och kundgrupper som godkänner utskick.
+ * @param {Array} props.customerGroups.allCustomers - Array av alla kundgrupper.
+ * @param {Array} props.customerGroups.customersWithAcceptInfo - Array av kundgrupper som godkänner utskick.
+ * @param {Function} props.onClose - Funktion som anropas när modalen stängs.
+ * @param {Array} props.selectedGroups - Array av valda kundgrupper.
+ * @param {Function} props.setSelectedGroups - Funktion för att uppdatera de valda kundgrupperna.
+ * @param {React.Ref} ref - Referens till modalen.
+ * 
+ * @example
+ * <SelectCustomerGroupModal
+ *   customerGroups={{ allCustomers: [], customersWithAcceptInfo: [] }}
+ *   onClose={handleClose}
+ *   selectedGroups={selectedGroups}
+ *   setSelectedGroups={setSelectedGroups}
+ *   ref={modalRef}
+ * />
+ * 
+ * @returns {JSX.Element} En modal för att välja kundgrupper.
+ */
 const SelectCustomerGroupModal = forwardRef(
   (
     {

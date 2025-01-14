@@ -1,9 +1,24 @@
 import React from "react";
 import InputField from "./InputField";
-import "./LoginContainer.css"; // Importera CSS-filen
+import "./LoginContainer.css";
 import Button from "./Button";
-import { Typography } from "../utils/MaterialUI"; // Importera Typography
+import { Typography } from "../utils/MaterialUI";
 
+/**
+ * @component LoginContainer
+ * @description LoginContainer-komponenten hanterar inloggningsformuläret.
+ *
+ * @param {Object} props - Egenskaper som skickas till komponenten.
+ * @param {string} props.username - Användarnamnet som användaren anger.
+ * @param {function} props.handleUsernameChange - Funktion för att hantera ändringar i användarnamnsfältet.
+ * @param {string} props.password - Lösenordet som användaren anger.
+ * @param {function} props.handlePasswordChange - Funktion för att hantera ändringar i lösenordsfältet.
+ * @param {boolean} props.showPassword - Anger om lösenordet ska visas i klartext.
+ * @param {function} props.handleClickShowPassword - Funktion för att hantera klick på visa lösenord-knappen.
+ * @param {function} props.handleMouseDownPassword - Funktion för att hantera musens nedtryckning på visa lösenord-knappen.
+ * @param {string} [props.error] - Felmeddelande som visas om inloggningen misslyckas.
+ * @returns {JSX.Element} JSX-element som representerar inloggningsformuläret.
+ */
 const LoginContainer = ({
   username,
   handleUsernameChange,

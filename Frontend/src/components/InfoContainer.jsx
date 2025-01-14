@@ -3,6 +3,20 @@ import { Stack, Paper, Divider } from "../utils/MaterialUI";
 import FetchUpcomingEvents from "../services/FetchUpcomingEvents";
 import { fetchTicketCounts } from "../services/customerService";
 
+/**
+ * @component InfoContainer
+ * @description InfoContainer-komponenten hanterar och visar information om nästkommande matcher,
+ * flest köpta biljetter och senaste mailutskick. Den använder flera useState-krokar
+ * för att hantera komponentens tillstånd och useEffect-krokar för att ladda data
+ * och hantera fönsterstorleksändringar.
+ *
+ * @example
+ * return (
+ *   <InfoContainer />
+ * )
+ *
+ * @returns {JSX.Element} En React-komponent som visar information i ett papperskort med staplade element.
+ */
 const InfoContainer = () => {
   const [showDivider, setShowDivider] = useState(true);
   const [pSize, setPSize] = useState(0);

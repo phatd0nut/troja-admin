@@ -13,6 +13,22 @@ import {
 } from "../utils/MaterialUI";
 import Button from "./Button";
 
+/**
+ * @component SubjectModal
+ * @example
+ * <SubjectModal isOpen={true} onClose={handleClose} onSave={handleSave} />
+ *
+ * @param {Object} props - Komponentens egenskaper.
+ * @param {boolean} props.isOpen - Anger om modalen är öppen.
+ * @param {function} props.onClose - Funktion som anropas när modalen stängs.
+ * @param {function} props.onSave - Funktion som anropas när ett ämne sparas.
+ *
+ * @description
+ * SubjectModal är en komponent som visar en modal där användaren kan ange och spara ämnen. 
+ * Användaren kan också välja tidigare sparade ämnen eller rensa alla sparade ämnen.
+ *
+ * @returns {JSX.Element} En JSX-element som representerar modalen.
+ */
 const SubjectModal = ({ isOpen, onClose, onSave }) => {
   const [subject, setSubject] = useState("");
   const [savedSubjects, setSavedSubjects] = useState([]);

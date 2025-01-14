@@ -22,6 +22,24 @@ const App = () => {
   );
 };
 
+/**
+ * AppContent-komponenten hanterar visningen av navigationsfältet och innehållet baserat på den aktuella URL-sökvägen.
+ *
+ * @param {Object} props - Egenskaper som skickas till komponenten.
+ * @param {boolean} props.openNav - Anger om navigationsfältet är öppet eller stängt.
+ * @param {Function} props.setOpenNav - Funktion för att uppdatera tillståndet för navigationsfältet.
+ *
+ * @returns {JSX.Element} JSX-element som representerar applikationens innehåll.
+ *
+ * Komponentens beteende:
+ * - Använder `useLocation` för att få den aktuella URL-sökvägen.
+ * - Bestämmer om navigationsfältet ska visas baserat på om sökvägen är '/login' eller inte.
+ * - Renderar `NavBar`-komponenten om `showNavBar` är sant.
+ * - Renderar olika rutter baserat på URL-sökvägen med hjälp av `Routes` och `Route` komponenterna.
+ * - Om sökvägen är '/', omdirigeras användaren till '/home'.
+ * - Om sökvägen är '/login', renderas `AdminLogin`-komponenten.
+ * - För skyddade rutter som '/home', '/customers', '/mailing' och '/settings', används `ProtectedRoute`-komponenten för att säkerställa att användaren är autentiserad innan de får tillgång.
+ */
 const AppContent = ({ openNav, setOpenNav }) => {
   const location = useLocation();
   const showNavBar = location.pathname !== '/login';

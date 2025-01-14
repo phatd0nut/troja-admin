@@ -12,6 +12,37 @@ import {
 } from "../utils/MaterialUI";
 import { triggerFetchData } from "../services/customerService";
 
+/**
+ * Komponent för att hantera kundsidan.
+ *
+ * @component Customers
+ * @returns {JSX.Element} JSX-element som representerar kundsidan.
+ *
+ * @example
+ * <Customers />
+ *
+ * @description
+ * Denna komponent hanterar visningen och synkroniseringen av kunddata. Den innehåller funktioner för att söka efter kunder,
+ * synkronisera kunddata och visa meddelanden under synkroniseringsprocessen.
+ *
+ * @function
+ * @name Customers
+ *
+ * @property {string} searchQuery - Sökfrågan som används för att filtrera kunder.
+ * @property {Array} searchCriteria - Kriterierna som används för att filtrera kunder.
+ * @property {boolean} loading - Indikator för om synkroniseringsprocessen pågår.
+ * @property {string} message - Meddelande som visas under synkroniseringsprocessen.
+ *
+ * @function
+ * @name handleCloseDialog
+ * @description Stänger dialogrutan och laddar om sidan.
+ *
+ * @function
+ * @name handleSync
+ * @description Hanterar synkroniseringen av kunddata. Visar ett meddelande under processen och hanterar eventuella fel.
+ *
+ * @returns {JSX.Element} JSX-element som representerar kundsidan.
+ */
 const Customers = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchCriteria, setSearchCriteria] = useState([]);
@@ -20,7 +51,7 @@ const Customers = () => {
 
   const handleCloseDialog = () => {
     setMessage("");
-    window.location.reload(); // Reload page when dialog closes
+    window.location.reload();
   };
 
   const handleSync = async () => {

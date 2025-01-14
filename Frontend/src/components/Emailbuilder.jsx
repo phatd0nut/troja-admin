@@ -5,6 +5,41 @@ import BeefreeSDK from "@beefree.io/sdk";
 const clientId = import.meta.env.VITE_CLIENT_ID;
 const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
 
+/**
+ * @component EmailBuilder
+ * @description EmailBuilder-komponenten använder BeefreeSDK för att skapa och hantera e-postmallar.
+ * 
+ * @param {Object} props - Egenskaper som skickas till komponenten.
+ * @param {Function} props.sendEmail - Funktion för att skicka e-post med HTML-innehåll.
+ * @param {React.Ref} ref - Referens för att exponera interna metoder.
+ * 
+ * @method loadTemplate - Laddar en e-postmall från en JSON-fil.
+ * @param {Object} jsonFile - JSON-objekt som representerar e-postmallen.
+ * 
+ * @method sendEmail - Skickar e-post och returnerar en Promise med HTML-innehållet.
+ * @returns {Promise<string>} - En Promise som löser sig med HTML-innehållet av e-posten.
+ * 
+ * @function saveTemplateLocally - Sparar en e-postmall lokalt som en JSON-fil.
+ * @param {Object} jsonFile - JSON-objekt som representerar e-postmallen.
+ * 
+ * @example
+ * // Exempel på hur man använder EmailBuilder-komponenten
+ * const emailBuilderRef = useRef();
+ * 
+ * const sendEmail = (htmlFile) => {
+ *   // Logik för att skicka e-post
+ * };
+ * 
+ * <EmailBuilder ref={emailBuilderRef} sendEmail={sendEmail} />
+ * 
+ * // Ladda en mall
+ * emailBuilderRef.current.loadTemplate(jsonFile);
+ * 
+ * // Skicka e-post
+ * emailBuilderRef.current.sendEmail().then((htmlFile) => {
+ *   console.log("E-post skickad med innehåll:", htmlFile);
+ * });
+ */
 const EmailBuilder = forwardRef((props, ref) => {
   const editorRef = useRef(null);
   const [bee, setBee] = useState(null);
