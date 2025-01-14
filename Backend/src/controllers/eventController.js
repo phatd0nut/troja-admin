@@ -1,6 +1,15 @@
+/**
+ * eventController.js är en fil som innehåller funktioner för att hantera evenemang i och från databasen
+ */
 const { getAllEvents } = require('../services/eventService');
 const { getPublicEvents } = require('../services/apiServicePublicEvents');
 
+/**
+ * Hämtar alla evenemang från databasen
+ * @param {object} req - request objekt
+ * @param {object} res - response objekt
+ * @returns {Promise<void>} - inget returnerat
+ */
 const fetchAllEvents = async (req, res) => {
     try {
         const events = await getAllEvents();
@@ -10,6 +19,12 @@ const fetchAllEvents = async (req, res) => {
     }
 };
 
+/**
+ * Hämtar alla offentliga evenemang från databasen
+ * @param {object} req - request objekt
+ * @param {object} res - response objekt
+ * @returns {Promise<void>} - inget returnerat
+ */
 const fetchUpcomingEvents = async (req, res) => {
     try {
         const events = await getPublicEvents();
@@ -19,4 +34,5 @@ const fetchUpcomingEvents = async (req, res) => {
     }
 };
 
+//exporterar fetchAllEvents och fetchUpcomingEvents för att kunna använda dem i andra filer
 module.exports = { fetchAllEvents, fetchUpcomingEvents };

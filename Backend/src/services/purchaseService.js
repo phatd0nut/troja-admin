@@ -1,3 +1,6 @@
+/**
+ * purchaseService.js är en fil som innehåller funktioner för att hantera köp i och från databasen
+ */
 const pool = require('../config/db');
 /**
  * Hämtar alla köp från databasen
@@ -8,6 +11,11 @@ const getAllPurchases = async () => {
     return rows;
 };
 
+/**
+ * Hämtar de senaste 10 köpen för en given kund
+ * @param {string} customerId - kundens ID
+ * @returns {Promise<Array<object>>} - de senaste 10 köpen för kunden
+ */
 const getRecentPurchasesByCustomerId = async (customerId) => {
     const query = `
     SELECT p.*, g.name AS goodsName, g.priceIncVatAfterDiscount AS priceAfterVat
@@ -22,6 +30,10 @@ const getRecentPurchasesByCustomerId = async (customerId) => {
     return rows;
 };
 
+/**
+ * Hämtar detaljerade köp för de senaste 10 köpen
+ * @returns {Promise<Array<object>>} - detaljerade köp
+ */
 const getRecentPurchasesWithDetails = async () => {
     const query = `
     SELECT p.*, c.firstName, c.lastName, c.userRefNo, g.priceIncVatAfterDiscount AS price, g.type AS goodsType, e.name AS eventName
@@ -38,6 +50,10 @@ const getRecentPurchasesWithDetails = async () => {
     return rows;
 };
 
+/**
+ * Hämtar totala intäkter för de senaste evenemangen
+ * @returns {Promise<Array<object>>} - totala intäkter för evenemangen
+ */
 const getTotalRevenueByRecentEvents = async () => {
     const query = `
     SELECT e.id AS eventId, e.name AS eventName, e.start, e.end, SUM(g.priceIncVatAfterDiscount) AS totalRevenue
@@ -54,4 +70,5 @@ const getTotalRevenueByRecentEvents = async () => {
     const [rows] = await pool.query(query);
     return rows;
 };
+//exporterar alla funktioner för att kunna använda dem i andra filer
 module.exports = { getAllPurchases, getRecentPurchasesByCustomerId, getRecentPurchasesWithDetails, getTotalRevenueByRecentEvents};

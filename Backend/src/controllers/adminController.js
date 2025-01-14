@@ -1,7 +1,16 @@
+/**
+ * adminController.js är en fil som innehåller funktioner för att hantera administratörers inloggning och registrering
+ */
 const { createAdmin, findAdminByUsername, updateAdminDetails, generateToken } = require('../services/adminService');
 const bcrypt = require('bcrypt');
 const { fetchDataAndLog } = require('../services/apiService');
 
+/**
+ * Loggar in en administratör
+ * @param {object} req - request objekt
+ * @param {object} res - response objekt
+ * @returns {Promise<void>} - inget returnerat
+ */
 const adminLogin = async (req, res) => {
     const { username, password } = req.body;
     const adminUser = await findAdminByUsername(username);
@@ -14,6 +23,12 @@ const adminLogin = async (req, res) => {
     }
 };
 
+/**
+ * Registrerar en ny administratör
+ * @param {object} req - request objekt
+ * @param {object} res - response objekt
+ * @returns {Promise<void>} - inget returnerat
+ */
 const registerAdmin = async (req, res) => {
     const { username, password } = req.body;
 
@@ -25,7 +40,12 @@ const registerAdmin = async (req, res) => {
     }
 };
 
-
+/**
+ * Uppdaterar detaljer för en administratör
+ * @param {object} req - request objekt
+ * @param {object} res - response objekt
+ * @returns {Promise<void>} - inget returnerat
+ */
 const changeAdminDetails = async (req, res) => {
     const { currentPassword, newName, newPassword, confirmPassword } = req.body;
     const adminId = req.user.id; 
@@ -53,11 +73,22 @@ const changeAdminDetails = async (req, res) => {
     }
 };
 
-
+/**
+ * Hämtar data från databasen
+ * @param {object} req - request objekt
+ * @param {object} res - response objekt
+ * @returns {Promise<void>} - inget returnerat
+ */
 const fetchData = async (req, res) => {
     res.status(200).json({ message: 'Data fetched successfully' });
 };
 
+/**
+ * Triggar hämtning av data från databasen
+ * @param {object} req - request objekt
+ * @param {object} res - response objekt
+ * @returns {Promise<void>} - inget returnerat
+ */
 const triggerFetchData = async (req, res) => {
     try {
         await fetchDataAndLog();
@@ -67,4 +98,5 @@ const triggerFetchData = async (req, res) => {
     }
 };
 
+//exporterar adminLogin, registerAdmin, changeAdminDetails, fetchData och triggerFetchData för att kunna använda dem i andra filer
 module.exports = { adminLogin, registerAdmin, changeAdminDetails, fetchData, triggerFetchData };

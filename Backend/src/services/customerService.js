@@ -1,3 +1,7 @@
+/**
+ * customerService.js är en fil som innehåller funktioner för att hantera kunder
+ */
+
 const pool = require('../config/db');
 
 /**
@@ -62,5 +66,5 @@ const getCustomersLastYear = async () => {
     );
     return rows[0].count;
 };
-
+//exporterar getAllCustomers, getCustomersGroupedByGoods, getCustomersLastMonth, getCustomersLastYear för att kunna använda dem i andra filer
 module.exports = { getAllCustomers, getCustomersGroupedByGoods, getCustomersLastMonth, getCustomersLastYear };

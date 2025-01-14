@@ -21,34 +21,11 @@ app.use(cors()); //använder cors() för att kunna skapa en cors-policy
 
 app.use('/admin', adminRoutes); //använder adminRoutes för att kunna skapa en router för admin-relaterade routes
 
-
-
 //Kör en cron-jobb som tar bort kunder som inte har handlat på 2 år. checkar varje dag kl 2:00
 cron.schedule('0 2 * * *', async () => {
     console.log('Running cleanup task to remove old users...');
     await removeOldUsers();
 });
-
-/* 
-cron.schedule('* * * * *', async () => {
-    await fetchDataAndLog();
-    logger.info('Data fetch triggered immediately on server start.');
-    
-    this.stop();
-});
- */
-/**
- * Test route, used to insert data - should be deleted later on N.A 
- * 
- */
-/* app.get('/test-insert', async (req, res) => {
-    try {
-        await insertDataFromJson(); 
-        res.send('Data insertion triggered successfully.');
-    } catch (error) {
-        res.status(500).send('Error during data insertion: ' + error.message);
-    }
-}); */
 
 //startar servern på port 3000
 app.listen(port, () => {
