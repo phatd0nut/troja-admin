@@ -21,6 +21,7 @@ import {
 } from "../utils/MaterialUI";
 import Button from "./Button";
 import InputField from "./InputField";
+import { all } from "axios";
 
 const CustomTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#dc2e34",
@@ -34,7 +35,7 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
  * @component SelectCustomerGroupModal
  * @description SelectCustomerGroupModal är en React-komponent som visar en modal för att välja kundgrupper.
  * Den använder sig av Material-UI-komponenter för att skapa ett användarvänligt gränssnitt.
- * 
+ *
  * @param {Object} props - Komponentens props.
  * @param {Object} props.customerGroups - Objekt som innehåller alla kundgrupper och kundgrupper som godkänner utskick.
  * @param {Array} props.customerGroups.allCustomers - Array av alla kundgrupper.
@@ -43,7 +44,7 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
  * @param {Array} props.selectedGroups - Array av valda kundgrupper.
  * @param {Function} props.setSelectedGroups - Funktion för att uppdatera de valda kundgrupperna.
  * @param {React.Ref} ref - Referens till modalen.
- * 
+ *
  * @example
  * <SelectCustomerGroupModal
  *   customerGroups={{ allCustomers: [], customersWithAcceptInfo: [] }}
@@ -52,13 +53,15 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
  *   setSelectedGroups={setSelectedGroups}
  *   ref={modalRef}
  * />
- * 
+ *
  * @returns {JSX.Element} En modal för att välja kundgrupper.
  */
 const SelectCustomerGroupModal = forwardRef(
   (
     {
-      customerGroups = { allCustomers: [], customersWithAcceptInfo: [] },
+      customerGroups = {
+        allCustomers: []
+      },
       onClose,
       selectedGroups,
       setSelectedGroups,
@@ -88,9 +91,13 @@ const SelectCustomerGroupModal = forwardRef(
     };
 
     const uniqueGroups = Array.from(
-      new Set(customerGroups.allCustomers.map((group) => group.goodsName))
+      new Set([
+        "Alla kunder",
+        ...customerGroups.allCustomers
+          .filter((group) => group.goodsName !== "Alla kunder")
+          .map((group) => group.goodsName),
+      ])
     );
-
     const [groupCounts, setGroupCounts] = useState({});
 
     const handleCheckboxChange = (event) => {
@@ -219,7 +226,6 @@ const SelectCustomerGroupModal = forwardRef(
               "& .MuiButton-endIcon": {
                 margin: 0,
                 padding: 0,
-
               },
             }}
           />
@@ -269,22 +275,31 @@ const SelectCustomerGroupModal = forwardRef(
             <TableHead>
               <TableRow>
                 <CustomTableCell>Grupp</CustomTableCell>
-                <CustomTableCell>
-                  Antal kunder som accepterar utskick
-                </CustomTableCell>
+                <CustomTableCell>Kunder</CustomTableCell>
                 <CustomTableCell>Välj för utskick</CustomTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {paginatedGroups.length > 0 ? (
                 paginatedGroups.map((goodsName, index) => {
-                  const acceptCount =
-                    customerGroups.customersWithAcceptInfo.filter(
+                  let acceptCount, totalCount;
+
+                  if (goodsName === "Alla kunder") {
+                    // For "Alla kunder", use the allCustomersGroup data
+                    acceptCount = customerGroups.allCustomers.length;
+                    // totalCount = customerGroups.allCustomers.length; // allCustomersGroup
+                  } else {
+                    // acceptCount = customerGroups.customersWithAcceptInfo.filter(
+                    //   (group) => group.goodsName === goodsName
+                    // ).length;
+                    acceptCount = customerGroups.allCustomers.filter(
                       (group) => group.goodsName === goodsName
                     ).length;
-                  const totalCount = customerGroups.allCustomers.filter(
-                    (group) => group.goodsName === goodsName
-                  ).length;
+                    // totalCount = customerGroups.allCustomers.filter(
+                    //   (group) => group.goodsName === goodsName
+                    // ).length;
+                  }
+
                   return (
                     <TableRow
                       key={index}
@@ -301,7 +316,7 @@ const SelectCustomerGroupModal = forwardRef(
                     >
                       <TableCell>{goodsName}</TableCell>
                       <TableCell>
-                        {acceptCount} ({totalCount})
+                        {acceptCount} {/* ({totalCount}) */}
                       </TableCell>
                       <TableCell>
                         <Checkbox

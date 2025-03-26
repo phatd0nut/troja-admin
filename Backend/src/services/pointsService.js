@@ -119,5 +119,50 @@ const addNewCustomerWithPoints = async (userRefNo, points) => {
         console.error(`Error adding new customer with userRefNo ${userRefNo}:`, error.message);
     }
 };
-//exporterar calculateAndUpdatePointsFromDatabase för att kunna använda den i andra filer
-module.exports = { calculateAndUpdatePointsFromDatabase };
+
+const calculateCustomerPointsWithAcceptInfo = async () => {
+    try {
+        const [results] = await pool.query(`
+            SELECT 
+                SUM(CASE WHEN acceptInfo = 1 THEN points ELSE 0 END) AS totalPointsWithAccept,
+                SUM(CASE WHEN acceptInfo = 0 THEN points ELSE 0 END) AS totalPointsWithoutAccept
+            FROM customer
+        `);
+        
+        // Format the date as YYYY/MM/DD HH:MM
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        
+        const formattedTime = `${year}/${month}/${day} ${hours}:${minutes}`;
+        
+        const pointsStats = {
+            timestamp: formattedTime,
+            totalPointsWithAcceptInfo: results[0].totalPointsWithAccept || 0,
+            totalPointsWithoutAcceptInfo: results[0].totalPointsWithoutAccept || 0
+        };
+        
+        console.log(`[${formattedTime}] Customer points statistics:`, pointsStats);
+        return pointsStats;
+    } catch (error) {
+        console.error('Error calculating customer points statistics:', error.message);
+        throw error;
+    }
+};
+
+module.exports = { 
+    calculateAndUpdatePointsFromDatabase,
+    calculateCustomerPointsWithAcceptInfo
+};
+
+// Run it once when the module loads
+(async () => {
+    try {
+        await calculateCustomerPointsWithAcceptInfo();
+    } catch (error) {
+        console.error("Failed to calculate points statistics:", error);
+    }
+})();
