@@ -40,7 +40,7 @@ import SubjectModal from "../components/SubjectModal";
  *
  * @function
  * @name Mailing
- * 
+ *
  * @function handleFileChange
  * Hanterar filändringar och laddar en e-postmall från en JSON-fil.
  * @param {Event} event - Filändringshändelsen.
@@ -70,7 +70,7 @@ const Mailing = () => {
   const MAIL_URL = import.meta.env.VITE_SEND_MAIL_ENDPOINT;
   const [customerGroups, setCustomerGroups] = useState({
     allCustomers: [],
-    customersWithAcceptInfo: [],
+    // customersWithAcceptInfo: [],
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);
@@ -78,12 +78,25 @@ const Mailing = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [recipientsCount, setRecipientsCount] = useState(0);
+  const [selectedCustomers, setSelectedCustomers] = useState([]);
+  const [customGroups, setCustomGroups] = useState({});
 
   // Hämta sparade grupper från localStorage när komponenten laddas
   useEffect(() => {
     const savedGroups =
       JSON.parse(localStorage.getItem("selectedGroups")) || [];
+    const savedCustomers =
+      JSON.parse(localStorage.getItem("selectedCustomers")) || [];
+    const savedCustomGroups =
+      JSON.parse(localStorage.getItem("customGroups")) || {};
+    const savedCustomerGroups = JSON.parse(
+      localStorage.getItem("customerGroups")
+    ) || { allCustomers: [] };
+
     setSelectedGroups(savedGroups);
+    setSelectedCustomers(savedCustomers);
+    setCustomGroups(savedCustomGroups);
+    setCustomerGroups(savedCustomerGroups); // Changed from setCustomGroups to setCustomerGroups
   }, []);
 
   const handleFileChange = (event) => {
@@ -117,21 +130,82 @@ const Mailing = () => {
       console.log("Missing content or subject");
       return;
     }
-
-    console.log("Subject:", subjectRef.current);
+    
     setLoading(true);
     setMessage("Skickar e-postmeddelanden...");
 
     try {
       const token = localStorage.getItem("token");
-      // Samla in e-postadresser från valda kundgrupper inom customersWithAcceptInfo
-      const emailAddresses = customerGroups.customersWithAcceptInfo
-        .filter((customer) => selectedGroups.includes(customer.goodsName))
-        .map((customer) => customer.email);
+
+      // Get data from state and localStorage
+      const storedCustomerData = JSON.parse(
+        localStorage.getItem("customerGroups")
+      );
+      const currentCustomerGroups = storedCustomerData || customerGroups;
+
+      const currentSelectedGroups = JSON.parse(
+        localStorage.getItem("selectedGroups") || "[]"
+      );
+      const currentCustomGroups = JSON.parse(
+        localStorage.getItem("customGroups") || "{}"
+      );
+      const currentSelectedCustomers = JSON.parse(
+        localStorage.getItem("selectedCustomers") || "[]"
+      );
+
+      // Create a Set to track all unique email addresses
+      const uniqueEmails = new Set();
+
+      // STEP 1: Handle standard product groups
+      if (currentSelectedGroups.includes("Alla kunder")) {
+        currentCustomerGroups.allCustomers.forEach((customer) => {
+          if (customer.email) {
+            uniqueEmails.add(customer.email);
+          }
+        });
+      } else {
+        currentCustomerGroups.allCustomers
+          .filter((customer) => {
+            const isIncluded = currentSelectedGroups.includes(
+              customer.goodsName
+            );
+            return isIncluded;
+          })
+          .forEach((customer) => {
+            if (customer.email) {
+              uniqueEmails.add(customer.email);
+            }
+          });
+      }
+
+      // STEP 2: Handle custom groups using data from localStorage
+      currentSelectedGroups.forEach((groupName) => {
+        const customGroup = currentCustomGroups[groupName];
+        if (customGroup && customGroup.customers) {
+          customGroup.customers.forEach((customer) => {
+            if (customer.email) uniqueEmails.add(customer.email);
+          });
+        }
+      });
+
+      // STEP 3: Handle individually selected customers
+      currentSelectedCustomers.forEach((customer) => {
+        if (customer.email) uniqueEmails.add(customer.email);
+      });
+
+      // Convert Set to Array for processing
+      const emailAddresses = Array.from(uniqueEmails);
+
+      if (emailAddresses.length === 0) {
+        setMessage(
+          "Inga giltiga e-postadresser hittades i de valda grupperna eller för specifik kund."
+        );
+        return;
+      }
 
       setRecipientsCount(emailAddresses.length);
 
-      // Skicka ett separat e-postmeddelande till varje e-postadress
+      // Send emails to all recipients
       for (const email of emailAddresses) {
         try {
           const response = await axios.post(
@@ -160,25 +234,41 @@ const Mailing = () => {
       console.error("Error sending emails:", error);
       setMessage("Misslyckades med att skicka e-postmeddelanden.");
     } finally {
-      setLoading(false); // Göm dialogen när alla e-postmeddelanden har skickats
+      setLoading(false);
     }
   };
 
   const handleSelectCustomerGroups = async () => {
     try {
-      const data = await fetchCustomersGroupedByGoods();
-      setCustomerGroups(data);
-      setIsModalOpen(true); // Öppna modalen när data har hämtats
+      // Only fetch if we don't have data
+      if (
+        !customerGroups.allCustomers ||
+        customerGroups.allCustomers.length === 0
+      ) {
+        const data = await fetchCustomersGroupedByGoods();
+        setCustomerGroups(data);
+        localStorage.setItem("customerGroups", JSON.stringify(data));
+      }
+      setIsModalOpen(true);
     } catch (error) {
       console.error("Error fetching customer groups:", error);
     }
   };
 
-  const handleCloseModal = (selectedGroups) => {
+  const handleCloseModal = (selectedGroups, selectedCustomers = []) => {
     setIsModalOpen(false);
+
     if (selectedGroups) {
       setSelectedGroups(selectedGroups);
       localStorage.setItem("selectedGroups", JSON.stringify(selectedGroups));
+    }
+
+    if (selectedCustomers) {
+      setSelectedCustomers(selectedCustomers);
+      localStorage.setItem(
+        "selectedCustomers",
+        JSON.stringify(selectedCustomers)
+      );
     }
   };
 
@@ -236,9 +326,17 @@ const Mailing = () => {
             <Typography variant="h6">
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <GroupIcon sx={{ mr: 1 }} />
-                {selectedGroups.length > 0
-                  ? `${selectedGroups.length}`
-                  : "Inga kundgrupper valda"}
+                {selectedGroups.includes("Alla kunder") ? (
+                  "Alla kunder"
+                ) : (
+                  <>
+                    {selectedGroups.length > 0
+                      ? `${selectedGroups.length} grupper`
+                      : "Inga grupper valda"}
+                    {selectedCustomers.length > 0 &&
+                      ` + ${selectedCustomers.length} enskilda kunder`}
+                  </>
+                )}
               </Box>
             </Typography>
             <Typography variant="h6">
@@ -278,16 +376,24 @@ const Mailing = () => {
       <Paper id="mailingPaper" elevation={3}>
         <EmailBuilder ref={emailBuilderRef} sendEmail={handleSendEmail} />
       </Paper>
+      // Update the Modal component
       <Modal
         open={isModalOpen}
-        onClose={() => handleCloseModal(selectedGroups)}
+        onClose={() => handleCloseModal(selectedGroups, selectedCustomers)}
       >
         <Box>
           <SelectCustomerGroupModal
             customerGroups={customerGroups}
-            onClose={handleCloseModal}
+            onClose={(groups, customers) => {
+              handleCloseModal(groups, customers);
+              // Add a small delay before allowing send
+              setTimeout(() => {
+              }, 100);
+            }}
             selectedGroups={selectedGroups}
             setSelectedGroups={setSelectedGroups}
+            selectedCustomers={selectedCustomers}
+            setSelectedCustomers={setSelectedCustomers}
           />
         </Box>
       </Modal>

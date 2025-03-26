@@ -44,6 +44,11 @@ import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import SubjectIcon from '@mui/icons-material/Subject';
+import PersonAdd from '@mui/icons-material/PersonAdd';
+import PersonRemove from '@mui/icons-material/PersonRemove';
+import Search from '@mui/icons-material/Search';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import Check from '@mui/icons-material/Check';
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
@@ -158,6 +163,11 @@ export {
   DeleteIcon,
   CloseIcon,
   SubjectIcon,
+  PersonAdd,
+  PersonRemove,
+  Search,
+  Tab,
+  Tabs,
   Check,
   Avatar,
   Badge,
