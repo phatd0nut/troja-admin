@@ -114,6 +114,9 @@ const SelectCustomerGroupModal = forwardRef(
         ...customerGroups.allCustomers
           .filter((group) => group.goodsName !== "Alla kunder")
           .map((group) => group.goodsName),
+        ...(customerGroups.customGroups
+          ? Object.keys(customerGroups.customGroups)
+          : []), // Add custom groups if available
       ])
     );
     const [groupCounts, setGroupCounts] = useState({});
@@ -177,7 +180,6 @@ const SelectCustomerGroupModal = forwardRef(
       });
     };
 
-    // Function to save the custom group
     // Function to save the custom group
     const saveCustomGroup = () => {
       if (selectedCustomers.length === 0) return;
@@ -425,6 +427,13 @@ const SelectCustomerGroupModal = forwardRef(
 
                       if (goodsName === "Alla kunder") {
                         acceptCount = customerGroups.allCustomers.length;
+                      } else if (
+                        customerGroups.customGroups &&
+                        customerGroups.customGroups[goodsName]
+                      ) {
+                        acceptCount =
+                          customerGroups.customGroups[goodsName].customers
+                            .length;
                       } else {
                         acceptCount = customerGroups.allCustomers.filter(
                           (group) => group.goodsName === goodsName
@@ -499,7 +508,7 @@ const SelectCustomerGroupModal = forwardRef(
           <>
             <Box sx={{ mb: 3 }}>
               <InputField
-                label="Namn på personligt utskick"
+                label="Namn på ny kundgrupp"
                 value={customGroupName}
                 onChange={(e) => setCustomGroupName(e.target.value)}
                 sx={{ mb: 2 }}
@@ -550,19 +559,16 @@ const SelectCustomerGroupModal = forwardRef(
               </Paper>
 
               <Box
-                sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  mb: 2,
+                  mt: 4,
+                }}
               >
                 <Typography variant="h6">
                   Valda kunder: {selectedCustomers.length}
                 </Typography>
-                <Button
-                  onClick={handleClearCustomers}
-                  variant="outlined"
-                  color="secondary"
-                  size="small"
-                >
-                  Rensa val
-                </Button>
               </Box>
 
               <Paper sx={{ maxHeight: 200, overflow: "auto", mb: 2 }}>
@@ -595,6 +601,14 @@ const SelectCustomerGroupModal = forwardRef(
                 disabled={selectedCustomers.length === 0}
               >
                 Lägg till i grupp
+              </Button>
+              <Button
+                onClick={handleClearCustomers}
+                variant="outlined"
+                color="secondary"
+                sx={{ ml: 2 }}
+              >
+                Rensa val
               </Button>
             </Box>
           </>

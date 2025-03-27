@@ -238,20 +238,46 @@ const Mailing = () => {
     }
   };
 
-  const handleSelectCustomerGroups = async () => {
+    const handleSelectCustomerGroups = async () => {
+    console.log("Fetching customer groups...");
+    
     try {
-      // Only fetch if we don't have data
-      if (
-        !customerGroups.allCustomers ||
-        customerGroups.allCustomers.length === 0
-      ) {
+      // Always fetch custom groups from localStorage
+      const savedCustomGroups = JSON.parse(localStorage.getItem("customGroups")) || {};
+      console.log("Saved custom groups:", savedCustomGroups);
+  
+      // Check if we need to fetch other data
+      if (!customerGroups.allCustomers || customerGroups.allCustomers.length === 0) {
         const data = await fetchCustomersGroupedByGoods();
-        setCustomerGroups(data);
-        localStorage.setItem("customerGroups", JSON.stringify(data));
+        console.log("Fetched data:", data);
+        
+        const combinedData = {
+          allCustomers: data.allCustomers || [],
+          goodsGroups: data.goodsGroups || [],
+          customGroups: savedCustomGroups
+        };
+        
+        console.log("Combined data:", combinedData);
+        setCustomerGroups(combinedData);
+        localStorage.setItem("customerGroups", JSON.stringify(combinedData));
+      } else {
+        // Just update the custom groups in the existing data
+        setCustomerGroups(prevState => ({
+          ...prevState,
+          customGroups: savedCustomGroups
+        }));
+        
+        // Update localStorage with the combined data
+        const updatedData = {
+          ...customerGroups,
+          customGroups: savedCustomGroups
+        };
+        localStorage.setItem("customerGroups", JSON.stringify(updatedData));
       }
+      
       setIsModalOpen(true);
     } catch (error) {
-      console.error("Error fetching customer groups:", error);
+      console.error("Error handling customer groups:", error);
     }
   };
 
