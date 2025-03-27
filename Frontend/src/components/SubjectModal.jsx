@@ -100,7 +100,7 @@ const SubjectModal = ({ isOpen, onClose, onSave }) => {
         <List sx={{ mb: 2, maxHeight: 300, overflow: "auto" }}>
           {savedSubjects.map((savedSubject, index) => (
             <ListItem
-              button
+              button="true"
               key={index}
               onClick={() => handleSelectSubject(savedSubject)}
               sx={{

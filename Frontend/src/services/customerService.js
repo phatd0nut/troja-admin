@@ -73,11 +73,18 @@ export const fetchCustomersGroupedByGoods = async () => {
         });
 
         const allCustomers = response.data.customers || [];
-        const customersWithAcceptInfo = allCustomers.filter(customer => customer.acceptInfo === 1);
-        
+        // const customersWithAcceptInfo = allCustomers.filter(customer =>
+        //     customer.acceptInfo === 1 || customer.acceptInfo === 0
+        // );
+
+ 
+
+        // Skapar en lista med alla kunder inklusive "Alla kunder"
+        // const customersWithAllGroup = [...allCustomers];
+
         return {
             allCustomers,
-            customersWithAcceptInfo,
+            // customersWithAllGroup,
         };
     } catch (error) {
         console.error('Error fetching customers grouped by goods:', error);
