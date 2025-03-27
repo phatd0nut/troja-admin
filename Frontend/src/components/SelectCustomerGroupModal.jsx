@@ -72,25 +72,39 @@ const SelectCustomerGroupModal = forwardRef(
     const [isDeleting, setIsDeleting] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [inspectionPage, setInspectionPage] = useState(1);
-    const inspectionRowsPerPage = 5;
+    const inspectionRowsPerPage = 6;
 
     const handleInspectGroup = (goodsName, event) => {
       event.stopPropagation();
       setCurrentGroupName(goodsName);
-
+    
+      // Helper function to remove duplicates
+      const getUniqueCustomers = (customers) => {
+        const uniqueCustomersMap = new Map();
+        customers.forEach(customer => {
+          const email = customer.email?.toLowerCase();
+          if (email && !uniqueCustomersMap.has(email)) {
+            uniqueCustomersMap.set(email, customer);
+          }
+        });
+        return Array.from(uniqueCustomersMap.values());
+      };
+      
+    
+      let customersToInspect;
       if (goodsName === "Alla kunder") {
-        setInspectingGroup(customerGroups.allCustomers);
+        customersToInspect = getUniqueCustomers(customerGroups.allCustomers);
+      } else if (customerGroups.customGroups && customerGroups.customGroups[goodsName]) {
+        customersToInspect = getUniqueCustomers(customerGroups.customGroups[goodsName].customers);
       } else {
-        setInspectingGroup(
-          customerGroups.customGroups && customerGroups.customGroups[goodsName]
-            ? customerGroups.customGroups[goodsName].customers
-            : customerGroups.allCustomers.filter(
-                (customer) => customer.goodsName === goodsName
-              )
+        customersToInspect = getUniqueCustomers(
+          customerGroups.allCustomers.filter(customer => customer.goodsName === goodsName)
         );
       }
+    
+      setInspectingGroup(customersToInspect);
+      setInspectionPage(1); // Reset pagination when changing groups
     };
-
     const handleInspectionPageChange = (event, newPage) => {
       setInspectionPage(newPage);
     };
@@ -603,19 +617,31 @@ const SelectCustomerGroupModal = forwardRef(
                         paginatedGroups.map((goodsName, index) => {
                           let acceptCount;
                           if (goodsName === "Alla kunder") {
-                            acceptCount = customerGroups.allCustomers.length;
-                          } else if (
-                            customerGroups.customGroups &&
-                            customerGroups.customGroups[goodsName]
-                          ) {
-                            acceptCount =
-                              customerGroups.customGroups[goodsName].customers
-                                .length;
+                            const uniqueCustomers = new Map();
+                            customerGroups.allCustomers.forEach(customer => {
+                              const email = customer.email?.toLowerCase();
+                              if (email) uniqueCustomers.set(email, customer);
+                            });
+                            acceptCount = uniqueCustomers.size;
+                          } else if (customerGroups.customGroups && customerGroups.customGroups[goodsName]) {
+                            const uniqueCustomers = new Map();
+                            customerGroups.customGroups[goodsName].customers.forEach(customer => {
+                              const email = customer.email?.toLowerCase();
+                              if (email) uniqueCustomers.set(email, customer);
+                            });
+                            acceptCount = uniqueCustomers.size;
                           } else {
-                            acceptCount = customerGroups.allCustomers.filter(
-                              (group) => group.goodsName === goodsName
-                            ).length;
+                            const filteredCustomers = customerGroups.allCustomers.filter(
+                              group => group.goodsName === goodsName
+                            );
+                            const uniqueCustomers = new Map();
+                            filteredCustomers.forEach(customer => {
+                              const email = customer.email?.toLowerCase();
+                              if (email) uniqueCustomers.set(email, customer);
+                            });
+                            acceptCount = uniqueCustomers.size;
                           }
+                          
                           return (
                             <TableRow
                               key={index}
