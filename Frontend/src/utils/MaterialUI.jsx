@@ -28,6 +28,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
 import MailIcon from "@mui/icons-material/Mail";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import SettingsIcon from "@mui/icons-material/Settings";
 import SendIcon from "@mui/icons-material/Send";
 import GroupIcon from '@mui/icons-material/Group';
@@ -73,6 +75,8 @@ import Badge from '@mui/material/Badge';
 import Switch from '@mui/material/Switch';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import { TablePagination } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { styled } from "@mui/material/styles";
@@ -128,6 +132,8 @@ export {
   HomeIcon,
   PeopleIcon,
   MailIcon,
+  ArrowBackIcon,
+  VisibilityIcon,
   SettingsIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -175,4 +181,6 @@ export {
   Switch,
   ArrowDropUpIcon,
   ArrowDropDownIcon,
+  Snackbar,
+  Alert
 };

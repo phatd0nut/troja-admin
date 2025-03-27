@@ -239,17 +239,14 @@ const Mailing = () => {
   };
 
     const handleSelectCustomerGroups = async () => {
-    console.log("Fetching customer groups...");
     
     try {
       // Always fetch custom groups from localStorage
       const savedCustomGroups = JSON.parse(localStorage.getItem("customGroups")) || {};
-      console.log("Saved custom groups:", savedCustomGroups);
   
       // Check if we need to fetch other data
       if (!customerGroups.allCustomers || customerGroups.allCustomers.length === 0) {
         const data = await fetchCustomersGroupedByGoods();
-        console.log("Fetched data:", data);
         
         const combinedData = {
           allCustomers: data.allCustomers || [],
@@ -257,7 +254,6 @@ const Mailing = () => {
           customGroups: savedCustomGroups
         };
         
-        console.log("Combined data:", combinedData);
         setCustomerGroups(combinedData);
         localStorage.setItem("customerGroups", JSON.stringify(combinedData));
       } else {

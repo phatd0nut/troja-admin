@@ -20,15 +20,20 @@ import {
   styled,
   PersonAdd,
   PersonRemove,
-  Search,
+  ArrowBackIcon,
+  VisibilityIcon,
+  DeleteIcon,
   Tabs,
   Tab,
   List,
   ListItem,
   ListItemText,
+  Snackbar,
+  Alert,
 } from "../utils/MaterialUI";
 import Button from "./Button";
 import InputField from "./InputField";
+import LoadingCircle from "./LoadingCircle";
 
 const CustomTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#dc2e34",
@@ -54,17 +59,58 @@ const SelectCustomerGroupModal = forwardRef(
     const [searchTerm, setSearchTerm] = useState("");
     const rowsPerPage = 6;
     const [tabValue, setTabValue] = useState(0);
-
-    // New state variables for customer search
     const [customerSearchTerm, setCustomerSearchTerm] = useState("");
     const [searchedCustomers, setSearchedCustomers] = useState([]);
     const [selectedCustomers, setSelectedCustomers] = useState([]);
     const [customGroupName, setCustomGroupName] = useState(
       "Personligt utskick/Grupp"
     );
-    // Add this after your state declarations
     const [debouncedSearchTerm, setDebouncedSearchTerm] =
       useState(customerSearchTerm);
+    const [inspectingGroup, setInspectingGroup] = useState(null);
+    const [currentGroupName, setCurrentGroupName] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    const handleInspectGroup = (goodsName, event) => {
+      event.stopPropagation();
+      setCurrentGroupName(goodsName);
+
+      if (goodsName === "Alla kunder") {
+        setInspectingGroup(customerGroups.allCustomers);
+      } else {
+        setInspectingGroup(
+          customerGroups.customGroups && customerGroups.customGroups[goodsName]
+            ? customerGroups.customGroups[goodsName].customers
+            : customerGroups.allCustomers.filter(
+                (customer) => customer.goodsName === goodsName
+              )
+        );
+      }
+    };
+
+    const handleClearCustomGroups = async () => {
+      setIsDeleting(true);
+
+      if (localStorage.getItem("customGroups")) {
+        try {
+          localStorage.removeItem("customGroups");
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          window.location.reload();
+        } catch (error) {
+          console.error("Error clearing custom groups:", error);
+        } finally {
+          setIsDeleting(false);
+        }
+      } else {
+        setIsDeleting(false);
+        setOpenSnackbar(true);
+      }
+    };
+
+    const handleCloseSnackbar = () => {
+      setOpenSnackbar(false);
+    };
 
     // Add this useEffect to create the debounce effect
     useEffect(() => {
@@ -315,197 +361,309 @@ const SelectCustomerGroupModal = forwardRef(
     );
 
     return (
-      <Box
-        ref={ref}
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "80%",
-          height: "80%",
-          minWidth: 800,
-          minHeight: 800,
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          p: 4,
-          outline: "none",
-          overflowY: "auto",
-        }}
-      >
+      <>
         <Box
+          ref={ref}
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 3,
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "80%",
+            height: "80%",
+            minWidth: 800,
+            minHeight: 800,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            outline: "none",
+            overflowY: "auto",
           }}
         >
-          <Typography variant="h4" color="primary">
-            Välj mottagare
-          </Typography>
-          <Button
-            onClick={() => onClose(selectedGroups, selectedCustomers)} // Make sure this passes both!
-            variant="text"
-            color="secondary"
-            endIcon={<CloseIcon />}
+          <Box
             sx={{
-              "& .MuiButton-endIcon": {
-                margin: 0,
-                padding: 0,
-              },
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 3,
             }}
-          />
-        </Box>
-
-        <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 3 }}>
-          <Tab label="Kundgrupper" />
-          <Tab label="Enskilda kunder" />
-        </Tabs>
-
-        {tabValue === 0 ? (
-          // Kundgrupper tab content
-          <>
-            <Box
+          >
+            <Typography variant="h4" color="primary">
+              Välj mottagare
+            </Typography>
+            <Button
+              onClick={() => onClose(selectedGroups, selectedCustomers)}
+              variant="text"
+              color="secondary"
+              endIcon={<CloseIcon />}
               sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 2,
+                "& .MuiButton-endIcon": {
+                  margin: 0,
+                  padding: 0,
+                },
               }}
-            >
-              <InputField
-                label="Sök kundgrupp"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                sx={{ mb: 2 }}
-              />
+            />
+          </Box>
+
+          <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 3 }}>
+            <Tab label="Kundgrupper" />
+            <Tab label="Enskilda kunder" />
+          </Tabs>
+
+          {tabValue === 0 && (
+            <>
               <Box
                 sx={{
                   display: "flex",
-                  gap: 2,
+                  justifyContent: "space-between",
                   alignItems: "center",
-                  height: 56,
+                  marginBottom: 2,
                 }}
               >
-                <Button
-                  onClick={handleSelectAll}
-                  variant="contained"
-                  color="primary"
-                  endIcon={<GroupAdd />}
-                  sx={{ height: "100%" }}
+                <InputField
+                  label="Sök kundgrupp"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  sx={{ mb: 2 }}
+                />
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 2,
+                    alignItems: "center",
+                    height: 56,
+                  }}
                 >
-                  Välj alla
-                </Button>
-                <Button
-                  onClick={handleClearAll}
-                  variant="contained"
-                  color="primary"
-                  endIcon={<GroupRemove />}
-                  sx={{ height: "100%" }}
-                >
-                  Rensa alla
-                </Button>
+                  <Button
+                    onClick={handleSelectAll}
+                    variant="contained"
+                    color="primary"
+                    endIcon={<GroupAdd />}
+                    sx={{ height: "100%" }}
+                  >
+                    Välj alla
+                  </Button>
+                  <Button
+                    onClick={handleClearAll}
+                    variant="contained"
+                    color="primary"
+                    endIcon={<GroupRemove />}
+                    sx={{ height: "100%" }}
+                  >
+                    Rensa alla
+                  </Button>
+                  <Button
+                    onClick={handleClearCustomGroups}
+                    variant="outlined"
+                    color="secondary"
+                    endIcon={
+                      isDeleting ? <LoadingCircle size={20} /> : <DeleteIcon />
+                    }
+                    disabled={isDeleting}
+                    sx={{ height: "100%" }}
+                  >
+                    {isDeleting ? "Tömmer grupper..." : "Töm skapade grupper"}
+                  </Button>
+                </Box>
               </Box>
-            </Box>
-            <TableContainer
-              component={Paper}
-              sx={{ mt: 2, minHeight: 400, maxHeight: 400 }}
-            >
-              <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <CustomTableCell>Grupp</CustomTableCell>
-                    <CustomTableCell>Kunder</CustomTableCell>
-                    <CustomTableCell>Välj för utskick</CustomTableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {paginatedGroups.length > 0 ? (
-                    paginatedGroups.map((goodsName, index) => {
-                      let acceptCount;
 
-                      if (goodsName === "Alla kunder") {
-                        acceptCount = customerGroups.allCustomers.length;
-                      } else if (
-                        customerGroups.customGroups &&
-                        customerGroups.customGroups[goodsName]
-                      ) {
-                        acceptCount =
-                          customerGroups.customGroups[goodsName].customers
-                            .length;
-                      } else {
-                        acceptCount = customerGroups.allCustomers.filter(
-                          (group) => group.goodsName === goodsName
-                        ).length;
-                      }
-
-                      return (
-                        <TableRow
-                          key={index}
-                          onClick={() => handleRowClick(goodsName)}
-                          sx={{
-                            cursor: "pointer",
-                            backgroundColor: selectedGroups.includes(goodsName)
-                              ? ""
-                              : "inherit",
-                            "&:hover": {
-                              backgroundColor: "rgba(220, 46, 52, 0.2)",
-                            },
+              {inspectingGroup ? (
+                <>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      mb: 2,
+                    }}
+                  >
+                    <Typography variant="h6">
+                      Kunder i gruppen:{" "}
+                      {inspectingGroup ? currentGroupName : ""}
+                    </Typography>
+                    <Button
+                      onClick={() => setInspectingGroup(null)}
+                      variant="text"
+                      endIcon={<ArrowBackIcon />}
+                    >
+                      Tillbaka
+                    </Button>
+                  </Box>
+                  <TableContainer
+                    component={Paper}
+                    sx={{ mt: 2, minHeight: 400, maxHeight: 400 }}
+                  >
+                    <TableContainer stickyHeader>
+                      <TableHead>
+                        <TableRow>
+                          <CustomTableCell>Namn</CustomTableCell>
+                          <CustomTableCell>E-post</CustomTableCell>
+                          <CustomTableCell>Telefon</CustomTableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {inspectingGroup.map((customer, index) => (
+                          <TableRow key={index}>
+                            <TableCell>
+                              {customer.firstName} {customer.lastName}
+                            </TableCell>
+                            <TableCell>{customer.email}</TableCell>
+                            <TableCell>{customer.phoneNumber}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </TableContainer>
+                  </TableContainer>
+                </>
+              ) : (
+                <>
+                  <TableContainer
+                    component={Paper}
+                    sx={{ mt: 2, minHeight: 400, maxHeight: 400 }}
+                  >
+                    <Table stickyHeader>
+                      <TableHead>
+                        <Snackbar
+                          open={openSnackbar}
+                          autoHideDuration={3000}
+                          onClose={handleCloseSnackbar}
+                          anchorOrigin={{
+                            vertical: "top",
+                            horizontal: "center",
                           }}
                         >
-                          <TableCell>{goodsName}</TableCell>
-                          <TableCell>{acceptCount}</TableCell>
-                          <TableCell>
-                            <Checkbox
-                              disableRipple={true}
-                              checked={selectedGroups.includes(goodsName)}
-                              onChange={handleCheckboxChange}
-                              name={goodsName}
-                              sx={{ padding: 0 }}
-                            />
-                          </TableCell>
+                          <Alert
+                            onClose={handleCloseSnackbar}
+                            severity="error"
+                            size="large"
+                            sx={{ width: "100%" }}
+                          >
+                            Det finns inga sparade grupper att ta bort
+                          </Alert>
+                        </Snackbar>
+                        <TableRow>
+                          <CustomTableCell>Grupp</CustomTableCell>
+                          <CustomTableCell>Kunder</CustomTableCell>
+                          <CustomTableCell>Välj för utskick</CustomTableCell>
                         </TableRow>
-                      );
-                    })
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={3}>
-                        <Typography sx={{ mt: 2 }}>
-                          Inga kundgrupper tillgängliga.
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Box display="flex" justifyContent="end" sx={{ mt: 2 }}>
-              <Pagination
-                count={Math.ceil(filteredGroups.length / rowsPerPage)}
-                page={page}
-                onChange={handleChangePage}
-                color="primary"
-                shape="rounded"
-                sx={{
-                  "& .MuiPaginationItem-root": {
-                    "&:hover": {
-                      backgroundColor: "black",
-                      color: "white",
-                    },
-                    "&.Mui-selected:hover": {
-                      backgroundColor: "black",
-                      color: "white",
-                    },
-                    fontWeight: "bold",
-                  },
-                }}
-              />
-            </Box>
-          </>
-        ) : (
-          // Enskilda kunder tab content
-          <>
+                      </TableHead>
+                      <TableBody>
+                        {paginatedGroups.length > 0 ? (
+                          paginatedGroups.map((goodsName, index) => {
+                            let acceptCount;
+                            if (goodsName === "Alla kunder") {
+                              acceptCount = customerGroups.allCustomers.length;
+                            } else if (
+                              customerGroups.customGroups &&
+                              customerGroups.customGroups[goodsName]
+                            ) {
+                              acceptCount =
+                                customerGroups.customGroups[goodsName].customers
+                                  .length;
+                            } else {
+                              acceptCount = customerGroups.allCustomers.filter(
+                                (group) => group.goodsName === goodsName
+                              ).length;
+                            }
+                            return (
+                              <TableRow
+                                key={index}
+                                onClick={() => handleRowClick(goodsName)}
+                                sx={{
+                                  cursor: "pointer",
+                                  backgroundColor: selectedGroups.includes(
+                                    goodsName
+                                  )
+                                    ? ""
+                                    : "inherit",
+                                  "&:hover": {
+                                    backgroundColor: "rgba(220, 46, 52, 0.2)",
+                                  },
+                                }}
+                              >
+                                <TableCell>{goodsName}</TableCell>
+                                <TableCell>
+                                  {acceptCount}
+                                  <Button
+                                    size="medium"
+                                    onClick={(e) =>
+                                      handleInspectGroup(goodsName, e)
+                                    }
+                                    sx={{
+                                      color: "#666666",
+                                      padding: 0,
+                                      margin: 0,
+                                      minWidth: 0,
+                                      "&:hover": {
+                                        color: "#dc2e34",
+                                        backgroundColor: "transparent",
+                                      },
+                                    }}
+                                    endIcon={<VisibilityIcon />}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 1,
+                                    }}
+                                  >
+                                    <Checkbox
+                                      disableRipple={true}
+                                      checked={selectedGroups.includes(
+                                        goodsName
+                                      )}
+                                      onChange={handleCheckboxChange}
+                                      name={goodsName}
+                                      onClick={(e) => e.stopPropagation()}
+                                      sx={{ padding: 0 }}
+                                    />
+                                  </Box>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={3}>
+                              <Typography sx={{ mt: 2 }}>
+                                Inga kundgrupper tillgängliga.
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <Box display="flex" justifyContent="end" sx={{ mt: 2 }}>
+                    <Pagination
+                      count={Math.ceil(filteredGroups.length / rowsPerPage)}
+                      page={page}
+                      onChange={handleChangePage}
+                      color="primary"
+                      shape="rounded"
+                      sx={{
+                        "& .MuiPaginationItem-root": {
+                          "&:hover": {
+                            backgroundColor: "black",
+                            color: "white",
+                          },
+                          "&.Mui-selected:hover": {
+                            backgroundColor: "black",
+                            color: "white",
+                          },
+                          fontWeight: "bold",
+                        },
+                      }}
+                    />
+                  </Box>
+                </>
+              )}
+            </>
+          )}
+
+          {tabValue === 1 && (
             <Box sx={{ mb: 3 }}>
               <InputField
                 label="Namn på ny kundgrupp"
@@ -526,7 +684,7 @@ const SelectCustomerGroupModal = forwardRef(
                 <List dense>
                   {searchedCustomers.map((customer, index) => (
                     <ListItem
-                      key={`searched-${customer.id}-${index}`} // Use combination of ID and index for uniqueness
+                      key={`searched-${customer.id}-${index}`}
                       secondaryAction={
                         <Checkbox
                           edge="end"
@@ -599,6 +757,7 @@ const SelectCustomerGroupModal = forwardRef(
                 variant="contained"
                 color="primary"
                 disabled={selectedCustomers.length === 0}
+                endIcon={<PersonAdd />}
               >
                 Lägg till i grupp
               </Button>
@@ -607,94 +766,89 @@ const SelectCustomerGroupModal = forwardRef(
                 variant="outlined"
                 color="secondary"
                 sx={{ ml: 2 }}
+                endIcon={<PersonRemove />}
               >
                 Rensa val
               </Button>
             </Box>
-          </>
-        )}
-
-        <Divider sx={{ mt: 4 }} />
-        <Box
-          sx={{
-            mt: 2,
-            height: 240,
-            overflowY: "auto",
-          }}
-        >
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Valda Kundgrupper: {selectedGroups.length}
-            {selectedCustomers.length > 0 &&
-              ` + ${selectedCustomers.length} enskilda kunder`}
-          </Typography>
-          {selectedGroups.length > 0 ? (
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-              {selectedGroups.map((group, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    backgroundColor: "#f0f0f0",
-                    borderRadius: "4px",
-                    padding: "4px 8px",
-                  }}
-                >
-                  <Typography>{group}</Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleRemoveGroup(group)}
-                    sx={{ marginLeft: 1 }}
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              ))}
-
-              {selectedCustomers.length > 0 && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    backgroundColor: "#f0f0f0",
-                    borderRadius: "4px",
-                    padding: "4px 8px",
-                  }}
-                >
-                  <Typography>
-                    {customGroupName} ({selectedCustomers.length} kunder)
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={handleClearCustomers}
-                    sx={{ marginLeft: 1 }}
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              )}
-            </Box>
-          ) : (
-            <Typography sx={{ mt: 1 }}>
-              {selectedCustomers.length === 0
-                ? "Inga mottagare valda."
-                : `${selectedCustomers.length} enskilda kunder valda.`}
-            </Typography>
           )}
+
+          <Divider sx={{ mt: 4 }} />
+          <Box sx={{ mt: 2, height: 240, overflowY: "auto" }}>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Valda Kundgrupper: {selectedGroups.length}
+              {selectedCustomers.length > 0 &&
+                ` + ${selectedCustomers.length} enskilda kunder`}
+            </Typography>
+            {selectedGroups.length > 0 ? (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                {selectedGroups.map((group, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      backgroundColor: "#f0f0f0",
+                      borderRadius: "4px",
+                      padding: "4px 8px",
+                    }}
+                  >
+                    <Typography>{group}</Typography>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleRemoveGroup(group)}
+                      sx={{ marginLeft: 1 }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                ))}
+
+                {selectedCustomers.length > 0 && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      backgroundColor: "#f0f0f0",
+                      borderRadius: "4px",
+                      padding: "4px 8px",
+                    }}
+                  >
+                    <Typography>
+                      {customGroupName} ({selectedCustomers.length} kunder)
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      onClick={handleClearCustomers}
+                      sx={{ marginLeft: 1 }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                )}
+              </Box>
+            ) : (
+              <Typography sx={{ mt: 1 }}>
+                {selectedCustomers.length === 0
+                  ? "Inga mottagare valda."
+                  : `${selectedCustomers.length} enskilda kunder valda.`}
+              </Typography>
+            )}
+          </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2 }}
+            onClick={() => onClose(selectedGroups, selectedCustomers)}
+            endIcon={<Check />}
+            disabled={
+              selectedGroups.length === 0 && selectedCustomers.length === 0
+            }
+          >
+            Bekräfta val
+          </Button>
         </Box>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2 }}
-          onClick={() => onClose(selectedGroups, selectedCustomers)}
-          endIcon={<Check />}
-          disabled={
-            selectedGroups.length === 0 && selectedCustomers.length === 0
-          }
-        >
-          Bekräfta val
-        </Button>
-      </Box>
+      </>
     );
   }
 );
