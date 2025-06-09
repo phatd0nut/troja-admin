@@ -5,6 +5,14 @@ Troja Admin is an integrated, lightweight CRM (Customer Relationship Management)
 > **Note:**  
 > This codebase is tailored for the needs of Troja Ljungby IF and is not intended for general use or distribution as-is. However, you are welcome to browse the code for educational purposes, inspiration, or technical reference.
 
+## Owners
+
+- [phatd0nut](https://github.com/phatd0nut)
+
+## Contributors
+
+- [LNU4](https://github.com/LNU4)
+
 ## Features
 
 - **Contact Management:** Organize and manage member and contact information.
